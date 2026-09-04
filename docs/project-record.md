@@ -19,17 +19,19 @@ project's authoritative standard and the version distributed with the skill,
 so a Git installer may copy that directory without relying on the repository
 parent or fetching rules at runtime.
 
-The repository has a clean public initial tree and an `origin` target of
-`https://github.com/brightskye/pls.git`. It contains no predecessor Git history
-or private review archive. PLS is available under the MIT License. The public
-push has not yet occurred.
+The repository has clean public history ready for publication at
+[`brightskye/pls`](https://github.com/brightskye/pls). It contains no
+predecessor Git history or private review archive and is available under the
+MIT License. The empty GitHub repository exists; pushing awaits authenticated
+GitHub access from this environment.
 
 ## Next
 
 - Review the working standard as a human reader.
 - Review whether any real project needs an explicitly mapped alternative to a
   normal PLS location.
-- Publish the clean repository at `https://github.com/brightskye/pls`.
+- Push `main` to `https://github.com/brightskye/pls` from an authenticated
+  GitHub environment.
 - Decide when the draft is clear enough to tag as a PLS release.
 
 ## Proposals
@@ -87,3 +89,7 @@ runtime network lookup is required.
 
 On 2026-09-05, the Owner selected the MIT License for public use, modification,
 and distribution of PLS.
+
+On 2026-09-05, the empty `brightskye/pls` GitHub repository was created. The
+clean local history was ready, but publication remained pending authenticated
+push access.
