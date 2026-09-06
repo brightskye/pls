@@ -25,8 +25,10 @@ project's authoritative standard and the version distributed with the skill,
 so a Git installer may copy that directory without relying on the repository
 parent or fetching rules at runtime.
 
-Distribution is moving to a complete release bundle: skill, rules, installer,
-instructions, license, and release metadata. Maintained sources stay in
+The published
+[`v0.3.0-draft.1`](https://github.com/brightskye/pls/releases/tag/v0.3.0-draft.1)
+bundle contains the skill, rules, installer, instructions, license, and release
+metadata. Maintained sources stay in
 `src/pls/` and `tools/`; the builder produces ignored `releases/<version>/`
 outputs for GitHub Releases. The bundled Python installer copies local bundle
 files offline and uses published bundles for later updates. Source Git
@@ -35,8 +37,19 @@ installation remains a development and compatibility route.
 The checked `skills` CLI 1.5.23 can install a release ZIP, but it does not track
 archive installs in its lock file, so its `update` command cannot refresh them.
 Users must rerun `add` with the selected new ZIP, or use the Python bundle
-installer/updater. Initial archive installation was verified in a temporary
-project; bundle publication and the Orca pilot are still pending.
+installer/updater. Installation from the published GitHub ZIP was verified
+with that CLI in a temporary project.
+
+All 23 installer and builder tests pass locally and in the GitHub release
+workflow. The downloaded release matched the local build byte for byte, and
+its checksum passed. Using the downloaded installer, offline installation,
+updates from GitHub bundles, and refusal to overwrite local edits passed.
+These live checks ran on Linux/WSL; native Windows was not tested.
+
+Orca now has a project-local copy installed from this published bundle. The
+installer is stored with the release outside the PLS checkout, and its update
+command passed against GitHub. This installation does not use a source link
+or change Orca's recorded adoption of the standard.
 
 The repository is publicly available at
 [`brightskye/pls`](https://github.com/brightskye/pls) with clean public
@@ -48,12 +61,10 @@ installed copies remain at their selected version until explicitly updated.
 
 ## Next
 
-- Publish and verify the first complete working-draft bundle, then use it for
-  a project-level Orca installation.
 - Review the working standard as a human reader.
 - Review whether any real project needs an explicitly mapped alternative to a
   normal PLS location.
-- Decide when the draft is clear enough to tag as a PLS release.
+- Decide when the draft is clear enough for a stable PLS release.
 
 ## Proposals
 
@@ -166,5 +177,11 @@ The working draft remains PLS v0.3; publication did not promote it to stable.
 On 2026-09-06, the Owner requested a complete bundle and use of that bundle
 instead of direct source links. A versioned ZIP builder, bundled offline
 installation, release-based updates, and a GitHub prerelease workflow were
-prepared. The current `npx` archive-update limitation was verified and is
-documented; the Python route owns the Orca bundle pilot.
+implemented and published at commit
+[0c195bc56e76b6367bf612a9ef980f4a761194fe](https://github.com/brightskye/pls/commit/0c195bc56e76b6367bf612a9ef980f4a761194fe).
+The tagged `v0.3.0-draft.1` workflow passed all 23 tests and published the ZIP
+and checksum. The published download, Python installation and update checks,
+and `npx` archive installation passed. Orca's project-local bundle installation
+and update check also passed. The `npx` archive-update limitation is documented;
+Python provides the tested bundle update route. The standard remains a working
+draft.
