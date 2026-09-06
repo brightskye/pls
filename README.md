@@ -62,7 +62,7 @@ PLS is available under the [MIT License](LICENSE).
 ## Current state
 
 The structure-first PLS v0.3 text is a working draft. The published
-`v0.3.0-draft.1` bundle remains the current public release; `0.3.0-draft.2`
-is being prepared and is not yet published or a verified release. The draft
-covers the main project layout as well as its documentation and has not been
-promoted to a stable release.
+[`v0.3.0-draft.2`](https://github.com/brightskye/pls/releases/tag/v0.3.0-draft.2)
+bundle has a verified single-folder Python installation and updater. The
+standard covers the main project layout as well as its documentation and has
+not been promoted to a stable release.

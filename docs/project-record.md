@@ -26,39 +26,34 @@ so a Git installer may copy that directory without relying on the repository
 parent or fetching rules at runtime.
 
 The published
-[`v0.3.0-draft.1`](https://github.com/brightskye/pls/releases/tag/v0.3.0-draft.1)
-bundle contains the skill, rules, installer, instructions, license, and release
-metadata. Maintained sources stay in
-`src/pls/` and `tools/`; the builder produces ignored `releases/<version>/`
-outputs for GitHub Releases. The bundled Python installer copies local bundle
-files offline and uses published bundles for later updates. Source Git
-installation remains a development and compatibility route. A follow-up
-`0.3.0-draft.2` bundle is being prepared. Its intended Python route keeps the
-skill, rules, updater, instructions, license, and release metadata together in
-one `.agents/skills/pls/` directory, hashes every installed bundle file in the
-receipt, and updates all of those files together, including the updater itself.
-The 30 local installer and builder tests pass, including self-update from an
-unrelated working directory, migration of old receipts, and preservation of
-local updater edits. A packaged offline install and update passed after the
-extracted installer was moved away. The draft.2 package is not yet published.
-The PLS skill validator also passes.
+[`v0.3.0-draft.2`](https://github.com/brightskye/pls/releases/tag/v0.3.0-draft.2)
+bundle installs the skill, rules, updater, instructions, license, and release
+metadata together in `.agents/skills/pls/`. Its receipt tracks every installed
+file. The installed updater updates that same directory, including itself,
+from published GitHub bundles. The extracted download is no longer needed.
+Maintained sources remain in `src/pls/` and `tools/`; generated bundles use
+ignored `releases/<version>/` outputs and GitHub Releases for distribution.
 
-The checked `skills` CLI 1.5.23 can install a release ZIP, but it does not track
-archive installs in its lock file, so its `update` command cannot refresh them.
-Users must rerun `add` with the selected new ZIP, or use the Python bundle
-installer/updater. Installation from the published GitHub ZIP was verified
-with that CLI in a temporary project.
+All 30 installer and builder tests pass locally and in the GitHub release
+workflow. These include migration of old receipts, self-update from an
+unrelated working directory, and preservation of local updater edits. The
+published ZIP matched the local build byte for byte and passed its checksum.
+Offline installation and GitHub updates through the installed updater passed
+after the extracted installer was moved away. The installed PLS skill also
+passed its validator. Live checks ran on Linux/WSL; native Windows remains
+untested.
 
-All 23 installer and builder tests pass locally and in the GitHub release
-workflow. The downloaded release matched the local build byte for byte, and
-its checksum passed. Using the downloaded installer, offline installation,
-updates from GitHub bundles, and refusal to overwrite local edits passed.
-These live checks ran on Linux/WSL; native Windows was not tested.
+Orca now uses this complete project-local installation. Its GitHub update
+check passed after the old home-folder installation and dangling source link
+were moved to temporary recovery storage. No separate persistent installer
+location is needed. Orca's recorded adoption of the standard was unchanged.
 
-Orca now has a project-local copy installed from this published bundle. The
-installer is stored with the release outside the PLS checkout, and its update
-command passed against GitHub. This installation does not use a source link
-or change Orca's recorded adoption of the standard.
+The checked `skills` CLI 1.5.23 can install the archive's skill payload but does
+not include the outer Python updater or track archive installs for updates.
+This route was verified with draft.1; the archive layout remains unchanged.
+Use Python for the complete single-folder installation and dedicated update
+command. Source Git installation remains a development and compatibility
+route.
 
 The repository is publicly available at
 [`brightskye/pls`](https://github.com/brightskye/pls) with clean public
@@ -203,5 +198,9 @@ draft.
 On 2026-09-06, the Owner requested that the next bundled installer keep the
 complete Python installation in one `.agents/skills/pls/` directory and update
 the updater together with the skill, rules, instructions, metadata, and
-license. The `0.3.0-draft.2` package is being prepared; its release and new
-verification results are pending.
+license. Commit
+[05d9a3e30f96bd42928ecf3d13f87a682af2312f](https://github.com/brightskye/pls/commit/05d9a3e30f96bd42928ecf3d13f87a682af2312f)
+was published as `v0.3.0-draft.2`. All 30 release tests passed, and the published
+bundle passed offline installation and independent GitHub update checks.
+Orca was migrated and its updater verified after retiring the separate
+home-folder installation and source link. The standard remains a working draft.

@@ -23,11 +23,11 @@ and checksums use ignored `releases/<version>/` locally and GitHub Releases
 for distribution. The standard remains a working draft. Bundle versions such
 as `0.3.0-draft.1` identify packaged revisions of that draft.
 
-The first complete bundle,
-[`v0.3.0-draft.1`](https://github.com/brightskye/pls/releases/tag/v0.3.0-draft.1),
-is published and tested. `0.3.0-draft.2` is being prepared and is not yet
-published or a verified release. See the [Project Record](project-record.md)
-for the verification results and limits.
+The current bundle,
+[`v0.3.0-draft.2`](https://github.com/brightskye/pls/releases/tag/v0.3.0-draft.2),
+is published and tested. Its Python installer keeps the complete installation
+in one folder. See the [Project Record](project-record.md) for verification
+results and limits.
 
 ## Install with Python
 
