@@ -6,7 +6,9 @@ import importlib.util
 import io
 import json
 from pathlib import Path
+import runpy
 import stat
+import sys
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -30,9 +32,9 @@ def archive(files):
     return data.getvalue()
 
 
-def release_archive(payload, version="0.3.0-draft.1", commit=FIRST):
+def release_archive(payload, version="0.3.0-draft.1", commit=FIRST, script=None):
     files = {"pls/skills/pls/" + name: data for name, data in payload.items()}
-    files.update({"pls/install.py": b"# installer", "pls/README.md": b"Instructions",
+    files.update({"pls/install.py": script or (ROOT / "tools" / "pls_skill.py").read_bytes(), "pls/README.md": b"Instructions",
                   "pls/LICENSE": b"MIT", "pls/release.json": json.dumps({
                       "format": 1, "repository": installer.REPOSITORY,
                       "version": version, "commit": commit}).encode()})
@@ -196,7 +198,8 @@ class InstallerTests(unittest.TestCase):
             installer.install("install", self.skills, bundle=bundle)
         self.assertEqual(self.receipt()["source"], "bundle")
         self.assertEqual(self.receipt()["release_ref"], "latest")
-        self.assertEqual(installer.installed_files(self.destination), self.payload)
+        _, expected = installer.read_bundle(bundle.read_bytes())
+        self.assertEqual(installer.installed_files(self.destination), expected)
         changed = {name: data + b"\nNew release.\n" for name, data in self.payload.items()}
         metadata, files = installer.read_bundle(release_archive(changed, "0.3.0-draft.2", SECOND))
         with patch.object(installer, "fetch_release", return_value=(metadata, files)) as fetch:
@@ -204,7 +207,7 @@ class InstallerTests(unittest.TestCase):
                 installer.install("update", self.skills)
         fetch.assert_called_once_with("latest")
         self.assertEqual(self.receipt()["version"], "0.3.0-draft.2")
-        self.assertEqual(installer.installed_files(self.destination), changed)
+        self.assertEqual(installer.installed_files(self.destination), files)
 
     def test_pinned_release_stays_pinned_and_offline_update_works(self):
         metadata, files = installer.read_bundle(release_archive(self.payload))
@@ -227,7 +230,9 @@ class InstallerTests(unittest.TestCase):
         with patch.object(installer, "download", side_effect=[json.dumps(releases).encode(), package, checksum]) as download:
             metadata, files = installer.fetch_release("latest")
         self.assertEqual(metadata["version"], "0.3.0-draft.1")
-        self.assertEqual(files, self.payload)
+        for name, data in self.payload.items():
+            self.assertEqual(files[name], data)
+        self.assertTrue(set(installer.BUNDLE_FILES) <= files.keys())
         self.assertIn("/releases/download/v0.3.0-draft.1/pls.zip", download.call_args_list[1].args[0])
         with patch.object(installer, "download", side_effect=[package, b"wrong checksum"]):
             with self.assertRaisesRegex(installer.InstallError, "checksum"):
@@ -262,6 +267,110 @@ class InstallerTests(unittest.TestCase):
         with self.assertRaisesRegex(installer.InstallError, "linked directories"):
             installer.install("install", self.skills, bundle=root)
         self.assertFalse(self.destination.exists())
+
+    def test_legacy_receipt_migrates_to_complete_installation(self):
+        self.run_install()
+        receipt = self.receipt()
+        receipt.update(source="bundle", version="0.3.0-draft.1", release_ref="latest")
+        (self.destination / installer.RECEIPT).write_text(json.dumps(receipt))
+        metadata, files = installer.read_bundle(release_archive(self.payload, "0.3.0-draft.2", SECOND))
+        with patch.object(installer, "fetch_release", return_value=(metadata, files)):
+            installer.install("update", self.skills)
+        self.assertEqual(installer.installed_files(self.destination), files)
+        self.assertEqual(self.receipt()["files"], installer.hashes(files))
+
+    def test_installed_script_updates_itself_from_another_working_directory(self):
+        bundle = self.project / "pls.zip"
+        bundle.write_bytes(release_archive(self.payload))
+        installer.install("install", self.skills, bundle=bundle)
+        bundle.unlink()
+        script = self.destination / "install.py"
+        updated_script = script.read_bytes() + b"\n# Next release installer.\n"
+        changed = {name: data + b"\nNew release.\n" for name, data in self.payload.items()}
+        new_bundle = release_archive(changed, "0.3.0-draft.2", SECOND, updated_script)
+        releases = [{"draft": False, "tag_name": "v0.3.0-draft.2", "assets": [{"name": "pls.zip"}]}]
+        responses = [json.dumps(releases).encode(), new_bundle,
+                     (hashlib.sha256(new_bundle).hexdigest() + "  pls.zip\n").encode()]
+        unrelated = self.project / "other-project"
+        unrelated.mkdir()
+        with patch.object(Path, "cwd", return_value=unrelated):
+            with patch.object(sys, "argv", [str(script), "update"]):
+                with patch("urllib.request.urlopen", side_effect=[io.BytesIO(data) for data in responses]):
+                    with contextlib.redirect_stdout(io.StringIO()):
+                        with self.assertRaises(SystemExit) as result:
+                            runpy.run_path(str(script), run_name="__main__")
+        self.assertEqual(result.exception.code, 0)
+        self.assertEqual(script.read_bytes(), updated_script)
+        self.assertEqual((self.destination / "SKILL.md").read_bytes(), changed["SKILL.md"])
+        self.assertEqual(self.receipt()["version"], "0.3.0-draft.2")
+        self.assertEqual(list(unrelated.iterdir()), [])
+        self.assertEqual(list(self.skills.iterdir()), [self.destination])
+
+    def test_installed_script_honors_explicit_destination(self):
+        bundle = self.project / "pls.zip"
+        bundle.write_bytes(release_archive(self.payload))
+        installer.install("install", self.skills, bundle=bundle)
+        other_skills = self.project / "other" / "skills"
+        installer.install("install", other_skills, bundle=bundle)
+        updated = self.project / "update.zip"
+        updated.write_bytes(release_archive(self.payload, "0.3.0-draft.2", SECOND))
+        with patch.object(installer, "__file__", str(self.destination / "install.py")):
+            with contextlib.redirect_stdout(io.StringIO()):
+                result = installer.main(["update", "--dest", str(other_skills), "--bundle", str(updated)])
+        self.assertEqual(result, 0)
+        self.assertEqual(self.receipt()["commit"], FIRST)
+        self.assertEqual(json.loads((other_skills / "pls" / installer.RECEIPT).read_text())["commit"], SECOND)
+
+    def test_local_updater_edits_are_preserved(self):
+        bundle = self.project / "pls.zip"
+        bundle.write_bytes(release_archive(self.payload))
+        installer.install("install", self.skills, bundle=bundle)
+        script = self.destination / "install.py"
+        changed = script.read_bytes() + b"\n# Local edit.\n"
+        script.write_bytes(changed)
+        with self.assertRaisesRegex(installer.InstallError, "local changes"):
+            installer.install("update", self.skills, bundle=bundle)
+        self.assertEqual(script.read_bytes(), changed)
+
+    def test_missing_receipt_does_not_redirect_update_to_working_directory(self):
+        bundle = self.project / "pls.zip"
+        bundle.write_bytes(release_archive(self.payload))
+        installer.install("install", self.skills, bundle=bundle)
+        (self.destination / installer.RECEIPT).unlink()
+        other = self.project / "other"
+        with patch.object(Path, "cwd", return_value=other):
+            with patch.object(installer, "__file__", str(self.destination / "install.py")):
+                with contextlib.redirect_stderr(io.StringIO()) as error:
+                    result = installer.main(["update", "--bundle", str(bundle)])
+        self.assertEqual(result, 1)
+        self.assertIn("not managed", error.getvalue())
+        self.assertFalse(other.exists())
+
+    def test_installed_copy_can_supply_a_new_offline_installation(self):
+        bundle = self.project / "pls.zip"
+        bundle.write_bytes(release_archive(self.payload))
+        installer.install("install", self.skills, bundle=bundle)
+        other_skills = self.project / "other" / "skills"
+        with patch.object(installer, "download", side_effect=AssertionError("offline")):
+            installer.install("install", other_skills, bundle=self.destination)
+        self.assertEqual(installer.installed_files(other_skills / "pls"), installer.installed_files(self.destination))
+
+    def test_rejects_linked_or_conflicting_bundled_installer(self):
+        with zipfile.ZipFile(io.BytesIO(release_archive(self.payload))) as bundle:
+            entries = {name: bundle.read(name) for name in bundle.namelist()}
+        entries["pls/skills/pls/install.py"] = b"conflicting installer"
+        with self.assertRaisesRegex(installer.InstallError, "reserved"):
+            installer.read_bundle(archive(entries))
+        del entries["pls/skills/pls/install.py"]
+        del entries["pls/install.py"]
+        data = io.BytesIO(archive(entries))
+        with zipfile.ZipFile(data, "a") as bundle:
+            link = zipfile.ZipInfo("pls/install.py")
+            link.create_system = 3
+            link.external_attr = (stat.S_IFLNK | 0o777) << 16
+            bundle.writestr(link, "../../outside")
+        with self.assertRaisesRegex(installer.InstallError, "regular"):
+            installer.read_bundle(data.getvalue())
 
 
 if __name__ == "__main__":

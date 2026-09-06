@@ -32,7 +32,16 @@ metadata. Maintained sources stay in
 `src/pls/` and `tools/`; the builder produces ignored `releases/<version>/`
 outputs for GitHub Releases. The bundled Python installer copies local bundle
 files offline and uses published bundles for later updates. Source Git
-installation remains a development and compatibility route.
+installation remains a development and compatibility route. A follow-up
+`0.3.0-draft.2` bundle is being prepared. Its intended Python route keeps the
+skill, rules, updater, instructions, license, and release metadata together in
+one `.agents/skills/pls/` directory, hashes every installed bundle file in the
+receipt, and updates all of those files together, including the updater itself.
+The 30 local installer and builder tests pass, including self-update from an
+unrelated working directory, migration of old receipts, and preservation of
+local updater edits. A packaged offline install and update passed after the
+extracted installer was moved away. The draft.2 package is not yet published.
+The PLS skill validator also passes.
 
 The checked `skills` CLI 1.5.23 can install a release ZIP, but it does not track
 archive installs in its lock file, so its `update` command cannot refresh them.
@@ -125,6 +134,11 @@ becomes large enough to need its own document.
 - The installed skill reads its bundled standard without fetching mutable
   remote content. Updates are explicit and may follow a pinned release or the
   working draft.
+- The Python bundle route keeps the updater, instructions, metadata, license,
+  skill, and rules in one managed installation directory. A successful update
+  replaces all managed files, including the updater. Python-managed `--ref`
+  installations can migrate with an explicit bundle update; unmanaged source,
+  `npx`, and symlink routes remain separate and do not include that updater.
 - Adopting PLS means preserving useful material while migrating obsolete
   structure to the normal PLS areas and names. A mapped existing name is an
   explicit exception for a project convention or Owner choice, not the default
@@ -185,3 +199,9 @@ and `npx` archive installation passed. Orca's project-local bundle installation
 and update check also passed. The `npx` archive-update limitation is documented;
 Python provides the tested bundle update route. The standard remains a working
 draft.
+
+On 2026-09-06, the Owner requested that the next bundled installer keep the
+complete Python installation in one `.agents/skills/pls/` directory and update
+the updater together with the skill, rules, instructions, metadata, and
+license. The `0.3.0-draft.2` package is being prepared; its release and new
+verification results are pending.

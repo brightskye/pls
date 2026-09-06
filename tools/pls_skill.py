@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Install or update the public PLS skill with Python 3.10+ and no dependencies.
 
-The default destination is .agents/skills/pls in the current project. A release
-bundle installs offline; its updates download published release bundles.
+The default installation is .agents/skills/pls in the current project. It
+contains the skill, rules, installer, and release information. Run its installed
+install.py to update that same directory from published release bundles.
 --bundle selects an offline bundle and --release pins a published release.
 --ref retains the development-only Git source route. Local edits are preserved.
 """
@@ -28,6 +29,7 @@ REPOSITORY = "brightskye/pls"
 SKILL_PATH = "src/pls"
 RECEIPT = ".pls-install.json"
 MAX_DOWNLOAD = 20 * 1024 * 1024
+BUNDLE_FILES = ("release.json", "install.py", "README.md", "LICENSE")
 
 
 class InstallError(Exception):
@@ -101,14 +103,28 @@ def read_bundle(archive: bytes) -> tuple[dict, dict[str, bytes]]:
         if len(roots) != 1 or not next(iter(roots)):
             raise InstallError("The release bundle must have one root folder.")
         prefix = next(iter(roots)) + "/"
-        required = ("release.json", "install.py", "README.md", "LICENSE")
-        for name in required:
-            if prefix + name not in bundle.namelist():
-                raise InstallError(f"The release bundle is missing {name}.")
+        support = {}
+        for name in BUNDLE_FILES:
+            if bundle.namelist().count(prefix + name) != 1:
+                raise InstallError(f"The release bundle needs exactly one {name} file.")
+            entry = bundle.getinfo(prefix + name)
+            if (stat.S_ISLNK(entry.external_attr >> 16) or entry.is_dir()
+                    or not 0 < entry.file_size <= MAX_DOWNLOAD):
+                raise InstallError(f"The release bundle needs a regular, nonempty {name} file.")
+            support[name] = bundle.read(entry)
         if bundle.getinfo(prefix + "release.json").file_size > 16384:
             raise InstallError("Release metadata is too large.")
-        metadata = bundle_metadata(bundle.read(prefix + "release.json"))
-    return metadata, read_skill(archive, "skills/pls")
+        metadata = bundle_metadata(support["release.json"])
+    return metadata, complete_payload(read_skill(archive, "skills/pls"), support)
+
+
+def complete_payload(skill: dict[str, bytes], support: dict[str, bytes]) -> dict[str, bytes]:
+    if skill.keys() & support.keys():
+        raise InstallError("The skill contains a reserved installer or release file.")
+    files = {**skill, **support}
+    if sum(map(len, files.values())) > MAX_DOWNLOAD:
+        raise InstallError("The complete release exceeds the installation size limit.")
+    return files
 
 
 def load_bundle(path: Path) -> tuple[dict, dict[str, bytes]]:
@@ -119,16 +135,23 @@ def load_bundle(path: Path) -> tuple[dict, dict[str, bytes]]:
         if path.stat().st_size > MAX_DOWNLOAD:
             raise InstallError("The release bundle exceeds the 20 MiB limit.")
         return read_bundle(path.read_bytes())
-    for name in ("release.json", "install.py", "README.md", "LICENSE"):
+    for name in BUNDLE_FILES:
         if not (path / name).is_file() or (path / name).is_symlink():
             raise InstallError(f"The release bundle is missing a regular {name} file.")
+        if not 0 < (path / name).stat().st_size <= MAX_DOWNLOAD:
+            raise InstallError(f"The release bundle has an empty or oversized {name} file.")
+    metadata = bundle_metadata((path / "release.json").read_bytes())
+    if (path / RECEIPT).exists():
+        load_receipt(path)
+        return metadata, installed_files(path)
     skill = path / "skills" / "pls"
     if skill.is_symlink() or not skill.is_dir():
         raise InstallError("The release bundle needs a regular skills/pls directory.")
     files = installed_files(skill)
     if not files.get("SKILL.md") or not files.get("references/PLS.md"):
         raise InstallError("The release bundle contains an incomplete PLS skill.")
-    return bundle_metadata((path / "release.json").read_bytes()), files
+    support = {name: (path / name).read_bytes() for name in BUNDLE_FILES}
+    return metadata, complete_payload(files, support)
 
 
 def fetch_release(selection: str) -> tuple[dict, dict[str, bytes]]:
@@ -267,15 +290,23 @@ def install(action: str, skills_dir: Path, ref: str | None = None,
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("action", choices=("install", "update"))
-    parser.add_argument("--dest", type=Path, default=Path.cwd() / ".agents" / "skills",
-                        help="skills directory (default: .agents/skills in the current directory)")
+    parser.add_argument("--dest", type=Path,
+                        help="parent skills directory (install: current project's .agents/skills; installed update: this copy)")
     source = parser.add_mutually_exclusive_group()
     source.add_argument("--bundle", type=Path, help="install/update from an extracted bundle or ZIP without network access")
     source.add_argument("--release", help="published release tag, or latest (includes published working drafts)")
     source.add_argument("--ref", help="development Git source: branch, tag, or commit")
     args = parser.parse_args(argv)
+    skills_dir = args.dest
+    if skills_dir is None:
+        script_dir = Path(__file__).absolute().parent
+        if args.action == "update" and ((script_dir / RECEIPT).exists()
+                                        or (script_dir / "SKILL.md").is_file()):
+            skills_dir = script_dir.parent
+        else:
+            skills_dir = Path.cwd() / ".agents" / "skills"
     try:
-        print(install(args.action, args.dest, args.ref, args.bundle, args.release))
+        print(install(args.action, skills_dir, args.ref, args.bundle, args.release))
     except (InstallError, OSError, URLError, ValueError, zipfile.BadZipFile) as error:
         print(f"PLS: {error}", file=sys.stderr)
         return 1

@@ -161,18 +161,40 @@ From the target project's root, run:
 python3 /path/to/pls/install.py install
 ```
 
-The skill is copied to `.agents/skills/pls/`. Use `--dest` with the parent
-skills directory when a different location is needed. This Python route needs
-no PLS checkout, Node.js, or third-party Python packages.
+The skill, rules, updater, instructions, release metadata, and license are
+copied together to `.agents/skills/pls/`. Use `--dest` with the parent skills
+directory when a different managed location is needed. This Python route needs
+no PLS checkout, Node.js, or third-party Python packages. The extracted bundle
+is no longer needed after installation.
 Python 3.10 or newer is required. Installation uses the local bundle offline.
+
+The installed directory contains the skill, rules, updater, instructions,
+license, release metadata, and `.pls-install.json` receipt. The receipt records
+hashes for every installed bundle file and detects local edits before updates.
 
 ## Update
 
-`python3 /path/to/pls/install.py update` asks for the latest published bundle.
+Run the installed updater from any working directory:
+
+```bash
+python3 /absolute/path/to/project/.agents/skills/pls/install.py update
+```
+
+It asks for the latest published bundle and updates every managed file,
+including `install.py` itself. Use `--dest` with the parent skills directory to
+override the managed location.
 For an explicitly offline update, provide an extracted bundle directory:
 
 ```bash
-python3 /path/to/pls/install.py update --bundle /path/to/extracted/pls
+python3 /absolute/path/to/project/.agents/skills/pls/install.py update --bundle /path/to/extracted/pls
+```
+
+The extracted update bundle is no longer needed after the update. An unchanged
+Python installation from `v0.3.0-draft.1` can be migrated once with the new
+downloaded installer:
+
+```bash
+python3 /path/to/new/pls/install.py update --bundle /path/to/new/pls
 ```
 
 Installing the skill does not adopt PLS or reorganize a project. Human

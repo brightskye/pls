@@ -25,63 +25,81 @@ as `0.3.0-draft.1` identify packaged revisions of that draft.
 
 The first complete bundle,
 [`v0.3.0-draft.1`](https://github.com/brightskye/pls/releases/tag/v0.3.0-draft.1),
-is published and tested. See the [Project Record](project-record.md) for the
-verification results and limits.
+is published and tested. `0.3.0-draft.2` is being prepared and is not yet
+published or a verified release. See the [Project Record](project-record.md)
+for the verification results and limits.
 
 ## Install with Python
 
-Download and extract `pls.zip`. Keep the extracted folder at a convenient
-location. From the target project's root, run its installer:
+Download and extract `pls.zip`. From the target project's root, run the
+extracted bundle's installer:
 
 ```bash
 python3 /absolute/path/to/pls/install.py install
 ```
 
-This copies the bundled skill and rules into `.agents/skills/pls/` without
-network access. It requires Python 3.10 or newer, with no Node.js, Git, or extra
-Python packages. On Windows, `py -3` can replace `python3` when using the Python
-launcher.
+This copies the skill, rules, updater, instructions, release metadata, and
+license into `.agents/skills/pls/` without network access. It requires Python
+3.10 or newer, with no Node.js, Git, or extra Python packages. On Windows,
+`py -3` can replace `python3` when using the Python launcher. The extracted
+bundle is no longer needed after installation.
 
-For a different location, use `--dest` with the **parent skills directory**.
-For example, `--dest ~/.agents/skills` installs a user-wide Codex copy. Other
-agent hosts may use different skill locations; use the path documented by
-that host.
+The managed directory contains the complete Python route:
+
+```text
+.agents/skills/pls/
+  SKILL.md
+  references/PLS.md
+  install.py
+  README.md
+  LICENSE
+  release.json
+  .pls-install.json
+```
+
+For a different location, pass `--dest` with the parent skills directory; the
+installer creates or updates its `pls/` child there. Other agent hosts may use
+different skill locations; use the path documented by that host.
 
 The installed `.pls-install.json` records the release, source commit, file
-hashes, and update selection. Keep this generated receipt unchanged; it is the
-baseline for detecting local edits. The installer refuses to overwrite an
-existing path during installation, or update an unmanaged or edited copy.
+hashes for every installed bundle file, and update selection. Keep this
+generated receipt unchanged; it is the baseline for detecting local edits. The
+installer refuses to overwrite an existing path during installation, or update
+an unmanaged or edited copy.
 
-Use one installation method for each copy. A copied or `npx` installation,
-or a symlink, cannot be taken over by the Python tool without preserving and
-moving the original first. Do not run two installers on the same destination
-at once.
+Use one installation method for each copy. A source or `npx` installation,
+or a symlink, keeps its original update route and does not include this
+updater. Do not run two installers on the same destination at once.
 
 ## Update a Python installation
 
-From the same target project, run the bundled installer again:
+Run the updater installed in the managed directory:
 
 ```bash
-python3 /absolute/path/to/pls/install.py update
+python3 /absolute/path/to/project/.agents/skills/pls/install.py update
 ```
 
-This downloads the newest published PLS release bundle and checks its SHA-256
-checksum before replacing the installed skill and rules. It does not fetch
-`src/pls` or read a local PLS checkout. Updates require HTTPS access to GitHub.
-The newest published bundle may be a working-draft prerelease; unpublished
-GitHub drafts are excluded. Updating is always an explicit operation.
+The updater resolves the managed directory from its own installed path, so this
+command works even when the current working directory is elsewhere. Pass
+`--dest` to override that location. It downloads the newest published PLS
+release bundle and checks its SHA-256 checksum before replacing every managed
+file, including the skill, instructions, release metadata, license, and
+`install.py` itself. It does not fetch `src/pls` or read a local PLS checkout.
+Updates require HTTPS access to GitHub. The newest published bundle may be a
+working-draft prerelease; unpublished GitHub drafts are excluded. Updating is
+always an explicit operation.
 
 To select a release and keep subsequent updates pinned to it:
 
 ```bash
-python3 /absolute/path/to/pls/install.py update --release v0.3.0-draft.1
+python3 /absolute/path/to/project/.agents/skills/pls/install.py update --release v0.3.0-draft.2
 ```
 
 Use `--release latest` to follow new published bundles again. To update offline,
 download and extract the desired bundle, then select it explicitly:
 
 ```bash
-python3 /absolute/path/to/pls/install.py update --bundle /absolute/path/to/new/pls
+python3 /absolute/path/to/project/.agents/skills/pls/install.py update --bundle /absolute/path/to/new/pls
 ```
 
 `--bundle` also accepts a release ZIP. A pinned installation remains pinned
@@ -92,8 +110,22 @@ The tool stages the complete replacement first. Changed, added, missing, or
 symlinked installed files stop the update. Failed downloads leave the old copy
 in place. If replacement fails, restoration is attempted; if restoration also
 fails, the error names the preserved original directory. An unchanged package
-reports that it is already up to date. The downloaded installer itself is not
-self-updated; use the installer in a newer bundle when its behavior changes.
+reports that it is already up to date. The updater itself is replaced as part
+of a successful update, so later runs use the new bundle's behavior. The
+downloaded or extracted update bundle is no longer needed after the update.
+
+To migrate an unchanged Python installation from the published draft.1 bundle
+to the new bundled installer, download and extract the new bundle, then run its
+installer once from the target project:
+
+```bash
+python3 /path/to/new/pls/install.py update --bundle /path/to/new/pls
+```
+
+The migration replaces the old managed directory only after checking its
+receipt and local files. A Python-managed `--ref` installation can use this
+same explicit bundle migration. Unmanaged source, `npx`, and symlink
+installations keep their original update routes.
 
 Installing or updating the skill does not change a project's recorded PLS
 version or reorganize its files. A human must accept that adoption separately.
@@ -108,7 +140,8 @@ npx skills@latest add https://github.com/brightskye/pls/releases/download/v0.3.0
 
 The [skills CLI](https://github.com/vercel-labs/skills) installs the skill found
 inside the ZIP. Add `--global` for a user-wide copy or use another supported
-agent name as needed.
+agent name as needed. This route installs the skill payload only; it does not
+include the Python updater or the bundle's outer files.
 
 The checked CLI version, 1.5.23, does not put archive installs in its lock file.
 Therefore `npx skills update pls --project` cannot update this installation.
@@ -141,9 +174,10 @@ rules. PLS does not introduce a separate scaffold command or linter.
 
 Direct `src/pls/` installation remains available for development. The old
 standalone Python tool's `--ref` route still downloads a Git branch, tag, or
-commit. Such installations keep their saved ref unless changed explicitly.
-Running the new bundled installer with `update --bundle <path>` can migrate an
-unchanged Python-managed copy to bundle updates.
+commit. Such installations keep their saved ref unless changed explicitly and
+do not include the bundled updater. A Python-managed `--ref` installation can
+be migrated with the explicit `update --bundle` command above. The complete
+Python bundle route is the single-folder installation described above.
 
 A Git source installation made with `npx` keeps using its existing Git update
 route. CLI 1.5.23 supports branch/tag URLs but not raw commit SHAs. A local-path
