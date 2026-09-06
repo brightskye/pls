@@ -25,20 +25,18 @@ project's authoritative standard and the version distributed with the skill,
 so a Git installer may copy that directory without relying on the repository
 parent or fetching rules at runtime.
 
-The distribution now documents the `skills` CLI and provides a standalone
-Python install/update tool in [`tools/pls_skill.py`](../tools/pls_skill.py).
-Both use the existing `src/pls/` package; no second source location or build
-step is required. The Python tool uses only the standard library, remembers
-the selected Git ref, protects local edits, and stages a complete replacement
-before updating. All 11 [installer tests](../tests/test_pls_skill.py) pass with
-isolated installations and substituted GitHub responses.
-Live GitHub installation and updates from `src/pls/` passed using both literal
-`npx` with `skills` 1.5.23 and the standalone Python tool downloaded from the
-published commit. Installed files matched the published package. Python commit
-pinning and local-edit protection also passed. The checks ran in temporary WSL
-projects; [Operations](operations.md#check-changes-to-the-distribution-tool)
-records their scope. The checked `skills` CLI supports branch/tag selection but
-fails on raw commit SHAs, so exact commit selection uses the Python tool.
+Distribution is moving to a complete release bundle: skill, rules, installer,
+instructions, license, and release metadata. Maintained sources stay in
+`src/pls/` and `tools/`; the builder produces ignored `releases/<version>/`
+outputs for GitHub Releases. The bundled Python installer copies local bundle
+files offline and uses published bundles for later updates. Source Git
+installation remains a development and compatibility route.
+
+The checked `skills` CLI 1.5.23 can install a release ZIP, but it does not track
+archive installs in its lock file, so its `update` command cannot refresh them.
+Users must rerun `add` with the selected new ZIP, or use the Python bundle
+installer/updater. Initial archive installation was verified in a temporary
+project; bundle publication and the Orca pilot are still pending.
 
 The repository is publicly available at
 [`brightskye/pls`](https://github.com/brightskye/pls) with clean public
@@ -50,6 +48,8 @@ installed copies remain at their selected version until explicitly updated.
 
 ## Next
 
+- Publish and verify the first complete working-draft bundle, then use it for
+  a project-level Orca installation.
 - Review the working standard as a human reader.
 - Review whether any real project needs an explicitly mapped alternative to a
   normal PLS location.
@@ -107,6 +107,10 @@ becomes large enough to need its own document.
   explicit installation and updates without extra Python dependencies.
   Each installed copy keeps one installation method. Updating that copy does
   not authorize migration of its adopting project.
+- Complete release bundles are the normal user distribution. Their installer
+  installs offline and updates from GitHub release bundles. Direct source
+  links and Git downloads are development routes. Each bundle includes the
+  installer; users need no separate tool download or development checkout.
 - The installed skill reads its bundled standard without fetching mutable
   remote content. Updates are explicit and may follow a pinned release or the
   working draft.
@@ -158,3 +162,9 @@ On 2026-09-06, the Owner authorized publication and live GitHub testing. Commit
 published the source-layout and distribution changes. Both installation and
 update routes passed against the new GitHub path, with matching package files.
 The working draft remains PLS v0.3; publication did not promote it to stable.
+
+On 2026-09-06, the Owner requested a complete bundle and use of that bundle
+instead of direct source links. A versioned ZIP builder, bundled offline
+installation, release-based updates, and a GitHub prerelease workflow were
+prepared. The current `npx` archive-update limitation was verified and is
+documented; the Python route owns the Orca bundle pilot.

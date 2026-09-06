@@ -30,6 +30,15 @@ def archive(files):
     return data.getvalue()
 
 
+def release_archive(payload, version="0.3.0-draft.1", commit=FIRST):
+    files = {"pls/skills/pls/" + name: data for name, data in payload.items()}
+    files.update({"pls/install.py": b"# installer", "pls/README.md": b"Instructions",
+                  "pls/LICENSE": b"MIT", "pls/release.json": json.dumps({
+                      "format": 1, "repository": installer.REPOSITORY,
+                      "version": version, "commit": commit}).encode()})
+    return archive(files)
+
+
 class InstallerTests(unittest.TestCase):
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory()
@@ -179,6 +188,65 @@ class InstallerTests(unittest.TestCase):
                 self.assertEqual(installer.main(["install"]), 1)
         self.assertIn("already exists", error.getvalue())
         self.assertTrue(self.destination.is_dir())
+
+    def test_bundle_install_is_offline_and_updates_use_release_bundles(self):
+        bundle = self.project / "pls.zip"
+        bundle.write_bytes(release_archive(self.payload))
+        with patch.object(installer, "download", side_effect=AssertionError("offline install used network")):
+            installer.install("install", self.skills, bundle=bundle)
+        self.assertEqual(self.receipt()["source"], "bundle")
+        self.assertEqual(self.receipt()["release_ref"], "latest")
+        self.assertEqual(installer.installed_files(self.destination), self.payload)
+        changed = {name: data + b"\nNew release.\n" for name, data in self.payload.items()}
+        metadata, files = installer.read_bundle(release_archive(changed, "0.3.0-draft.2", SECOND))
+        with patch.object(installer, "fetch_release", return_value=(metadata, files)) as fetch:
+            with patch.object(installer, "fetch_skill", side_effect=AssertionError("release update read Git source")):
+                installer.install("update", self.skills)
+        fetch.assert_called_once_with("latest")
+        self.assertEqual(self.receipt()["version"], "0.3.0-draft.2")
+        self.assertEqual(installer.installed_files(self.destination), changed)
+
+    def test_pinned_release_stays_pinned_and_offline_update_works(self):
+        metadata, files = installer.read_bundle(release_archive(self.payload))
+        with patch.object(installer, "fetch_release", return_value=(metadata, files)) as fetch:
+            installer.install("install", self.skills, release="v0.3.0-draft.1")
+            installer.install("update", self.skills)
+        self.assertEqual([call.args[0] for call in fetch.call_args_list], ["v0.3.0-draft.1"] * 2)
+        bundle = self.project / "pls.zip"
+        bundle.write_bytes(release_archive(self.payload, "0.3.0-draft.2", SECOND))
+        with patch.object(installer, "download", side_effect=AssertionError("offline update used network")):
+            installer.install("update", self.skills, bundle=bundle)
+        self.assertEqual(self.receipt()["version"], "0.3.0-draft.2")
+        self.assertEqual(self.receipt()["release_ref"], "v0.3.0-draft.2")
+
+    def test_release_download_checks_checksum_and_uses_published_bundle(self):
+        package = release_archive(self.payload)
+        checksum = (hashlib.sha256(package).hexdigest() + "  pls.zip\n").encode()
+        releases = [{"draft": True, "published_at": "2026-09-07", "tag_name": "v0.3.0-draft.9", "assets": [{"name": "pls.zip"}]},
+                    {"draft": False, "prerelease": True, "published_at": "2026-09-06", "tag_name": "v0.3.0-draft.1", "assets": [{"name": "pls.zip"}]}]
+        with patch.object(installer, "download", side_effect=[json.dumps(releases).encode(), package, checksum]) as download:
+            metadata, files = installer.fetch_release("latest")
+        self.assertEqual(metadata["version"], "0.3.0-draft.1")
+        self.assertEqual(files, self.payload)
+        self.assertIn("/releases/download/v0.3.0-draft.1/pls.zip", download.call_args_list[1].args[0])
+        with patch.object(installer, "download", side_effect=[package, b"wrong checksum"]):
+            with self.assertRaisesRegex(installer.InstallError, "checksum"):
+                installer.fetch_release("v0.3.0-draft.1")
+
+    def test_bundle_validation_and_local_edits_preserved(self):
+        bundle = self.project / "pls.zip"
+        bundle.write_bytes(release_archive(self.payload))
+        installer.install("install", self.skills, bundle=bundle)
+        skill = self.destination / "SKILL.md"
+        skill.write_text("Local changes")
+        with self.assertRaisesRegex(installer.InstallError, "local changes"):
+            installer.install("update", self.skills, bundle=bundle)
+        self.assertEqual(skill.read_text(), "Local changes")
+        for payload in [b"{}", b"[]", b'{"format": 2}']:
+            with self.assertRaises(installer.InstallError):
+                installer.bundle_metadata(payload)
+        with self.assertRaises(installer.InstallError):
+            installer.read_bundle(archive({"pls/release.json": b"{}"}))
 
 
 if __name__ == "__main__":

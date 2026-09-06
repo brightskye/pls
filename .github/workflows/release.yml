@@ -1,0 +1,33 @@
+name: Publish working-draft bundle
+
+on:
+  push:
+    tags:
+      - 'v*-draft.*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - name: Test installer and bundle
+        run: python3 -m unittest discover -s tests -v
+      - name: Build complete bundle
+        run: python3 tools/build_release.py --version "${GITHUB_REF_NAME#v}"
+      - name: Publish bundle and checksum
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cat > /tmp/pls-release-notes.md <<'NOTES'
+          Complete PLS working-draft bundle: skill, rules, Python installer, instructions, and license.
+          Download pls.zip and extract it. From the target project, run the extracted install.py with Python 3.10 or newer.
+          This is a working draft, not a stable PLS standard release.
+          NOTES
+          gh release create "$GITHUB_REF_NAME" \
+            "releases/${GITHUB_REF_NAME#v}/pls.zip" \
+            "releases/${GITHUB_REF_NAME#v}/pls.zip.sha256" \
+            --verify-tag --prerelease --title "PLS $GITHUB_REF_NAME" \
+            --notes-file /tmp/pls-release-notes.md

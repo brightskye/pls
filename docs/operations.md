@@ -1,142 +1,128 @@
 # PLS Operations
 
-## Product package
+## Release bundle
 
-The maintained product is [`src/pls/`](../src/pls/SKILL.md), a self-contained
-agent skill. Its `SKILL.md` is a thin adapter and
-`references/PLS.md` is the authoritative standard distributed with it. The
-installed skill does not need the repository parent or network access to read
-its rules.
-
-## Install the agent skill
-
-Choose one installation method for each installed copy. The skill and
-`references/PLS.md` are installed and updated together. Neither method changes
-the project's recorded PLS version or reorganizes its files.
-
-The `src/pls/` package and Python tool are published on GitHub. A `main`
-installation follows the working draft, not the latest stable GitHub release.
-
-### With the skills CLI (Node.js)
-
-From the target project's root, run:
-
-```bash
-npx skills@latest add https://github.com/brightskye/pls/tree/main/src/pls --skill pls --agent codex
-```
-
-This uses the existing [skills CLI](https://github.com/vercel-labs/skills),
-which requires Node.js/npm and Git. The explicit GitHub folder URL selects the
-self-contained package without moving it or copying the rules into another
-source location. For a fixed version, replace `main` in that URL with a release
-tag that contains `src/pls/`. The checked CLI version, 1.5.23, supports branch
-and tag URLs but fails on a raw commit SHA. Use the Python route when an exact
-commit is required.
-
-The default is a project installation. Add `--global` for a user installation.
-Use the CLI's agent option for other supported hosts. Its own lock file tracks
-the source for updates; retain that file with the project installation.
-
-### With the standalone Python tool
-
-Download [`tools/pls_skill.py`](../tools/pls_skill.py) from GitHub and keep it
-at a convenient local path. It is one standalone file and does not need a PLS
-checkout, Node.js, Git, or third-party Python packages. It requires Python
-3.10 or newer and HTTPS access to the public GitHub API and archive service.
-
-From the target project's root, run the downloaded file:
-
-```bash
-python3 /absolute/path/to/pls_skill.py install
-```
-
-This installs the current `main` skill in `.agents/skills/pls/`. To select a
-fixed Git version, add `--ref <tag-or-commit>`. To use a different agent's skill
-location, set `--dest` to its **parent skills directory**; the tool creates
-`pls/` inside it. For example, a user-wide Codex installation uses:
-
-```bash
-python3 /absolute/path/to/pls_skill.py install --dest ~/.agents/skills
-```
-
-On Windows, `py -3` can replace `python3` when using the Python launcher.
-The download is resolved to one Git commit before the package is copied.
-The installed `.pls-install.json` records that commit, the selected ref, and
-file hashes so updates can detect local edits. It is installation metadata,
-not a second copy of the rules or a project adoption declaration. Keep this
-generated receipt unchanged; it is the baseline for the local-edit checks.
-
-The tool refuses an existing destination. It does not replace copied,
-symlinked, or `npx`-managed installations. Keep using their original updater,
-or preserve and move the old installation before switching methods. Do not
-run two installers against the same destination at once.
-
-### With Codex's built-in installer
-
-Choose an immutable release tag or commit when reproducibility matters. Ask
-Codex to install the self-contained directory from the public repository:
+Use the complete `pls.zip` asset from [GitHub Releases](https://github.com/brightskye/pls/releases).
+It contains:
 
 ```text
-$skill-installer install the skill from https://github.com/brightskye/pls/tree/<tag-or-commit>/src/pls
+pls/
+  install.py
+  README.md
+  LICENSE
+  release.json
+  skills/pls/
+    SKILL.md
+    references/PLS.md
 ```
 
-Select a revision that contains `src/pls/`. Revisions before the source-layout
-migration use `deploy/pls/` instead.
+The maintained skill and rules stay in `src/pls/`, and the installer source
+stays in `tools/pls_skill.py`. These are copied into the release; users do not
+need a development checkout or a separate installer download. Generated ZIPs
+and checksums use ignored `releases/<version>/` locally and GitHub Releases
+for distribution. The standard remains a working draft. Bundle versions such
+as `0.3.0-draft.1` identify packaged revisions of that draft.
 
-Use `main` in place of `<tag-or-commit>` only when intentionally following the
-working draft. The installer downloads a local copy, so invoking PLS afterward
-does not fetch rules from GitHub. Codex normally detects a newly installed skill
-automatically; restart it if the skill does not appear.
+The first complete bundle is being prepared. See the
+[Project Record](project-record.md) for current publication and verification
+status.
 
-This installer uses Python, but it refuses an existing destination and does
-not provide the update behavior of the standalone PLS tool.
+## Install with Python
 
-### Install from a local clone
-
-A clone-and-symlink installation is convenient for PLS development or an
-explicit rolling update channel. Choose any location for the complete PLS
-repository. Set these example variables to the real repository and user skill
-directories, then create the link:
+Download and extract `pls.zip`. Keep the extracted folder at a convenient
+location. From the target project's root, run its installer:
 
 ```bash
-PLS_REPO_DIR=/absolute/path/to/pls
-PLS_USER_SKILLS_DIR=/absolute/path/to/.agents/skills
-mkdir -p "$PLS_USER_SKILLS_DIR"
-ln -s "$PLS_REPO_DIR/src/pls" "$PLS_USER_SKILLS_DIR/pls"
+python3 /absolute/path/to/pls/install.py install
 ```
 
-Do not replace an existing path until you have checked what it contains. Codex
-supports symbolic links for skill directories and follows their targets. Other
-agent hosts may use a different skill directory; use the location documented
-by that host.
+This copies the bundled skill and rules into `.agents/skills/pls/` without
+network access. It requires Python 3.10 or newer, with no Node.js, Git, or extra
+Python packages. On Windows, `py -3` can replace `python3` when using the Python
+launcher.
 
-### Verify an installation
+For a different location, use `--dest` with the **parent skills directory**.
+For example, `--dest ~/.agents/skills` installs a user-wide Codex copy. Other
+agent hosts may use different skill locations; use the path documented by
+that host.
 
-Confirm that the installed skill contains both its entry point and standard:
+The installed `.pls-install.json` records the release, source commit, file
+hashes, and update selection. Keep this generated receipt unchanged; it is the
+baseline for detecting local edits. The installer refuses to overwrite an
+existing path during installation, or update an unmanaged or edited copy.
+
+Use one installation method for each copy. A copied or `npx` installation,
+or a symlink, cannot be taken over by the Python tool without preserving and
+moving the original first. Do not run two installers on the same destination
+at once.
+
+## Update a Python installation
+
+From the same target project, run the bundled installer again:
 
 ```bash
-PLS_INSTALLED_SKILL=/absolute/path/to/installed/pls
-test -f "$PLS_INSTALLED_SKILL/SKILL.md"
-test -f "$PLS_INSTALLED_SKILL/references/PLS.md"
+python3 /absolute/path/to/pls/install.py update
 ```
 
-The official [Build skills](https://learn.chatgpt.com/docs/build-skills)
-guide describes Codex skill discovery, Git repository installation, symlinks,
-and supported locations.
+This downloads the newest published PLS release bundle and checks its SHA-256
+checksum before replacing the installed skill and rules. It does not fetch
+`src/pls` or read a local PLS checkout. Updates require HTTPS access to GitHub.
+The newest published bundle may be a working-draft prerelease; unpublished
+GitHub drafts are excluded. Updating is always an explicit operation.
 
-## Use the agent skill
+To select a release and keep subsequent updates pinned to it:
 
-Codex can select the skill automatically when a request matches its
-description. In Codex CLI or the IDE extension, `$pls` invokes it explicitly.
+```bash
+python3 /absolute/path/to/pls/install.py update --release v0.3.0-draft.1
+```
 
-| Action | What it does | Changes files? |
-|---|---|---|
-| Scaffold | Creates the smallest useful structure for a new project. | Yes, when requested |
-| Review | Explains how well an existing project follows PLS. | No, unless changes are also requested |
-| Reorganize or adopt | Improves an existing project layout or adopts PLS. | Yes, when requested |
-| Place | Chooses the right existing location for a new document or artifact. | Only when creation or movement is requested |
+Use `--release latest` to follow new published bundles again. To update offline,
+download and extract the desired bundle, then select it explicitly:
 
-Examples:
+```bash
+python3 /absolute/path/to/pls/install.py update --bundle /absolute/path/to/new/pls
+```
+
+`--bundle` also accepts a release ZIP. A pinned installation remains pinned
+to the newly selected bundle after an offline update; a latest-following
+installation continues to follow latest.
+
+The tool stages the complete replacement first. Changed, added, missing, or
+symlinked installed files stop the update. Failed downloads leave the old copy
+in place. If replacement fails, restoration is attempted; if restoration also
+fails, the error names the preserved original directory. An unchanged package
+reports that it is already up to date. The downloaded installer itself is not
+self-updated; use the installer in a newer bundle when its behavior changes.
+
+Installing or updating the skill does not change a project's recorded PLS
+version or reorganize its files. A human must accept that adoption separately.
+
+## Install a bundle with npx
+
+With Node.js/npm available, use the release asset URL:
+
+```bash
+npx skills@latest add https://github.com/brightskye/pls/releases/download/v0.3.0-draft.1/pls.zip --skill pls --agent codex
+```
+
+The [skills CLI](https://github.com/vercel-labs/skills) installs the skill found
+inside the ZIP. Add `--global` for a user-wide copy or use another supported
+agent name as needed.
+
+The checked CLI version, 1.5.23, does not put archive installs in its lock file.
+Therefore `npx skills update pls --project` cannot update this installation.
+To use a newer release, preserve local edits and rerun `add` with the new
+release asset URL. Use Python when release tracking and a dedicated update
+command are wanted.
+
+## Use the installed skill
+
+The installed directory must contain `SKILL.md` and `references/PLS.md`.
+Codex can select the skill when its description matches the request; in CLI or
+the IDE extension, `$pls` selects it explicitly. If the skill does not appear,
+restart the agent. See the official
+[Build skills guide](https://learn.chatgpt.com/docs/build-skills) for discovery
+locations and behavior.
 
 ```text
 $pls scaffold this new project
@@ -145,142 +131,72 @@ $pls reorganize this project using PLS
 $pls tell me where this release package belongs
 ```
 
-Scaffolding does not create every default directory. Review is read-only unless
-changes are requested. Reorganization improves the currently recorded layout.
-Adoption preserves useful material while moving it to normal PLS areas and
-names; an existing location remains only when a tool convention requires or
-normally uses it, or the human explicitly chooses it as a mapped alternative.
-It does not create evaluation or evidence areas merely to record the migration.
-Maintained evaluation cases use the project's test layout; temporary
-machine-local or sensitive output may use ignored `.local/`, while retaining
-sensitive evidence requires an explicit human choice.
+Review is read-only unless changes are requested. Scaffold creates only needed
+areas. Reorganize improves the recorded layout; adopting a different version
+requires human acceptance. The bundled standard owns placement and adoption
+rules. PLS does not introduce a separate scaffold command or linter.
 
-For product source, configuration, build and installer scripts, and complete
-versioned packages, follow the standard
-[Project areas](../src/pls/references/PLS.md#6-what-each-project-area-is-for).
+## Development and older installations
 
-Lint is not a separate PLS action. PLS review handles purpose, ownership, and
-navigation. Existing project linters handle Markdown, source, configuration,
-and link mechanics.
+Direct `src/pls/` installation remains available for development. The old
+standalone Python tool's `--ref` route still downloads a Git branch, tag, or
+commit. Such installations keep their saved ref unless changed explicitly.
+Running the new bundled installer with `update --bundle <path>` can migrate an
+unchanged Python-managed copy to bundle updates.
 
-Installing or invoking the skill does not change a project's recorded layout
-standard or version. A human must accept that migration first.
+A Git source installation made with `npx` keeps using its existing Git update
+route. CLI 1.5.23 supports branch/tag URLs but not raw commit SHAs. A local-path
+CLI install needs `add` again to refresh it. These are source installations,
+not release bundle installations.
 
-## Update the skill
-
-### Skills CLI installation
-
-From the target project's root:
+For an intentional development symlink, point the host's `pls` skill path at
+`/absolute/path/to/pls/src/pls`. A link to the former `deploy/pls/` must be
+repointed; inspect it first. Older pinned Git revisions retain their original
+layout. Update a linked `main` checkout with:
 
 ```bash
-npx skills@latest update pls --project
+git -C /absolute/path/to/pls pull --ff-only
 ```
 
-For a global installation, replace `--project` with `--global`. The update
-follows the recorded source. To choose a different branch or tag, rerun the
-scoped `add` command with that revision in the GitHub URL. Preserve any local
-edits before using the CLI to replace the installed skill.
+A source link makes checkout changes immediately visible to every project
+using it. Release bundle installations are independent copies.
 
-### Python installation
+## Build and publish a bundle
 
-From the target project's root:
-
-```bash
-python3 /absolute/path/to/pls_skill.py update
-```
-
-Use the same `--dest` as installation when it was customized. Without
-`--ref`, updates keep the previously selected branch, tag, or commit. An
-installation pinned to a commit stays there. To change versions deliberately:
-
-```bash
-python3 /absolute/path/to/pls_skill.py update --ref <tag-or-commit>
-```
-
-The tool checks the existing receipt and files, downloads and stages the full
-replacement, then replaces the installed directory. Edited, added, missing,
-or symlinked files stop the update. A failed download leaves the old copy in
-place. If replacement fails, the tool attempts to restore it; if restoration
-also fails, the error names the preserved original directory. An unchanged
-installation reports that it is already up to date.
-
-Updates refresh the installed skill and rules, not the downloaded Python
-tool itself. Download a newer tool explicitly when its behavior needs updating.
-
-### Copied or clone-and-symlink installation
-
-After the source-layout migration, a local symlink targeting `deploy/pls/` must
-be repointed to `src/pls/` using the installation and removal procedures in this guide. Inspect
-the link first and preserve any copied installation or local changes. Copied
-skill installations remain usable at their existing version until deliberately
-reinstalled. Older pinned Git revisions continue to use their original path.
-
-An installation copied from GitHub is a snapshot. Select a newer release or
-commit deliberately and use the agent host's supported replacement or reinstall
-procedure. Do not replace an existing skill directory until its identity and
-contents have been checked.
-
-For a clone-and-symlink installation, review and update the clone. Following a
-tag keeps the installed rules fixed; following `main` opts into the latest
-working draft. A fast-forward update of an intentional `main` checkout is:
-
-```bash
-git -C "$PLS_REPO_DIR" pull --ff-only
-```
-
-The symlink uses the updated files without another copy step. Codex normally
-detects skill changes automatically; restart it if an update does not appear.
-
-Updating an installed skill does not change a target project's recorded PLS
-version or authorize a structural migration. A human must accept that change.
-
-## Check changes to the distribution tool
-
-Run the maintained installer tests from the PLS repository root:
+From a clean, committed PLS checkout:
 
 ```bash
 python3 -m unittest discover -s tests -v
-git diff --check
+python3 tools/build_release.py --version 0.3.0-draft.1
 ```
 
-The tests use real skill files and temporary installations, with GitHub
-responses substituted locally. They check installation, updates, version
-selection, local-edit protection, archive paths, and failure recovery.
-They do not prove that an unpublished GitHub revision can be installed. After
-publishing a layout or installer change, check both GitHub installation routes
-and their updates in temporary projects before announcing them as ready.
+The builder writes `releases/0.3.0-draft.1/pls.zip` and `pls.zip.sha256`, records
+the source commit, and refuses to overwrite an existing version output.
+`--output-dir` selects another build output location. Only the skill package,
+installer, license, generated instructions, and release metadata are included.
+The same inputs produce the same ZIP bytes.
 
-On 2026-09-06, both GitHub installation routes passed against publication
-commit [5ec1c115616c664b00f2d6850584bf5bfe6a4f18](https://github.com/brightskye/pls/commit/5ec1c115616c664b00f2d6850584bf5bfe6a4f18)
-in temporary WSL projects. Literal `npx` installation from `src/pls/` and
-`update pls --project` passed using `skills` 1.5.23; its lock retained the
-repository, `main` ref, and nested skill path. The standalone Python tool was
-downloaded from that commit and passed installation, unchanged update, exact
-commit pinning, and local-edit protection checks. Both routes installed files
-that matched the published skill and rules. The target project's recorded
-standard stayed unchanged in the Python check. All 11 installer tests passed.
-
-A local-path CLI install must be refreshed by rerunning `add`; its `update`
-command needs a tracked remote source.
-
-## Remove a symlink installation
-
-Before removing the installation, confirm that it is the expected symbolic
-link. Then unlink it:
+After committing and pushing the desired source, publish a matching new tag:
 
 ```bash
-test -L "$PLS_USER_SKILLS_DIR/pls"
-unlink "$PLS_USER_SKILLS_DIR/pls"
+git tag v0.3.0-draft.1
+git push origin v0.3.0-draft.1
 ```
 
-Removing the link does not remove the PLS repository.
+The [release workflow](../.github/workflows/release.yml) runs the tests, builds
+the ZIP, and attaches it and its checksum to a GitHub prerelease. It uses the
+repository-scoped GitHub Actions token; no personal token or credentials are
+bundled. Do not reuse an existing release tag or replace its assets. Choose a
+new bundle version for changed contents.
 
-For distribution through ChatGPT and Codex beyond direct Git installation, PLS
-may later package the same skill as a plugin. The standalone skill remains the
-source package for that option.
+## Verification and release status
 
-## Publication boundaries
+Use the maintained installer and bundle tests, plus `git diff --check`.
+Before declaring a new bundle usable, extract it outside the checkout, install
+without network access, verify the installed bytes, and check updates and
+local-edit protection. Check the published release download after publication.
+The Project Record records current results and limitations.
 
-PLS is distributed under the [MIT License](../LICENSE). A release tag must
-match the version and status recorded by the bundled standard; the current PLS
-v0.3 text remains a working draft until explicitly promoted.
+A working-draft bundle is not a stable PLS standard release. Stable promotion
+remains a separate human decision. Existing adopting projects do not migrate
+merely because a bundle was built or published.

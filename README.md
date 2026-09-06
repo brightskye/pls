@@ -31,23 +31,26 @@ projects that use PLS.
 | How do I install and use the PLS agent skill? | [Operations](docs/operations.md) |
 | Where is the maintained product package? | [PLS agent skill](src/pls/SKILL.md) |
 | Where is the Python install/update tool? | [Installer](tools/pls_skill.py) |
-| Where are the installer checks? | [Tests](tests/test_pls_skill.py) |
+| Where are the complete release bundles? | [GitHub Releases](https://github.com/brightskye/pls/releases), built under ignored `releases/<version>/` |
+| How are the bundles built? | [Builder](tools/build_release.py) and [release workflow](.github/workflows/release.yml) |
+| Where are the installer and bundle checks? | `tests/` |
 | Under what terms may PLS be used? | [MIT License](LICENSE) |
 
 ## Distribution
 
-The self-contained `src/pls/` directory can be installed from a Git
-repository without access to the rest of this checkout. It contains the skill
-entry point and the authoritative PLS standard. Pin an immutable commit or
-release tag when reproducible rules matter; use `main` only when deliberately
-following the working draft.
+Download `pls.zip` from [GitHub Releases](https://github.com/brightskye/pls/releases).
+The complete bundle includes the skill, rules, Python installer, instructions,
+and license. Extract it and run its `install.py` from the target project.
+Installation uses the bundled files without a development checkout or network
+access. Later updates download release bundles, not the source tree.
 
-Use `npx skills` for installation and updates through the existing Node.js
-skill manager, or download the standalone [Python tool](tools/pls_skill.py)
-for the same PLS package without Node.js or extra Python packages. Both install
-the skill and its rules together. No build step is needed. See
-[Operations](docs/operations.md) for commands, update behavior, and publication
-status.
+The Python route requires Python 3.10 or newer and no extra packages. `npx`
+can install a release ZIP, but the checked `skills` CLI does not track archive
+installs for `update`; rerun `add` with the selected new bundle instead.
+
+The maintained skill stays in `src/pls/`; installer and builder sources stay
+in `tools/`. See [Operations](docs/operations.md) for installation, updates,
+development routes, and publication status.
 
 ## License
 
