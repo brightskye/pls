@@ -129,7 +129,7 @@ def _required_file(root: Path, relative: Path) -> Path:
 def _read_sources(root: Path) -> dict[str, bytes]:
     source_dir = root / SKILL_SOURCE
     files = dict(_read_file(path, arcname) for arcname, path in _source_files(source_dir))
-    if "skills/pls/SKILL.md" not in files or "skills/pls/references/PLS.md" not in files:
+    if not files.get("skills/pls/SKILL.md") or not files.get("skills/pls/references/PLS.md"):
         raise BundleError("PLS skill must contain SKILL.md and references/PLS.md")
     installer = _required_file(root, INSTALLER_SOURCE)
     license_file = _required_file(root, LICENSE_SOURCE)

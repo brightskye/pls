@@ -248,6 +248,21 @@ class InstallerTests(unittest.TestCase):
         with self.assertRaises(installer.InstallError):
             installer.read_bundle(archive({"pls/release.json": b"{}"}))
 
+    def test_bundle_rejects_linked_skills_ancestor(self):
+        root = self.project / "bundle"
+        root.mkdir()
+        with zipfile.ZipFile(io.BytesIO(release_archive(self.payload))) as package:
+            for name in ("release.json", "install.py", "README.md", "LICENSE"):
+                (root / name).write_bytes(package.read("pls/" + name))
+        outside = self.project / "outside"
+        (outside / "pls" / "references").mkdir(parents=True)
+        for name, data in self.payload.items():
+            (outside / "pls" / name).write_bytes(data)
+        (root / "skills").symlink_to(outside, target_is_directory=True)
+        with self.assertRaisesRegex(installer.InstallError, "linked directories"):
+            installer.install("install", self.skills, bundle=root)
+        self.assertFalse(self.destination.exists())
+
 
 if __name__ == "__main__":
     unittest.main()

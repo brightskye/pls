@@ -113,6 +113,8 @@ def read_bundle(archive: bytes) -> tuple[dict, dict[str, bytes]]:
 
 def load_bundle(path: Path) -> tuple[dict, dict[str, bytes]]:
     path = path.expanduser()
+    if path.is_symlink() or (path / "skills").is_symlink():
+        raise InstallError("The release bundle must not redirect to linked directories.")
     if path.is_file():
         if path.stat().st_size > MAX_DOWNLOAD:
             raise InstallError("The release bundle exceeds the 20 MiB limit.")

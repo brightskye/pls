@@ -111,6 +111,12 @@ class ReleaseBundleTests(unittest.TestCase):
         self.assertEqual(first[0].read_bytes(), second[0].read_bytes())
         self.assertEqual(first[1].read_bytes(), second[1].read_bytes())
 
+    def test_empty_skill_is_not_packaged(self):
+        (self.root / "src" / "pls" / "SKILL.md").write_bytes(b"")
+        with self.assertRaisesRegex(builder.BundleError, "must contain"):
+            self.build()
+        self.assertFalse(self.output.exists())
+
     def test_refuses_overwrite_and_preserves_existing_output(self):
         archive, checksum = self.build()
         before_archive = archive.read_bytes()
