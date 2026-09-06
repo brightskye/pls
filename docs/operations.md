@@ -14,8 +14,7 @@ Choose one installation method for each installed copy. The skill and
 `references/PLS.md` are installed and updated together. Neither method changes
 the project's recorded PLS version or reorganizes its files.
 
-The `src/pls/` move and Python tool are currently local changes. The GitHub
-commands below become usable after those changes are published. A `main`
+The `src/pls/` package and Python tool are published on GitHub. A `main`
 installation follows the working draft, not the latest stable GitHub release.
 
 ### With the skills CLI (Node.js)
@@ -251,12 +250,18 @@ They do not prove that an unpublished GitHub revision can be installed. After
 publishing a layout or installer change, check both GitHub installation routes
 and their updates in temporary projects before announcing them as ready.
 
-The published `skills` CLI 1.5.23 was also checked in temporary projects. A
-local installation of `src/pls/` preserved both package files, and a GitHub
-installation/update using the currently published `deploy/pls/` layout passed.
-The `src/pls/` GitHub route remains unavailable until publication. A local-path
-CLI install must be refreshed by rerunning `add`; its `update` command needs
-a tracked remote source.
+On 2026-09-06, both GitHub installation routes passed against publication
+commit [5ec1c115616c664b00f2d6850584bf5bfe6a4f18](https://github.com/brightskye/pls/commit/5ec1c115616c664b00f2d6850584bf5bfe6a4f18)
+in temporary WSL projects. Literal `npx` installation from `src/pls/` and
+`update pls --project` passed using `skills` 1.5.23; its lock retained the
+repository, `main` ref, and nested skill path. The standalone Python tool was
+downloaded from that commit and passed installation, unchanged update, exact
+commit pinning, and local-edit protection checks. Both routes installed files
+that matched the published skill and rules. The target project's recorded
+standard stayed unchanged in the Python check. All 11 installer tests passed.
+
+A local-path CLI install must be refreshed by rerunning `add`; its `update`
+command needs a tracked remote source.
 
 ## Remove a symlink installation
 

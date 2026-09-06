@@ -30,26 +30,26 @@ Python install/update tool in [`tools/pls_skill.py`](../tools/pls_skill.py).
 Both use the existing `src/pls/` package; no second source location or build
 step is required. The Python tool uses only the standard library, remembers
 the selected Git ref, protects local edits, and stages a complete replacement
-before updating. The [installer tests](../tests/test_pls_skill.py) pass with
+before updating. All 11 [installer tests](../tests/test_pls_skill.py) pass with
 isolated installations and substituted GitHub responses.
-The published `skills` CLI 1.5.23 installed the local `src/pls/` package with
-matching contents, and its remote install/update route passed against the
-still-published `deploy/pls/` layout. Its branch/tag handling works; raw commit
-SHA installation failed, so exact commit selection uses the Python tool.
+Live GitHub installation and updates from `src/pls/` passed using both literal
+`npx` with `skills` 1.5.23 and the standalone Python tool downloaded from the
+published commit. Installed files matched the published package. Python commit
+pinning and local-edit protection also passed. The checks ran in temporary WSL
+projects; [Operations](operations.md#check-changes-to-the-distribution-tool)
+records their scope. The checked `skills` CLI supports branch/tag selection but
+fails on raw commit SHAs, so exact commit selection uses the Python tool.
 
 The repository is publicly available at
 [`brightskye/pls`](https://github.com/brightskye/pls) with clean public
 history. It contains no predecessor Git history or private review archive and
 is available under the MIT License. The local `main` branch tracks the
-published GitHub branch. The move to `src/pls/` is currently a local,
-uncommitted change, along with the new distribution tool and instructions;
-GitHub and existing installed copies have not been updated. Live GitHub
-installation and update verification for the new layout remains pending.
+published GitHub branch. The `src/pls/` source layout, updated working rules,
+Python tool, tests, and installation instructions are published. Existing
+installed copies remain at their selected version until explicitly updated.
 
 ## Next
 
-- Publish the approved distribution changes and check both GitHub install/update
-  routes in temporary projects.
 - Review the working standard as a human reader.
 - Review whether any real project needs an explicitly mapped alternative to a
   normal PLS location.
@@ -152,3 +152,9 @@ rules updates through both `npx skills` and Python. The existing `src/pls/`
 package was retained, and the standalone Python installer/updater and its
 tests were added in Tools and Tests. This prepares distribution; it does not
 publish the local changes or promote the working draft to a stable release.
+
+On 2026-09-06, the Owner authorized publication and live GitHub testing. Commit
+[5ec1c115616c664b00f2d6850584bf5bfe6a4f18](https://github.com/brightskye/pls/commit/5ec1c115616c664b00f2d6850584bf5bfe6a4f18)
+published the source-layout and distribution changes. Both installation and
+update routes passed against the new GitHub path, with matching package files.
+The working draft remains PLS v0.3; publication did not promote it to stable.
