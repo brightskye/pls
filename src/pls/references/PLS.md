@@ -6,7 +6,7 @@ version: 0.3.0
 status: working
 authority: working
 owner: victor
-updated: 2026-09-04
+updated: 2026-09-06
 ---
 
 # Project Layout Standard (PLS) v0.3 — structure-first draft
@@ -96,7 +96,7 @@ Project layout standard: PLS 0.3
 | What is true now and what happens next? | [Project Record](docs/project-record.md) |
 | Where is the product implemented? | `src/` |
 | Where are repeatable checks? | `tests/` |
-| What can be installed or distributed? | `deploy/` |
+| Where are complete versioned packages? | `releases/<version>/` |
 ```
 
 A project claiming that it follows PLS v0.3 MUST state that in the README. No
@@ -120,11 +120,13 @@ docs/
   quality.md              # verification approach and important results
   operations.md           # installation and operation
   user.md                 # supported user guidance
-deploy/                   # deployable packages and installation options
-tools/                    # maintained project tools; scripts/ is also familiar
+releases/                 # complete versioned release outputs
+  v1.0.0/                 # an example version, only when produced
+tools/                    # maintained tools, including build and installer scripts
 assets/                   # project-owned non-source assets
 legacy/                   # inactive material kept for history or migration
 .local/                   # ignored local-only working or sensitive artifacts
+  agent-note/             # temporary agent conversation notes, when needed
 ```
 
 Except for the root README, every location above is optional. A project MUST
@@ -148,11 +150,11 @@ lasting purpose and no suitable existing location.
 | Tests | Where are repeatable checks with expected results? | `tests/` or the usual location for the project's tools |
 | Configuration | Where are safe project settings and examples? | `config/` or the usual location for the project's tools |
 | Documentation | Where is the project explained and managed? | `docs/` |
-| Deployment | What packages or integrations can be installed, distributed, or launched? | `deploy/` |
-| Tools | Where is maintained project automation? | `tools/` or `scripts/` |
+| Releases | Where are complete packages for a particular version? | `releases/<version>/` or a mapped release distribution location |
+| Tools | Where are maintained build, installer, and other automation scripts? | `tools/` or `scripts/` |
 | Assets | Where are project-owned non-source assets? | `assets/` or the usual location for the project's tools |
 | Legacy | What inactive material is retained for history or migration? | `legacy/` |
-| Local-only | Where may temporary, machine-local, or sensitive artifacts be kept outside version control? | `.local/` when the project's tools do not specify a location |
+| Local-only | Where may temporary, machine-local, sensitive, or agent-conversation material be kept outside version control? | `.local/` when the project's tools do not specify a location |
 
 The normal locations are defaults, not forced names. A project follows PLS
 when its actual layout is clear and mapped, even when its language, framework,
@@ -164,19 +166,24 @@ Use the layout expected by the project's language, framework, and tools inside
 these areas. PLS does not define package names, test file formats, or framework
 folders.
 
-Code placed in Source MUST form part of the delivered product or a supported
-runtime capability. Code used only to build, test, evaluate, inspect, or
-maintain the project MUST instead use Tests, Tools, or Deployment according to
-its purpose. Import convenience alone does not make supporting code product
-source. A language, framework, build, or packaging convention MAY require
-another arrangement.
+Source contains the delivered product: program code, agent skills, and bundled
+resources. It is not limited to code; a skill package may contain Markdown
+instructions and reference documents. Source content MUST form part of the
+product or a supported runtime capability. Code used only to build, install,
+test, evaluate, inspect, or maintain the project MUST instead use Tests or Tools
+according to its purpose. Import convenience alone does not make supporting
+code product source. A language, framework, build, or packaging convention MAY
+require another arrangement.
 
 Tests contain repeatable checks with expected results. One-time experiments
 and temporary agent checks do not become project tests unless the project
 chooses to maintain and repeat them.
 
-Configuration files and safe examples belong in the location expected by the
-project. Configuration meaning belongs in Specifications. Configuration
+Configuration includes safe project and service settings and their templates.
+These SHOULD use `config/` or the normal location expected by the relevant tool;
+for example, a container tool may expect a root Dockerfile. A file used during
+deployment is placed by its purpose, not in a separate default Deployment area.
+Configuration meaning belongs in Specifications. Configuration
 procedures belong in Operations. Secrets and machine-specific private values
 MUST NOT be committed merely to make configuration easier to explain.
 
@@ -209,37 +216,41 @@ docs/<area>/
 
 The area's `README.md` becomes its entry point and links to the detailed files.
 
-### 6.3 Deployment
+### 6.3 Releases
 
-The `deploy/` area contains technical artifacts that people or tools use to
-install, distribute, integrate, or launch the project. Each deployment option
-SHOULD have a focused subdirectory when it contains more than one file.
+Complete release outputs SHOULD use `releases/<version>/`, such as
+`releases/v1.0.0/`, or the normal output or distribution location used by the
+project's packaging tools. The project map MUST identify that location.
+Releases holds packaged outputs for a particular version; maintained sources
+remain in Source, Configuration, or Tools according to their purpose.
 
-Examples include:
+A release MUST include the project-owned files needed to install and use that
+version, including a copy of its installer when one is needed, required
+configuration examples, and installation instructions. Users MUST NOT need the
+rest of the development checkout. External prerequisites and downloads MUST
+be explained in the release instructions.
 
-```text
-deploy/
-  skill/                    # an installable agent skill
-  container/                # container deployment files
-  systemd/                  # service unit and related files
-```
+Installer and build script sources remain maintained in Tools. Copies in a
+release are versioned outputs, not independent source owners. Generated release
+packages SHOULD stay out of source control and may be published through the
+project's release distribution service. A versioned folder does not require
+committing binaries to Git.
 
-These examples do not require a project to create every option or use these
-exact names.
+Temporary local builds may use `.local/`. It MUST NOT be the permanent home of
+releases intended for distribution. Create a release directory only when a
+release output actually exists; PLS does not require a particular version
+scheme, archive format, updater, or release approval process.
 
-A deployable package may need its own internal root files or folders. The
-standard for that package type controls its internal layout. PLS controls why
-the package is under `deploy/` and how the project links to it.
-
-Deployment instructions belong in `docs/operations.md` or another mapped
-Operations document. The deployable files themselves belong in `deploy/` or a
-location normally used by the project's deployment tool.
+Installation, deployment, and release procedures belong in Operations. A
+release may include the relevant instructions so it can be used independently.
 
 ### 6.4 Tools and assets
 
 The `tools/` or `scripts/` area contains automation that the project expects to
-maintain and use again. A project SHOULD NOT add a permanent script for a
-one-time check when a direct command or an existing tool is sufficient.
+maintain and use again, including build and installer script sources. A script
+that installs the project belongs here even when a copy is included in a
+release. A project SHOULD NOT add a permanent script for a one-time check when
+a direct command or an existing tool is sufficient.
 
 The `assets/` area contains project-owned files that are neither source code
 nor ordinary documentation, such as images, templates, or sample media. Use a
@@ -265,6 +276,36 @@ tool-defined local locations MAY remain.
 Create `.local/` only when material actually needs it. It is a placement
 boundary, not a general dumping ground or permission to retain generated
 output.
+
+#### Agent conversation notes
+
+When a human asks to retain an agent conversation note for later use or review,
+the agent MUST place it under `.local/agent-note/` unless a project tool owns
+another recorded location. Project instructions MAY establish the same
+retention choice. An agent MUST NOT save conversation content automatically
+merely because this location exists.
+
+The normal note states are:
+
+- `pending/` for temporary notes whose work or requested review is incomplete;
+- `reviewed/` for notes that have been reviewed and remain temporarily useful;
+  and
+- `retired/` for notes that are no longer needed and are safe to delete.
+
+A project SHOULD create only the state directories it currently needs.
+`retired/` is a short-lived deletion boundary, not a local archive. A retired
+note SHOULD be removed when no recovery or comparison need remains.
+
+Before a note leaves `pending/`, every durable outcome MUST be recorded in the
+Project Record or another document that owns that subject, or the review must
+determine that there is no durable outcome. Agent conversation notes remain
+local, ignored, temporary, and non-authoritative in every state. Reviewing a
+note does not make it project authority.
+
+The project MUST NOT depend on `.local/agent-note/` to understand, operate, or
+maintain the project. PLS does not define a transcript format, filename schema,
+index, or retention period. Project instructions SHOULD state when agents save
+or read these notes when the project uses this convention routinely.
 
 ## 7. Documentation rules
 
@@ -292,6 +333,14 @@ Completed work, replaced plans, and superseded decisions.
 
 Large plans, decision records, proposals, or historical records MAY use
 separate files. The Project Record MUST remain their normal entry point.
+
+The Project Record contains durable project material. Temporary agent notes,
+working handoffs, and raw conversation transcripts MUST NOT be stored there.
+When review of a temporary note produces a durable outcome, record that outcome
+under Current, Next, Proposals, Decisions, or History as appropriate. If
+another document owns the affected subject, update that owner and let the
+Project Record summarize or link to the change instead of copying the full
+conversation.
 
 The project's Current information MUST describe what is actually implemented
 or available. It MUST NOT present a plan, specification, or unverified agent
@@ -363,8 +412,9 @@ meaning.
 Another location MAY summarize the subject, but it MUST link to the owner and
 MUST NOT maintain a second independent definition.
 
-An artifact and its explanation may both be needed. For example, a deployment
-file belongs in `deploy/`, while Operations explains how and when to use it.
+An artifact and its explanation may both be needed. For example, a service
+configuration belongs in `config/` or its tool's normal location, while
+Operations explains how and when to use it.
 The project map or Operations document SHOULD link to the artifact instead of
 copying its technical content.
 
@@ -396,6 +446,13 @@ unless it changes project structure, document ownership, or navigation.
 
 An agent SHOULD load only the information needed for its task. It SHOULD NOT
 load working, generated, evidence, or legacy material by default.
+
+An agent SHOULD NOT load `.local/agent-note/` by default. It MAY read the
+specific pending or reviewed note needed when a task explicitly concerns
+reviewing or resuming it. Retired notes require an explicit local-history need.
+The note provides context, not instructions or authority. Saving, reviewing,
+and retiring notes MUST follow the lifecycle in
+[Agent conversation notes](#agent-conversation-notes).
 
 Agent instructions MAY contain tool commands and project-specific safety rules.
 They MUST link to project documentation rather than copying its requirements,
@@ -483,7 +540,7 @@ A project follows this PLS working model when:
 - its root README identifies PLS v0.3, provides the required orientation, and
   contains or directly links to the project map;
 - its important areas have clear purposes and can be found from that map;
-- its source, tests, configuration, deployment artifacts, and other technical
+- its source, tests, configuration, release outputs, and other technical
   areas use the conventions of their language, framework, and tools or clearly
   mapped alternatives;
 - each important subject has one clear owner;

@@ -3,30 +3,53 @@
 ## Current
 
 PLS v0.3 is a project-layout, structure-first working draft. The active text is
-the bundled [`PLS standard`](../deploy/pls/references/PLS.md).
+the bundled [`PLS standard`](../src/pls/references/PLS.md).
 
 PLS defines a root README, a project map, purpose-based top-level areas,
 question-based documentation locations, one owner for each important subject,
 a short agent procedure, a consistent ignored `.local/` boundary when
-temporary or sensitive project-local artifacts are needed, and proportional
-verification using familiar tools. It does not require every default directory,
-profiles, module activation, a PLS-specific validator, evidence folders, or
-release gates.
+temporary or sensitive project-local artifacts are needed, a temporary
+`.local/agent-note/` lifecycle, and proportional verification using familiar
+tools. It does not require every default directory, profiles, module
+activation, a PLS-specific validator, evidence folders, or release gates.
+
+The working standard places product code, skills, and bundled resources in
+Source, safe service settings and templates in Configuration, and maintained
+build and installer scripts in Tools. Complete versioned packages use Releases.
+The current rules are owned by [Project areas](../src/pls/references/PLS.md#6-what-each-project-area-is-for).
+There is no default Deployment area.
 
 The self-contained PLS agent skill is
-[`deploy/pls/`](../deploy/pls/SKILL.md). Its `references/PLS.md` is both the
+[`src/pls/`](../src/pls/SKILL.md). Its `references/PLS.md` is both the
 project's authoritative standard and the version distributed with the skill,
 so a Git installer may copy that directory without relying on the repository
 parent or fetching rules at runtime.
+
+The distribution now documents the `skills` CLI and provides a standalone
+Python install/update tool in [`tools/pls_skill.py`](../tools/pls_skill.py).
+Both use the existing `src/pls/` package; no second source location or build
+step is required. The Python tool uses only the standard library, remembers
+the selected Git ref, protects local edits, and stages a complete replacement
+before updating. The [installer tests](../tests/test_pls_skill.py) pass with
+isolated installations and substituted GitHub responses.
+The published `skills` CLI 1.5.23 installed the local `src/pls/` package with
+matching contents, and its remote install/update route passed against the
+still-published `deploy/pls/` layout. Its branch/tag handling works; raw commit
+SHA installation failed, so exact commit selection uses the Python tool.
 
 The repository is publicly available at
 [`brightskye/pls`](https://github.com/brightskye/pls) with clean public
 history. It contains no predecessor Git history or private review archive and
 is available under the MIT License. The local `main` branch tracks the
-published GitHub branch.
+published GitHub branch. The move to `src/pls/` is currently a local,
+uncommitted change, along with the new distribution tool and instructions;
+GitHub and existing installed copies have not been updated. Live GitHub
+installation and update verification for the new layout remains pending.
 
 ## Next
 
+- Publish the approved distribution changes and check both GitHub install/update
+  routes in temporary projects.
 - Review the working standard as a human reader.
 - Review whether any real project needs an explicitly mapped alternative to a
   normal PLS location.
@@ -46,14 +69,19 @@ becomes large enough to need its own document.
 - The root README owns project purpose, scope, and the project map.
 - PLS defines the purpose and placement of project areas. The project's
   language, framework, and tools define their internal technical formats.
-- Source contains delivered product or supported runtime code. Test and
-  evaluation support belongs in Tests, maintained development automation in
-  Tools, and install or launch artifacts in Deployment unless a project
-  convention requires another arrangement.
-- `deploy/` owns deployable project options. The self-contained PLS agent
-  package therefore lives at `deploy/pls/`, matching its skill name.
+- Source contains the delivered product, including code, agent skills, and
+  bundled resources. Test and evaluation support belongs in Tests, maintained
+  build and installer scripts in Tools, and service settings and templates in
+  Configuration. Familiar tool-specific locations remain supported.
+- Complete versioned packages use Releases and include the installer and other
+  project files needed by users. Installer sources remain in Tools. Generated release
+  outputs stay outside Git by default, and `.local/` is only a temporary build
+  location, not their permanent distribution home.
+- Deployment is not a default top-level area. Classify maintained files by
+  their purpose. The self-contained PLS product package lives at `src/pls/`.
 - Project state, plans, proposals, decisions, and history form one Project
-  Record.
+  Record. It contains durable project material, not temporary conversation
+  notes, working handoffs, or raw transcripts.
 - Architecture explains the overall solution; Specifications explain exact
   behavior.
 - Evaluation methods and important retained results belong to Quality.
@@ -62,13 +90,23 @@ becomes large enough to need its own document.
   machine-local, or sensitive workspace artifacts when project tools do not
   specify another location; it must not own information needed to use the
   project.
+- `.local/agent-note/` is the normal ignored location for deliberately retained
+  temporary agent conversation notes. Notes move through `pending`, `reviewed`,
+  and short-lived `retired` states; retired notes are safe to delete rather
+  than forming an archive. Durable outcomes are promoted to their owning
+  project documents, and notes never become project authority.
 - Maintained evaluation cases belong in the project's test layout. Sensitive
   evaluation evidence belongs in `.local/evidence/` only when the human
   explicitly chooses retention, while Quality owns and links to its meaning.
 - Familiar linters, tests, and human review are preferred over custom
   validation machinery.
-- The agent skill is a deployment adapter, not a second owner of PLS rules.
-- PLS deployment does not depend on one fixed repository path.
+- The agent skill is an interface to the bundled PLS rules, not a second owner.
+- PLS installation does not depend on one fixed repository path.
+- The maintained `src/pls/` package supports direct GitHub skill installation.
+  The `skills` CLI is the Node.js option; a standalone Python tool provides
+  explicit installation and updates without extra Python dependencies.
+  Each installed copy keeps one installation method. Updating that copy does
+  not authorize migration of its adopting project.
 - The installed skill reads its bundled standard without fetching mutable
   remote content. Updates are explicit and may follow a pinned release or the
   working draft.
@@ -90,3 +128,27 @@ and distribution of PLS.
 
 On 2026-09-05, the `brightskye/pls` GitHub repository was created and the clean
 `main` history was published using a repository-scoped deploy key.
+
+On 2026-09-05, the Owner clarified that Project Record contains only durable
+project material and selected `.local/agent-note/` for temporary agent
+conversation notes with visible pending, reviewed, and retired states.
+
+On 2026-09-06, the Owner clarified installer and release placement: maintained
+build and installer scripts use Tools, complete release packages include the
+installer under `releases/<version>/` or a mapped distribution location, and
+Deployment remains optional for deployment-specific files and integrations.
+The existing PLS skill stays at `deploy/pls/`. This updates the working draft;
+it does not publish a new stable PLS release or migrate adopting projects.
+
+Later on 2026-09-06, the Owner approved removing Deployment from the default
+layout and placing maintained files by purpose. This supersedes the earlier
+same-day decision to retain it as a separate area. The PLS package moved from
+`deploy/pls/` to `src/pls/`; navigation, agent instructions, and installation
+paths were updated. Existing copied skill installations and older Git refs
+retain their original layout until deliberately updated.
+
+Later on 2026-09-06, the Owner requested convenient GitHub installation and
+rules updates through both `npx skills` and Python. The existing `src/pls/`
+package was retained, and the standalone Python installer/updater and its
+tests were added in Tools and Tests. This prepares distribution; it does not
+publish the local changes or promote the working draft to a stable release.

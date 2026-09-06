@@ -25,22 +25,29 @@ projects that use PLS.
 
 | Question | Location |
 |---|---|
-| What rules does PLS define? | [PLS](deploy/pls/references/PLS.md) |
+| What rules does PLS define? | [PLS](src/pls/references/PLS.md) |
 | What project-specific rules must agents follow here? | [Agent instructions](AGENTS.md) |
 | What is happening with the PLS project? | [Project Record](docs/project-record.md) |
 | How do I install and use the PLS agent skill? | [Operations](docs/operations.md) |
-| What can be installed or distributed from this project? | `deploy/` |
-| Where is the deployable agent skill? | [PLS agent skill](deploy/pls/SKILL.md) |
+| Where is the maintained product package? | [PLS agent skill](src/pls/SKILL.md) |
+| Where is the Python install/update tool? | [Installer](tools/pls_skill.py) |
+| Where are the installer checks? | [Tests](tests/test_pls_skill.py) |
 | Under what terms may PLS be used? | [MIT License](LICENSE) |
 
 ## Distribution
 
-The self-contained `deploy/pls/` directory can be installed from a Git
+The self-contained `src/pls/` directory can be installed from a Git
 repository without access to the rest of this checkout. It contains the skill
 entry point and the authoritative PLS standard. Pin an immutable commit or
 release tag when reproducible rules matter; use `main` only when deliberately
-following the working draft. See [Operations](docs/operations.md) for install
-and update routes.
+following the working draft.
+
+Use `npx skills` for installation and updates through the existing Node.js
+skill manager, or download the standalone [Python tool](tools/pls_skill.py)
+for the same PLS package without Node.js or extra Python packages. Both install
+the skill and its rules together. No build step is needed. See
+[Operations](docs/operations.md) for commands, update behavior, and publication
+status.
 
 ## License
 

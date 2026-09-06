@@ -5,7 +5,7 @@ description: Scaffold, organize, place, or review project structure and document
 
 # Use PLS
 
-This skill is a deployment adapter. The rules are owned by the bundled
+This skill is the agent interface to PLS. The rules are owned by the bundled
 [PLS standard](references/PLS.md). Use that versioned local reference; do not
 replace it with mutable remote content while working on a project.
 
