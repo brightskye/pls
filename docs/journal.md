@@ -18,7 +18,7 @@ and [decision](#dec-0009-ship-reusable-journal-templates).
 
 PLS remains the 0.3.0 working draft. This repository maintains three independent
 packages: [PLS](../src/pls/SKILL.md) for layout,
-[Journal](../src/journal/SKILL.md) for shared discussion and decision rules, and
+[Journal](../src/journal/SKILL.md) for shared record rules and templates, and
 [design-writing](../src/design-writing/SKILL.md) for system designs. Each guide
 is maintained with its owning skill and works without the other packages.
 
@@ -32,8 +32,8 @@ the selected interface. Orca's later vault integration can adopt a versioned
 guide and keep local execution rules in configurable vault locations.
 
 The latest published bundle is
-[`v0.3.0-draft.6`](https://github.com/brightskye/pls/releases/tag/v0.3.0-draft.6).
-The [publication history](#draft6-publication-and-verification) records its
+[`v0.3.0-draft.7`](https://github.com/brightskye/pls/releases/tag/v0.3.0-draft.7).
+The [publication history](#draft7-publication-and-verification) records its
 verification details. The standard remains the 0.3.0 working draft.
 
 Orca subsequently upgraded `pls`, `journal`, and `design-writing` to verified
@@ -56,9 +56,8 @@ not moved by that upgrade.
 [DEC-0009](#dec-0009-ship-reusable-journal-templates) accepts reusable discussion,
 decision, and proposal templates owned by Journal. The templates and proposal
 rules passed package, standalone installation, upgrade, and document checks.
-The Owner authorized committing and publishing these changes as draft7.
-Draft6 remains the published and installed release until publication is
-verified; no live upgrade is included.
+Draft7 is published with these additions. Orca's installed skills remain on
+draft6; upgrading them is a separate action.
 
 ## Next
 
@@ -990,3 +989,28 @@ Journal templates and proposal rules. The next bundle is `0.3.0-draft.7`.
 This authorizes its source commit and publication; the PLS standard remains
 the 0.3.0 working draft. Orca's live skills remain on draft6. Publication and
 release verification are recorded separately when completed.
+
+### Draft7 publication and verification
+
+On 2026-09-16, source commit
+[`34b6451bbd3cf87bf64972b9e15d2da6a903dc34`](https://github.com/brightskye/pls/commit/34b6451bbd3cf87bf64972b9e15d2da6a903dc34)
+was published as
+[`v0.3.0-draft.7`](https://github.com/brightskye/pls/releases/tag/v0.3.0-draft.7).
+The [release workflow](https://github.com/brightskye/pls/actions/runs/34992779310)
+completed successfully. The published ZIP SHA-256 is
+`940ce12beca7074b42607fc3bd7d0ce78770c0459d68a5b85d56ff31ab8b880a`.
+
+All 47 package tests, all three skill validators, Markdown checks, and 130
+local links passed before publication. The clean-source bundle rebuilt
+byte-for-byte; the published ZIP and checksum matched that build.
+
+All three skills installed independently in temporary projects. Actual draft6
+updaters passed offline and normal latest-release downloads, with exact
+payloads, receipts, and source commit. The Journal installation included all
+three template assets. Updates retained latest-release selection and preserved
+sibling skills, project templates, and existing records. Managed template
+edits were protected.
+
+Orca's live skills remain on draft6. This publication did not upgrade any live
+installation or migrate records. PLS remains the 0.3.0 working draft; native
+Windows remains untested.

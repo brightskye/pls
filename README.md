@@ -58,14 +58,15 @@ is below.
 
 ## Distribution
 
-The published [draft6 bundle](https://github.com/brightskye/pls/releases/tag/v0.3.0-draft.6)
-includes the basic project map and configurable document locations. It contains
+The published [draft7 bundle](https://github.com/brightskye/pls/releases/tag/v0.3.0-draft.7)
+includes Journal record templates and proposal rules, alongside the basic
+project map and configurable document locations. It contains
 three independently selectable skills:
 
 | Skill | Responsibility | Install selection |
 |---|---|---|
 | `pls` | Layout, placement, navigation, and document ownership | Default |
-| `journal` | Discussion and decision records, history, and retrieval | `--skill journal` |
+| `journal` | Discussion, decision, and proposal records, templates, history, and retrieval | `--skill journal` |
 | `design-writing` | System design documents and implementation readiness | `--skill design-writing` |
 
 The complete bundle includes the guides, Python installer, instructions,
@@ -103,12 +104,11 @@ semantics, and saving systems own their execution paths. Orca can adopt a
 versioned copy while keeping its integration rules in configured vault
 locations. Agent adapters follow the selected system's interface.
 
-Draft6 is published and verified, including the basic-map template and
-clarified location rules. [Current](docs/journal.md#current) records the
-adoption boundary; [publication history](docs/journal.md#draft6-publication-and-verification)
-records the evidence. Orca subsequently upgraded all three skills to draft6.
-The Journal source now includes reusable record templates and proposal rules;
-these additions are not in draft6 or Orca's installed copy yet.
+Draft7 is published and verified, including reusable Journal record templates
+and proposal rules. [Current](docs/journal.md#current) records the adoption
+boundary; [publication history](docs/journal.md#draft7-publication-and-verification)
+records the evidence. Orca's installed skills remain on draft6; this release
+does not upgrade them.
 Runtime integration and vault adoption remain separate work. Native Windows is
 untested.
 

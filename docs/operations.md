@@ -3,10 +3,11 @@
 ## Release bundle
 
 Use the complete `pls.zip` asset from [GitHub Releases](https://github.com/brightskye/pls/releases).
-The published `0.3.0-draft.6` bundle contains three independently selectable
+The published `0.3.0-draft.7` bundle contains three independently selectable
 skills. Draft4 had two skills with Journal rules inside
 PLS; the standalone Journal skill requires draft5 or later. Draft6 adds the
-copyable project map to the PLS skill; its layout is shown below.
+copyable project map to PLS. Draft7 adds Journal record templates; its layout
+is shown below.
 
 ```text
 pls/
@@ -21,6 +22,9 @@ pls/
   skills/journal/
     SKILL.md
     references/journal.md
+    assets/templates/decision.md
+    assets/templates/discussion.md
+    assets/templates/proposal.md
   skills/design-writing/
     SKILL.md
     agents/openai.yaml
@@ -117,7 +121,7 @@ To select a release and keep subsequent updates pinned to it:
 
 ```bash
 python3 /path/to/project/.agents/skills/pls/install.py update \
-  --release v0.3.0-draft.6
+  --release v0.3.0-draft.7
 ```
 
 Use `--release latest` to follow new published bundles again. To update offline,
@@ -187,7 +191,7 @@ With Node.js/npm available, use the release asset URL:
 
 ```bash
 npx skills@latest add \
-  https://github.com/brightskye/pls/releases/download/v0.3.0-draft.6/pls.zip \
+  https://github.com/brightskye/pls/releases/download/v0.3.0-draft.7/pls.zip \
   --skill pls --agent codex
 ```
 
@@ -220,8 +224,8 @@ version until explicitly upgraded.
 ## Use the installed skill
 
 From draft5, each of `pls`, `journal`, and `design-writing` has its own
-`SKILL.md` and bundled guide. PLS handles layout, Journal handles discussion
-and decision records, and design-writing handles system designs.
+`SKILL.md` and bundled guide. PLS handles layout, Journal handles records and
+history, and design-writing handles system designs.
 Codex can select the skill when its description matches the request; in CLI or
 the IDE extension, `$pls`, `$journal`, or `$design-writing` selects it
 explicitly. If the skill does not appear, restart the agent. See the official
@@ -250,10 +254,10 @@ Journal records.
 
 ## Journal record templates
 
-The current Journal source includes [discussion, decision, and proposal templates](../src/journal/references/journal.md#record-templates)
-under `src/journal/assets/templates/`. A bundle built from this source carries
-them into `assets/templates/` inside the installed Journal skill. Published
-draft6 does not contain them.
+The published draft7 Journal skill includes
+[discussion, decision, and proposal templates](../src/journal/references/journal.md#record-templates)
+under `assets/templates/` inside its installed folder. The maintained source
+is `src/journal/assets/templates/`. Draft6 does not contain these assets.
 
 Use the project's mapped local template when one exists; otherwise start from
 the bundled template for the requested record type. The Journal guide owns
@@ -301,9 +305,9 @@ the source commit, and refuses to overwrite an existing version output.
 installer, license, generated instructions, and release metadata are included.
 The same inputs produce the same ZIP bytes.
 
-For candidate draft7, commit the source, build and verify it, then push the
-source and matching new tag. Draft6 remains the latest published release
-until draft7 publication is verified:
+For a future bundle, commit the source, build and verify it, then push the
+source and matching new tag. The draft7 example below is already published;
+use a new version for changed content:
 
 ```bash
 git tag v0.3.0-draft.7
@@ -324,10 +328,9 @@ without network access, verify the installed bytes, and check updates and
 local-edit protection. Check the published release download after publication.
 The [Project Journal](journal.md) records current results and limitations.
 
-Draft6 is published and verified. See the [publication history](journal.md#draft6-publication-and-verification)
-for the evidence. Orca subsequently upgraded all three skills to draft6.
-The template additions remain source changes pending publication. Native
-Windows remains untested.
+Draft7 is published and verified. See the [publication history](journal.md#draft7-publication-and-verification)
+for the evidence. Orca's installed skills remain on draft6; this release does
+not upgrade them. Native Windows remains untested.
 
 A working-draft bundle is not a stable PLS standard release. Stable promotion
 remains a separate human decision. Existing adopting projects do not migrate
