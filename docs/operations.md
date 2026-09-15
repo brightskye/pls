@@ -3,10 +3,10 @@
 ## Release bundle
 
 Use the complete `pls.zip` asset from [GitHub Releases](https://github.com/brightskye/pls/releases).
-The layout below describes the `0.3.0-draft.4` release candidate. It contains
-two independently selectable skills and adds the Journal reference to PLS.
-The latest published bundle remains `v0.3.0-draft.3`; its install and update
-commands are the same, but it does not contain the Journal rules.
+The published `v0.3.0-draft.4` bundle contains two independently selectable
+skills, adds the Journal reference to PLS, and ships configurable disposable
+context rules. It is the latest published bundle; its install and update
+commands are described below.
 
 The new bundle contains:
 
@@ -35,10 +35,9 @@ ignored `releases/<version>/` locally and GitHub Releases for distribution. The
 standard remains a working draft. Bundle versions such as `0.3.0-draft.4`
 identify packaged revisions of that draft.
 
-The latest verified remote bundle,
-[`v0.3.0-draft.3`](https://github.com/brightskye/pls/releases/tag/v0.3.0-draft.3),
-is published and tested. Its shared Python installer selects one skill per
-operation, with PLS as the default and `--skill design-writing` selecting the
+The [`v0.3.0-draft.4`](https://github.com/brightskye/pls/releases/tag/v0.3.0-draft.4)
+Python installer selects one skill per operation, with PLS as the default
+and `--skill design-writing` selecting the
 companion; each selected skill has its own updater and receipt. The PLS
 standard remains the 0.3.0 working draft. See the [Project Journal](journal.md)
 for verification results and limits.
@@ -122,7 +121,7 @@ To select a release and keep subsequent updates pinned to it:
 
 ```bash
 python3 /path/to/project/.agents/skills/pls/install.py update \
-  --release v0.3.0-draft.3
+  --release v0.3.0-draft.4
 ```
 
 Use `--release latest` to follow new published bundles again. To update offline,
@@ -169,7 +168,7 @@ With Node.js/npm available, use the release asset URL:
 
 ```bash
 npx skills@latest add \
-  https://github.com/brightskye/pls/releases/download/v0.3.0-draft.3/pls.zip \
+  https://github.com/brightskye/pls/releases/download/v0.3.0-draft.4/pls.zip \
   --skill pls --agent codex
 ```
 

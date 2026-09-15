@@ -19,9 +19,10 @@ PLS is the 0.3.0 working draft. The active
 `src/design-writing/`. The root README owns the project map, and
 [Operations](operations.md) owns installation and release procedures.
 
-The next release candidate is `0.3.0-draft.4`. It adds Journal saving and
-retrieval rules, linked discussion and decision history, selective reading,
-and a configurable disposable context location. The accepted directions are
+The published [`v0.3.0-draft.4`](https://github.com/brightskye/pls/releases/tag/v0.3.0-draft.4)
+release adds Journal saving and retrieval rules, linked discussion and
+decision history, selective reading, and a configurable disposable context
+location. The accepted directions are
 [history retention](#dec-0001-preserve-retrievable-project-history),
 [Journal naming](#dec-0002-name-the-area-project-journal),
 [growth and selective reading](#dec-0003-keep-journal-reading-focused), and
@@ -39,18 +40,16 @@ explicitly. The rule reference's temporary working name was
 `references/project-records.md`; it became `references/journal.md` before
 being committed or published.
 
-Candidate verification and release preparation are recorded in
-[History](#draft4-release-preparation). The latest published bundle remains
-[`v0.3.0-draft.3`](https://github.com/brightskye/pls/releases/tag/v0.3.0-draft.3).
-It contains both independently selectable skills and the shared Python
-installer, but does not include the new Journal rules. No draft4 tag or
-publication, live skill update, or other-project migration is part of this
-preparation. Checks run on Linux/WSL; native Windows remains untested.
+See [release preparation](#draft4-release-preparation) and
+[publication verification](#draft4-publication) for results.
+The latest published bundle is
+[`v0.3.0-draft.4`](https://github.com/brightskye/pls/releases/tag/v0.3.0-draft.4).
+It contains both independently selectable skills, the Journal guide, and
+configurable disposable context rules. Native Windows remains untested, and
+no live adopter installation was changed.
 
 ## Next
 
-- Publish `0.3.0-draft.4` when requested. Release review is complete; the
-  detailed rules remain a working draft, with stable acceptance separate.
 - Migrate other projects' `project-record` locations and update installed
   skills only when those separate actions are requested.
 - Review whether any real project needs an explicitly mapped alternative to a
@@ -624,6 +623,20 @@ rejected without being overwritten.
 The candidate is `0.3.0-draft.4`; the standard remains the 0.3.0 working draft.
 The complete reviewed revision uses a clean local commit for its bundle under
 ignored `releases/0.3.0-draft.4/`. The bundle's `release.json` records its exact
-source commit. There is no draft4 tag or GitHub release yet,
-and live installations retain their selected versions. Checks run on
+source commit. At preparation time, there was no draft4 tag or GitHub release,
+and live installations retained their selected versions. Checks run on
 Linux/WSL; native Windows remains untested.
+
+### Draft4 publication
+
+On 2026-09-15, commit
+[fc8b0e788f711b2614946c64c27b0f3dba9b3310](https://github.com/brightskye/pls/commit/fc8b0e788f711b2614946c64c27b0f3dba9b3310)
+was published as [`v0.3.0-draft.4`](https://github.com/brightskye/pls/releases/tag/v0.3.0-draft.4).
+The release ships both independently selectable skills, the Journal guide, and
+configurable disposable context rules. The PLS 0.3.0 standard remains a
+working draft; native Windows remains untested, and no live adopter
+installations changed. The [release workflow](https://github.com/brightskye/pls/actions/runs/34958738777)
+passed 40 tests; the published ZIP and checksum matched the verified local
+bundle; and both draft3 updaters selected draft4 with exact payload and
+receipt hashes while preserving the sibling skill. The published checksum is
+`d369afbf065b979dd8479e163bf8b056d64d9cfe0a84e30d14a1d612ae131466`.
