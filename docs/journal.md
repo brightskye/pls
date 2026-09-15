@@ -30,17 +30,13 @@ the selected interface. Orca's later vault integration can adopt a versioned
 guide and keep local execution rules in configurable vault locations.
 
 The latest published bundle is
-[`v0.3.0-draft.5`](https://github.com/brightskye/pls/releases/tag/v0.3.0-draft.5).
-The [release history](#draft5-publication-and-live-adoption) records its
-source commit, workflow, checksum, and verification details. Candidate draft6
-preparation is authorized for the basic project-map changes. All 47 package
-tests and three skill validators pass; build and publication checks remain
-pending.
+[`v0.3.0-draft.6`](https://github.com/brightskye/pls/releases/tag/v0.3.0-draft.6).
+The [publication history](#draft6-publication-and-verification) records its
+verification details. The standard remains the 0.3.0 working draft.
 
 Orca has verified draft5 installations of `pls`, `journal`, and
 `design-writing`, with latest-release selection retained. No live upgrade was
-requested for this candidate. The standard remains the 0.3.0 working draft;
-native Windows remains untested.
+requested or performed. Native Windows remains untested.
 
 PLS keeps its existing `docs/journal.md`. Adopting projects follow their current
 maps; separately authorized migrations are independent of this extraction.
@@ -52,13 +48,11 @@ separate from the package change and remain unimplemented.
 project map with project-selected locations. The source now includes a
 [copyable map](../src/pls/assets/project-map.md), documentation-root and
 area-override rules, and explicit discovery from the root README. The
-candidate release carries those source changes; published draft5, installed
-Orca skills, and existing project or vault records remain unchanged.
+published draft6 bundle carries those source changes; installed Orca skills and
+existing project or vault records remain unchanged.
 
 ## Next
 
-- Complete draft6 verification and publication. Orca's live installations
-  remain on draft5 until an upgrade is requested.
 - Migrate other projects' `project-record` locations and update installed
   skills only when those separate actions are requested.
 - Review whether any real project needs an explicitly mapped alternative to a
@@ -858,12 +852,33 @@ update.
 ### Draft6 release preparation authorization
 
 On 2026-09-15, the Owner said "commit and publish" for the existing basic
-project-map changes. The next bundle version is `0.3.0-draft.6`. The candidate carries
-the copyable `skills/pls/assets/project-map.md` asset and the clarified
+project-map changes. The next bundle version is `0.3.0-draft.6`. The candidate
+carries the copyable `skills/pls/assets/project-map.md` asset and the clarified
 location rules; the 0.3.0 standard remains a working draft.
 
-The latest published bundle remains draft5 until draft6 publication is
-verified. Orca's live `pls`, `journal`, and `design-writing` skills remain on
-draft5 because no live upgrade was requested. Candidate commit, build,
-publication, and independent release verification are recorded separately as
-they complete; this authorization does not claim those results.
+At that preparation stage, draft5 remained the latest published bundle and
+Orca remained on draft5 because no live upgrade was requested. The pending
+state is historical; publication and verification are recorded below.
+
+### Draft6 publication and verification
+
+On 2026-09-15, source commit
+[`571c5cf1dfb2554de5aecb6ebdb200c36543aa03`](https://github.com/brightskye/pls/commit/571c5cf1dfb2554de5aecb6ebdb200c36543aa03)
+was published as
+[`v0.3.0-draft.6`](https://github.com/brightskye/pls/releases/tag/v0.3.0-draft.6).
+The [release workflow](https://github.com/brightskye/pls/actions/runs/34975584496)
+completed successfully. The published SHA-256 checksum is
+`a01d06d5861eba3fc5af08a0d46832d990ff35dc732db9c935e0ac4291fe47cb`.
+
+All 47 package tests and all three skill validators passed, and 114 local links
+were checked. A rebuilt bundle was identical to the candidate; the public ZIP
+and checksum matched the local clean build.
+
+A temporary fresh PLS installation passed offline. Actual draft5 installed
+updaters for all three skills passed both offline and normal latest-release
+downloads. Template bytes and receipt hashes matched exactly, and sibling
+skills were preserved. Local edits to the new map were protected.
+
+Orca's live `pls`, `journal`, and `design-writing` installations remain on
+draft5. No live upgrade was requested or performed. The standard remains the
+0.3.0 working draft; native Windows remains untested.

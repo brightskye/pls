@@ -57,9 +57,9 @@ is below.
 
 ## Distribution
 
-The published [draft5 bundle](https://github.com/brightskye/pls/releases/tag/v0.3.0-draft.5)
-separates Journal from the PLS layout skill. It contains three independently
-selectable skills:
+The published [draft6 bundle](https://github.com/brightskye/pls/releases/tag/v0.3.0-draft.6)
+includes the basic project map and configurable document locations. It contains
+three independently selectable skills:
 
 | Skill | Responsibility | Install selection |
 |---|---|---|
@@ -102,13 +102,13 @@ semantics, and saving systems own their execution paths. Orca can adopt a
 versioned copy while keeping its integration rules in configured vault
 locations. Agent adapters follow the selected system's interface.
 
-Draft5 is published and verified, and Orca has adopted all three skills.
-The basic-map template and clarified location rules are newer source changes;
-they are not included in draft5 or Orca's installed copy yet.
-[Current](docs/journal.md#current) records the verification and adoption state;
-[release history](docs/journal.md#draft5-publication-and-live-adoption)
-retains the source commit and publication evidence. Runtime integration and
-vault adoption remain separate work. Native Windows is untested.
+Draft6 is published and verified, including the basic-map template and
+clarified location rules. [Current](docs/journal.md#current) records the
+adoption boundary; [publication history](docs/journal.md#draft6-publication-and-verification)
+records the evidence. Orca's live installations remain on draft5 because no
+upgrade was requested or performed.
+Runtime integration and vault adoption remain separate work. Native Windows is
+untested.
 
 Projects may declare a disposable working context and session handoff
 location in their project map. This project uses the default

@@ -3,10 +3,10 @@
 ## Release bundle
 
 Use the complete `pls.zip` asset from [GitHub Releases](https://github.com/brightskye/pls/releases).
-The published `0.3.0-draft.5` bundle contains three independently selectable
-skills. The preceding draft4 release has two skills with Journal rules inside
-PLS; the standalone Journal skill requires draft5 or later. Candidate draft6
-adds the copyable project map to the PLS skill; its layout is shown below.
+The published `0.3.0-draft.6` bundle contains three independently selectable
+skills. Draft4 had two skills with Journal rules inside
+PLS; the standalone Journal skill requires draft5 or later. Draft6 adds the
+copyable project map to the PLS skill; its layout is shown below.
 
 ```text
 pls/
@@ -71,10 +71,11 @@ route:
   .pls-install.json
 ```
 
-From draft5, PLS contains `references/PLS.md`, Journal contains
+From draft6, PLS contains `references/PLS.md` and
+`assets/project-map.md`, Journal contains
 `references/journal.md`, and design-writing contains
 `references/design-writing.md` and its agent metadata. Each guide is maintained
-with its owning skill. PLS adds `assets/project-map.md` in candidate draft6.
+with its owning skill.
 
 For a different location, pass `--dest` with the parent skills directory; the
 installer creates or updates its `<skill>/` child there. Use `--skill` to choose
@@ -116,7 +117,7 @@ To select a release and keep subsequent updates pinned to it:
 
 ```bash
 python3 /path/to/project/.agents/skills/pls/install.py update \
-  --release v0.3.0-draft.5
+  --release v0.3.0-draft.6
 ```
 
 Use `--release latest` to follow new published bundles again. To update offline,
@@ -186,7 +187,7 @@ With Node.js/npm available, use the release asset URL:
 
 ```bash
 npx skills@latest add \
-  https://github.com/brightskye/pls/releases/download/v0.3.0-draft.5/pls.zip \
+  https://github.com/brightskye/pls/releases/download/v0.3.0-draft.6/pls.zip \
   --skill pls --agent codex
 ```
 
@@ -212,9 +213,9 @@ how to interpret those paths, including vault locations.
 
 This map is project content interpreted by readers and agents. Installer
 `--dest` controls where the skill is installed; it does not configure where
-that project keeps its documents. The template and clarified rules are part of
-candidate draft6. Draft5 does not contain them; existing installations retain
-their selected version until explicitly upgraded.
+that project keeps its documents. The published draft6 bundle includes the
+template and clarified rules. Existing installations retain their selected
+version until explicitly upgraded.
 
 ## Use the installed skill
 
@@ -288,9 +289,9 @@ the source commit, and refuses to overwrite an existing version output.
 installer, license, generated instructions, and release metadata are included.
 The same inputs produce the same ZIP bytes.
 
-For candidate draft6, commit the source, build and verify the bundle, then
-push the source and matching new tag. Draft5 remains the latest published
-release until draft6 publication is verified:
+For a future bundle, commit the source, build and verify it, then push the
+source and matching new tag. The draft6 example below is already published;
+use a new version for changed content:
 
 ```bash
 git tag v0.3.0-draft.6
@@ -311,10 +312,9 @@ without network access, verify the installed bytes, and check updates and
 local-edit protection. Check the published release download after publication.
 The [Project Journal](journal.md) records current results and limitations.
 
-Draft5 is published and verified. Candidate draft6 contains the basic project
-map and clarified location rules; publication checks remain pending. The
-[Project Journal](journal.md) records release preparation and the draft5 live
-Orca installations. Native Windows remains untested.
+Draft6 is published and verified. See the [publication history](journal.md#draft6-publication-and-verification)
+for the evidence. Orca's live installations remain on draft5; no live upgrade
+was requested or performed. Native Windows remains untested.
 
 A working-draft bundle is not a stable PLS standard release. Stable promotion
 remains a separate human decision. Existing adopting projects do not migrate
