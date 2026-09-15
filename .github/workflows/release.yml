@@ -25,9 +25,11 @@ jobs:
           Complete PLS working-draft bundle: independently selectable layout,
           Journal, and design-writing skills, guides, Python installer,
           instructions, and license.
-          The Journal skill includes retrievable discussion and decision
-          history and selective reading. PLS owns configurable disposable
-          context placement.
+          The Journal skill includes retrievable discussion, proposal, and decision
+          history and selective reading. It ships ready-to-fill discussion, decision,
+          and proposal templates in assets/templates/, with common metadata and
+          lifecycle rules. Mapped local customizations and existing records are
+          preserved. PLS owns configurable disposable context placement.
           PLS also includes a copyable basic project map at assets/project-map.md
           inside its skill folder. Configure a documentation root and individual
           area overrides for project or vault locations. Existing mapped owners

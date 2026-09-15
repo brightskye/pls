@@ -47,6 +47,7 @@ is below.
 | How do I install and use the skills? | [Operations](docs/operations.md) |
 | Where is the maintained PLS package? | [PLS agent skill](src/pls/SKILL.md) |
 | Which skill records or retrieves project history? | [Journal skill](src/journal/SKILL.md) |
+| Where are reusable discussion, decision, and proposal templates? | [Journal templates](src/journal/references/journal.md#record-templates) |
 | How should system design documents be written? | [Design writing guide](src/design-writing/references/design-writing.md) |
 | Which skill creates, revises, or reviews a design? | [Design writing skill](src/design-writing/SKILL.md) |
 | Where is the Python install/update tool? | [Installer](tools/pls_skill.py) |
@@ -105,8 +106,9 @@ locations. Agent adapters follow the selected system's interface.
 Draft6 is published and verified, including the basic-map template and
 clarified location rules. [Current](docs/journal.md#current) records the
 adoption boundary; [publication history](docs/journal.md#draft6-publication-and-verification)
-records the evidence. Orca's live installations remain on draft5 because no
-upgrade was requested or performed.
+records the evidence. Orca subsequently upgraded all three skills to draft6.
+The Journal source now includes reusable record templates and proposal rules;
+these additions are not in draft6 or Orca's installed copy yet.
 Runtime integration and vault adoption remain separate work. Native Windows is
 untested.
 

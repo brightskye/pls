@@ -1,6 +1,6 @@
 ---
 name: journal
-description: Record, update, or retrieve a project's durable discussions, decisions, and change history. Use when a human asks to save or revise Journal material, or to find the current rule, original rationale, or recorded history. Retrieval is read-only.
+description: Record, update, or retrieve a project's durable discussions, proposals, decisions, and change history. Use when a human asks to save or revise Journal material, or to find the current rule, original rationale, or recorded history. Retrieval is read-only.
 ---
 
 # Use Journal
@@ -14,9 +14,11 @@ does not rename, move, or migrate existing records.
 
 Use the requested operation:
 
-- **Record:** save a meaningful discussion or decision, including its source,
-  scope, status, and reasons. A clear acceptance applies only to the confirmed
-  proposal or bundle.
+- **Record:** save a meaningful discussion, proposal, or decision, including its
+  source, scope, status, and reasons. For a new record, read the guide's
+  [record templates section](references/journal.md#record-templates) and use the
+  matching mapped local template or bundled default before following the record
+  flow. A clear acceptance applies only to the confirmed proposal or bundle.
 - **Update:** revise an existing record or align its owning documents. Preserve
   prior decisions, reasons, and amendment or replacement links.
 - **Retrieve:** read the mapped entry point and only the relevant records,

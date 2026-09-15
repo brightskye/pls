@@ -243,9 +243,9 @@ adoption and layout decisions remain separate.
 
 ## Use
 
-The PLS skill covers project layout. The Journal skill saves discussions and
-decisions, preserves reasons and linked changes, and retrieves relevant
-history. Each skill's bundled references own its rules. Disposable working
+The PLS skill covers project layout. The Journal skill saves discussions,
+decisions, and proposals, preserves reasons and linked changes, and retrieves
+relevant history. Each skill's bundled references own its rules. Disposable working
 context uses the location declared in the project map, with
 `.local/agent-note/` as the default; durable records belong in the Journal.
 The design-writing skill creates and reviews precise system design documents.
@@ -256,6 +256,12 @@ from there. The documentation root and individual area overrides select where
 project documents belong, including explicit vault locations. The bundled PLS
 guide defines path resolution. Installer `--dest` selects the skill folder;
 it does not configure project document locations or move existing records.
+
+Journal includes discussion, decision, and proposal templates under
+`assets/templates/` inside its installed skill folder. Its guide explains
+which template to use and how to follow a project's mapped local customization.
+Copy templates into the mapped Journal location when creating records;
+template updates do not rewrite existing records or their identifiers.
 """
     return text.encode("utf-8")
 

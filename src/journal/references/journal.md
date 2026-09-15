@@ -25,6 +25,7 @@ Use [placement](#placement-and-ownership) to choose a home,
 [growth](#keeping-a-growing-journal-usable) to keep it manageable,
 [layout examples](#small-and-expanded-journals) for small and expanded projects,
 [record content](#record-content) when saving,
+[record templates](#record-templates) when creating a new record,
 [changes](#decision-changes-and-history) when revising a decision, and
 [retrieval](#retrieval-without-a-database) when resuming or reviewing work.
 
@@ -162,22 +163,24 @@ document-level status does not determine the status of its individual records.
 | Field | Meaning |
 |---|---|
 | `id` | Stable identifier, unique within the project |
-| `kind` | `discussion` or `decision` |
+| `kind` | `discussion`, `decision`, or `proposal` |
 | `title` | Short, specific subject; include important domain terms |
 | `project` | Stable project key recorded in the project map; reuse an existing key |
 | `topics` | Short list of consistent topic names for navigation and filtering |
 | `scope` | Where the content applies, including relevant subsystem, phase, conditions, or exceptions |
 | `status` | The record lifecycle defined below |
-| `occurred` | Source discussion or decision date/time; `null` when unknown |
+| `occurred` | Source discussion, proposal, or decision date/time; `null` when unknown |
 | `created` | When this record was first saved |
 | `updated` | When its content or lifecycle last changed |
-| `sources` | References supporting the summary or decision, including acceptance when applicable |
+| `sources` | References supporting the record, including review or acceptance when applicable |
 
-The identity is `(project, id)`, independent of filename and title. Reuse
-existing ADR identifiers and project conventions. For new records, a project
-SHOULD use readable numbered IDs such as `DISC-0001` and `DEC-0001`. Allocate
-unused IDs, and preserve them across moves, edits, and retirement. Resolve
-duplicate IDs before claiming a save complete; no global registry is required.
+The identity is `(project, id)`, independent of filename and title. For new
+records, a project SHOULD use readable numbered IDs such as `DISC-0001`,
+`DEC-0001`, and `RFC-0001` for proposals. Existing ADR identifiers and project
+conventions stay valid; do not renumber them to match a new convention.
+Allocate unused IDs, and preserve them across moves, edits, and retirement.
+Resolve duplicate IDs before claiming a save complete; no global registry is
+required.
 
 Use ISO 8601 dates; include an offset or `Z` when recording a time. Preserve
 source chronology separately from save time. A historical backfill MUST NOT
@@ -233,6 +236,51 @@ Interpret confirmation against the specific proposal or clearly identified
 bundle it answers. Accept only the confirmed scope. Ask a focused question
 only when the existing context cannot resolve a material ambiguity; do not
 request confirmation again for an already clear decision.
+
+### Proposal records
+
+A proposal record captures a candidate change and its review history. It MUST
+state the motivation, exact scope, proposed design, material alternatives,
+unresolved questions, and sources for review or acceptance. Use `kind: proposal`
+for this record type. New proposals SHOULD use an `RFC-NNNN` identifier when
+the project has no stronger local convention.
+
+Proposal status is `draft`, `under-review`, `accepted`, `rejected`, `withdrawn`,
+or `superseded`. Record each status change with its date, source, evidence, and
+scope. Acceptance MUST be supported by a source or retained review evidence;
+the status is never inferred from age, implementation, or a later document.
+
+Acceptance of a proposal records agreement with the stated scope. It does not
+by itself rewrite current behavior or establish implementation. Promote an
+accepted result into its owning decision, architecture, specification, roadmap,
+or plan as applicable, link that owner from the proposal, and track
+implementation separately.
+
+## Record templates
+
+The bundled [decision](../assets/templates/decision.md),
+[discussion](../assets/templates/discussion.md), and
+[proposal](../assets/templates/proposal.md) files are concise starting
+examples. This guide is authoritative; templates show how to apply its common
+metadata, sources, and lifecycle in a new file.
+
+When creating a new record, resolve the project's mapped Journal location and
+any mapped local template location first. Use the matching local customization
+when one exists; otherwise copy the bundled default. Replace placeholders such
+as `<project-key>`, `<YYYY-MM-DD>`, `<source>`, and the example ID and title,
+allocate an unused project-local ID, and follow [Direct record editing and
+alignment](#direct-record-editing-and-alignment). Local templates MAY add
+project-specific fields or sections, but they MUST preserve the common
+metadata, source evidence, and lifecycle rules in this guide.
+
+Keep only lifecycle rows supported by the record's sources and remove unused
+example rows. When recording an existing accepted, rejected, withdrawn, or
+superseded outcome, begin with the earliest evidenced status; do not invent
+earlier draft, review, or proposed events.
+
+Using a template creates a new record only when the project authorizes that
+record. It does not migrate, rename, reformat, or change the IDs of existing
+records. Existing ADR identifiers and other project conventions remain valid.
 
 ## Direct record editing and alignment
 
@@ -328,12 +376,13 @@ preserve both records and flag the unresolved relationship. Obtain the missing
 scope or replacement decision before presenting one as the sole applicable
 rule. Dates and similarity alone cannot resolve this ambiguity.
 
-Discussion history and superseded or rejected decision records MUST remain
-retrievable for the project's lifetime unless an explicit retention, privacy,
-or legal requirement authorizes their removal. An overview MAY be condensed;
-it MUST NOT replace or erase the retained dated history and reasons. Follow
-the [growth rules](#keeping-a-growing-journal-usable) when splitting files.
-An archive move changes location, not decision identity or authority.
+Discussion history, proposal review history, and superseded or rejected
+decision records MUST remain retrievable for the project's lifetime unless an
+explicit retention, privacy, or legal requirement authorizes their removal. An
+overview MAY be condensed; it MUST NOT replace or erase the retained dated
+history and reasons. Follow the [growth rules](#keeping-a-growing-journal-usable)
+when splitting files. An archive move changes location, not record identity or
+authority.
 
 Material in the configured disposable context location MAY be retired after
 its durable discussion and decision content has been recorded and checked,

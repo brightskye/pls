@@ -248,6 +248,18 @@ skill from draft5 or later. Disposable context uses the path declared in the pro
 map, defaulting to `.local/agent-note/`; it remains separate from durable
 Journal records.
 
+## Journal record templates
+
+The current Journal source includes [discussion, decision, and proposal templates](../src/journal/references/journal.md#record-templates)
+under `src/journal/assets/templates/`. A bundle built from this source carries
+them into `assets/templates/` inside the installed Journal skill. Published
+draft6 does not contain them.
+
+Use the project's mapped local template when one exists; otherwise start from
+the bundled template for the requested record type. The Journal guide owns
+metadata, lifecycle, and use of templates. Keep project customizations outside
+the managed skill directory so skill updates can preserve local work.
+
 ## Development and older installations
 
 Direct `src/pls/` installation remains available for development. The old
@@ -280,22 +292,22 @@ From a clean, committed PLS checkout:
 
 ```bash
 python3 -m unittest discover -s tests -v
-python3 tools/build_release.py --version 0.3.0-draft.6
+python3 tools/build_release.py --version 0.3.0-draft.7
 ```
 
-The builder writes `releases/0.3.0-draft.6/pls.zip` and `pls.zip.sha256`, records
+The builder writes `releases/0.3.0-draft.7/pls.zip` and `pls.zip.sha256`, records
 the source commit, and refuses to overwrite an existing version output.
 `--output-dir` selects another build output location. Only the skill packages,
 installer, license, generated instructions, and release metadata are included.
 The same inputs produce the same ZIP bytes.
 
-For a future bundle, commit the source, build and verify it, then push the
-source and matching new tag. The draft6 example below is already published;
-use a new version for changed content:
+For candidate draft7, commit the source, build and verify it, then push the
+source and matching new tag. Draft6 remains the latest published release
+until draft7 publication is verified:
 
 ```bash
-git tag v0.3.0-draft.6
-git push origin v0.3.0-draft.6
+git tag v0.3.0-draft.7
+git push origin v0.3.0-draft.7
 ```
 
 The [release workflow](../.github/workflows/release.yml) runs the tests, builds
@@ -313,8 +325,9 @@ local-edit protection. Check the published release download after publication.
 The [Project Journal](journal.md) records current results and limitations.
 
 Draft6 is published and verified. See the [publication history](journal.md#draft6-publication-and-verification)
-for the evidence. Orca's live installations remain on draft5; no live upgrade
-was requested or performed. Native Windows remains untested.
+for the evidence. Orca subsequently upgraded all three skills to draft6.
+The template additions remain source changes pending publication. Native
+Windows remains untested.
 
 A working-draft bundle is not a stable PLS standard release. Stable promotion
 remains a separate human decision. Existing adopting projects do not migrate

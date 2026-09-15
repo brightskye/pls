@@ -11,6 +11,8 @@ Recordkeeping topic: [discussion](#disc-0001-project-recordkeeping),
 [separate Journal ownership](#dec-0007-separate-journal-from-layout-rules).
 Project-map configuration: [discussion](#disc-0002-project-map-defaults-and-locations)
 and [accepted direction](#dec-0008-provide-a-basic-configurable-project-map).
+Reusable Journal templates: [discussion](#disc-0003-reusable-journal-templates)
+and [decision](#dec-0009-ship-reusable-journal-templates).
 
 ## Current
 
@@ -34,9 +36,8 @@ The latest published bundle is
 The [publication history](#draft6-publication-and-verification) records its
 verification details. The standard remains the 0.3.0 working draft.
 
-Orca has verified draft5 installations of `pls`, `journal`, and
-`design-writing`, with latest-release selection retained. No live upgrade was
-requested or performed. Native Windows remains untested.
+Orca subsequently upgraded `pls`, `journal`, and `design-writing` to verified
+draft6, with latest-release selection retained. Native Windows remains untested.
 
 PLS keeps its existing `docs/journal.md`. Adopting projects follow their current
 maps; separately authorized migrations are independent of this extraction.
@@ -48,8 +49,16 @@ separate from the package change and remain unimplemented.
 project map with project-selected locations. The source now includes a
 [copyable map](../src/pls/assets/project-map.md), documentation-root and
 area-override rules, and explicit discovery from the root README. The
-published draft6 bundle carries those source changes; installed Orca skills and
-existing project or vault records remain unchanged.
+published draft6 bundle carries those source changes. Orca installed them
+through a separate requested upgrade; existing project and vault records were
+not moved by that upgrade.
+
+[DEC-0009](#dec-0009-ship-reusable-journal-templates) accepts reusable discussion,
+decision, and proposal templates owned by Journal. The templates and proposal
+rules passed package, standalone installation, upgrade, and document checks.
+The Owner authorized committing and publishing these changes as draft7.
+Draft6 remains the published and installed release until publication is
+verified; no live upgrade is included.
 
 ## Next
 
@@ -219,6 +228,40 @@ implementation uses the existing Markdown-map approach, with declared path
 bases; it does not add a parser or installer setting. The retained request is
 the available source, without a separate durable message locator. Publication,
 live skill upgrades, and moving existing records were not requested here.
+
+### DISC-0003: Reusable Journal templates
+
+```yaml
+id: DISC-0003
+kind: discussion
+title: Share reusable Journal templates across projects
+project: pls
+topics: [journal, templates, proposals]
+scope: Journal source assets and guide; no release or record migration
+status: closed
+occurred: 2026-09-15
+created: 2026-09-16
+updated: 2026-09-16
+sources:
+  - >-
+    Owner asked whether Orca Journal template.md files should be added to PLS,
+    then accepted the recommendation with do it
+```
+
+#### Entry 2026-09-15-01
+
+The Owner asked whether Orca's decision and proposal templates should be shared
+through PLS. The recommendation was to generalize them, add a discussion
+template, and ship all three with the Journal companion. Journal would define
+proposal metadata and lifecycle, own the rules, and provide templates as
+examples; projects could keep mapped local customizations. Existing records
+and IDs would stay unchanged when templates update.
+
+The Owner replied "do it", accepting that recommendation.
+[DEC-0009](#dec-0009-ship-reusable-journal-templates) owns the outcome. Keeping
+these assets in Journal follows its existing record-format ownership and
+makes them usable without Orca or the PLS layout skill. Release publication
+and live skill upgrades are separate follow-through.
 
 ## Decisions
 
@@ -510,6 +553,39 @@ configurable disposable-context direction in [DEC-0004](#dec-0004-allow-a-config
 No original decision or reason is replaced. Lifecycle: accepted on 2026-09-15
 through the user request in [DISC-0002](#disc-0002-project-map-defaults-and-locations).
 Current tracks verification and future distribution separately.
+
+### DEC-0009: Ship reusable Journal templates
+
+```yaml
+id: DEC-0009
+kind: decision
+title: Ship reusable discussion, decision, and proposal templates
+project: pls
+topics: [journal, templates, proposals]
+scope: Journal skill assets and record guide
+status: accepted
+occurred: 2026-09-15
+created: 2026-09-16
+updated: 2026-09-16
+sources:
+  - "journal.md#disc-0003-reusable-journal-templates"
+```
+
+Ship generalized decision and proposal templates, plus a discussion template,
+in `src/journal/assets/templates/`. The [Journal guide](../src/journal/references/journal.md#record-templates)
+owns their metadata, lifecycle, and use; templates are examples with project
+placeholders. Projects can use bundled defaults or a mapped local customization
+that follows the guide. Updating templates preserves existing records and IDs.
+
+This keeps record formats with the independent Journal companion under
+[DEC-0007](#dec-0007-separate-journal-from-layout-rules), making them reusable
+without an Orca checkout or a second rules owner in PLS layout. The proposal
+guide must explain review status, acceptance evidence, and promotion into
+owning documents separately from implementation progress.
+
+Lifecycle: accepted on 2026-09-15 by the Owner's "do it" in
+[DISC-0003](#disc-0003-reusable-journal-templates). The source work does not
+publish a release, upgrade installed skills, or migrate existing records.
 
 ### Earlier recorded decisions
 
@@ -882,3 +958,35 @@ skills were preserved. Local edits to the new map were protected.
 Orca's live `pls`, `journal`, and `design-writing` installations remain on
 draft5. No live upgrade was requested or performed. The standard remains the
 0.3.0 working draft; native Windows remains untested.
+
+### Draft6 live adoption follow-up
+
+After publication, the Owner requested "update orca's skill". Orca's managed
+`pls`, `journal`, and `design-writing` updaters installed draft6 from source
+`571c5cf1dfb2554de5aecb6ebdb200c36543aa03`. All payloads and receipt hashes
+matched the published bundle, all three skill validators passed, and the
+existing latest-release selection was retained. Earlier draft5 installation
+statements describe the state before this requested upgrade.
+
+### Reusable Journal templates verified
+
+On 2026-09-16, [DEC-0009](#dec-0009-ship-reusable-journal-templates) was applied
+to the Journal source. All 47 package tests, the Journal skill validator, and
+Markdown and local-link checks passed. A temporary verification bundle
+retained all three templates byte-for-byte in a standalone Journal install.
+Each copied source skill also resolved its local links without the repository
+or sibling skills.
+
+The actual draft6 Journal updater accepted the temporary bundle, preserving
+sibling skills, project-local templates, existing records, and latest-release
+selection. An edited managed template prevented an update and remained intact.
+No release was published, live skill upgraded, or Orca record migrated by this
+source change.
+
+### Draft7 release preparation authorization
+
+On 2026-09-16, the Owner requested "commit and publish" for the reviewed
+Journal templates and proposal rules. The next bundle is `0.3.0-draft.7`.
+This authorizes its source commit and publication; the PLS standard remains
+the 0.3.0 working draft. Orca's live skills remain on draft6. Publication and
+release verification are recorded separately when completed.
