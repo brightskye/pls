@@ -42,12 +42,12 @@ documentation, implementation, and adoption decisions.
 ## Distribution
 
 Download `pls.zip` from [GitHub Releases](https://github.com/brightskye/pls/releases).
-The upcoming `v0.3.0-draft.3` bundle described here is prepared but unpublished;
-the published `v0.3.0-draft.2` contains only the PLS skill.
+The published `v0.3.0-draft.3` bundle described here contains the PLS skill and
+the companion design-writing skill.
 
-The new complete bundle includes the PLS skill, the companion design-writing skill,
-their rules and guides, the Python installer, instructions, license, and release
-metadata. Extract it and run its `install.py` from the target project. The
+The complete bundle includes both skills, their rules and guides, the Python
+installer, instructions, license, and release metadata. Extract it and run its
+`install.py` from the target project. The
 shared Python installer selects one skill per operation: PLS is the default and
 `--skill design-writing` selects the companion. Each selected skill is kept with
 its own updater and receipt in `<skills_parent>/<skill>/`; install both with two
@@ -71,11 +71,10 @@ It supports human and agent readers, with Orca as an example, and works with
 the adopting project's documentation layout. The source is self-contained in
 `src/design-writing/`; it does not require the PLS skill or an Orca checkout.
 
-The planned `v0.3.0-draft.3` bundle includes this companion beside
+The published `v0.3.0-draft.3` bundle includes this companion beside
 `skills/pls/`. The shared installer selects one skill per operation, so a user
-who wants both runs two install commands. The companion does not change the
-PLS standard or its version. Draft3 preparation is pending commit and
-publication; the latest verified remote bundle remains draft2.
+who wants both runs two install commands. The two skills are independently
+selectable, and the companion does not change the PLS standard or its version.
 
 ## License
 
@@ -84,9 +83,9 @@ PLS is available under the [MIT License](LICENSE).
 ## Current state
 
 The structure-first PLS v0.3 text is a working draft. The published
-[`v0.3.0-draft.2`](https://github.com/brightskye/pls/releases/tag/v0.3.0-draft.2)
-bundle has a verified single-folder Python installation and updater. The
-`v0.3.0-draft.3` bundle is prepared for commit and publication with both
-selectable skills; it is not yet a live release. The standard covers the main
-project layout as well as its documentation and has not been promoted to a
-stable release.
+[`v0.3.0-draft.3`](https://github.com/brightskye/pls/releases/tag/v0.3.0-draft.3)
+bundle is the latest verified release and contains two independently
+selectable skills with their shared Python installer and per-skill updater.
+The standard remains the PLS 0.3.0 working draft and has not been promoted to
+a stable release. See the [Project Record](docs/project-record.md) for release
+verification and limitations.

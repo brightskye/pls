@@ -3,8 +3,8 @@
 ## Release bundle
 
 Use the complete `pls.zip` asset from [GitHub Releases](https://github.com/brightskye/pls/releases).
-The layout and companion commands below describe the prepared, unpublished
-`v0.3.0-draft.3` bundle. The published `v0.3.0-draft.2` contains only PLS.
+The layout and companion commands below describe the published
+`v0.3.0-draft.3` bundle, which contains two independently selectable skills.
 
 The new bundle contains:
 
@@ -33,11 +33,12 @@ standard remains a working draft. Bundle versions such as `0.3.0-draft.3`
 identify packaged revisions of that draft.
 
 The latest verified remote bundle,
-[`v0.3.0-draft.2`](https://github.com/brightskye/pls/releases/tag/v0.3.0-draft.2),
-is published and tested. The `v0.3.0-draft.3` bundle is prepared in this
-working tree and remains pending commit and publication. It will add the
-companion skill while preserving the PLS standard version. See the [Project
-Record](project-record.md) for verification results and limits.
+[`v0.3.0-draft.3`](https://github.com/brightskye/pls/releases/tag/v0.3.0-draft.3),
+is published and tested. Its shared Python installer selects one skill per
+operation, with PLS as the default and `--skill design-writing` selecting the
+companion; each selected skill has its own updater and receipt. The PLS
+standard remains the 0.3.0 working draft. See the [Project Record](project-record.md)
+for verification results and limits.
 
 ## Install with Python
 
@@ -261,7 +262,7 @@ Use the maintained installer and bundle tests, plus `git diff --check`.
 Before declaring a new bundle usable, extract it outside the checkout, install
 without network access, verify the installed bytes, and check updates and
 local-edit protection. Check the published release download after publication.
-The Project Record records current results and limitations.
+The [Project Record](project-record.md) records current results and limitations.
 
 A working-draft bundle is not a stable PLS standard release. Stable promotion
 remains a separate human decision. Existing adopting projects do not migrate

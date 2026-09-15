@@ -26,21 +26,17 @@ so a Git installer may copy that directory without relying on the repository
 parent or fetching rules at runtime.
 
 The latest verified remote bundle,
-[`v0.3.0-draft.2`](https://github.com/brightskye/pls/releases/tag/v0.3.0-draft.2),
-installs the skill, rules, updater, instructions, license, and release
-metadata together in `.agents/skills/pls/`. Its receipt tracks every installed
-file. The installed updater updates that same directory, including itself,
-from published GitHub bundles. The extracted download is no longer needed.
-Maintained sources remain in `src/pls/` and `tools/`; generated bundles use
-ignored `releases/<version>/` outputs and GitHub Releases for distribution.
-
-The planned `v0.3.0-draft.3` bundle adds the companion design-writing skill
-beside `skills/pls/`. Its shared Python installer selects one skill per
-operation, defaulting to `pls` and accepting `--skill design-writing`; each
-installed skill has its own updater and `.pls-install.json` receipt. Installing
-both skills therefore requires two commands. Draft3 preparation is pending
-commit and publication; it is not a live release, and the latest verified
-remote remains draft2.
+[`v0.3.0-draft.3`](https://github.com/brightskye/pls/releases/tag/v0.3.0-draft.3),
+contains the PLS and companion design-writing skills. Its shared Python
+installer selects one skill per operation, defaulting to `pls` and accepting
+`--skill design-writing`; each selected skill has its own updater and
+`.pls-install.json` receipt. Installing both skills therefore requires two
+commands. The installed updater updates the selected skill directory,
+including itself, from published GitHub bundles. The extracted download is no
+longer needed. Maintained skills remain in `src/pls/` and
+`src/design-writing/`, with installer and builder sources in `tools/`. Generated
+bundles use ignored `releases/<version>/` outputs and GitHub Releases for
+distribution. The standard remains the PLS 0.3.0 working draft.
 
 The published draft2's 30 installer and builder tests passed locally and in the
 GitHub release workflow. These include migration of old receipts, self-update
@@ -77,18 +73,22 @@ A companion [design-writing skill](../src/design-writing/SKILL.md) and
 maintained in `src/design-writing/`. They cover system views, use cases,
 operating behavior, readable prose and diagrams, and implementation readiness.
 The guide remains a draft for review and uses Orca as an example. The package
-is self-contained and independent of the PLS skill. Draft3 preparation adds it
-to the release bundle as a separately selectable skill. It has not been
-published or installed in live projects. Orca keeps a local copy of the guide
-for its readers.
+is self-contained and independent of the PLS skill. The published draft3
+bundle includes it as a separately selectable skill. Draft3 publication did
+not upgrade or install any live adopting project. Orca keeps a local copy of
+the guide for its readers.
 
-All 39 draft3 installer and builder tests passed locally, and both skill
-packages passed the skill validator. A temporary candidate bundle passed
-offline installation, byte and checksum checks, independent updates from an
-unrelated directory, and migration using the published draft2 updater.
-The final artifact must still be built from committed source, published, and
-verified through its release download. Checks ran on Linux/WSL; native Windows
-remains untested.
+All 39 draft3 installer and builder tests passed locally and in the GitHub
+release workflow, and both skill packages passed the skill validator. The
+published ZIP matched the committed local build byte for byte and passed its
+checksum. Separate temporary installations matched the bundled skill files
+and receipt hashes. After the extracted installer was moved away, both
+installed updaters passed real GitHub updates from an unrelated directory,
+with correct skill identity and no changes to the sibling. A locally edited
+companion was correctly rejected. Migration using the published draft2
+updater also passed during candidate verification. No live adopter
+installation was upgraded. Checks ran on Linux/WSL; native Windows remains
+untested.
 
 ## Next
 
@@ -253,6 +253,17 @@ Later on 2026-09-15, draft3 preparation was approved to include both
 `skills/pls/` and `skills/design-writing/` in one release bundle. The shared
 Python installer selects one skill per operation, with PLS as the default and
 the companion selected explicitly; each installed skill owns its updater and
-receipt. The draft3 release remains pending commit and publication, and the
-latest verified remote remains draft2. No live adoption or install was made by
-this preparation.
+receipt. At that point, commit and publication were pending, and the latest
+verified remote was draft2. No live adoption or install was made by this
+preparation.
+
+Later on 2026-09-15, commit
+[da0f5eaf613d55bbc9a1b8800e1de61b13ae96ee](https://github.com/brightskye/pls/commit/da0f5eaf613d55bbc9a1b8800e1de61b13ae96ee)
+was published as `v0.3.0-draft.3`. Its [GitHub Actions release workflow](https://github.com/brightskye/pls/actions/runs/34945194130)
+completed successfully. The bundle contains two independently selectable
+skills. All 39 installer and builder tests passed, both skill packages passed
+the skill validator, and the published ZIP matched the committed local build.
+Temporary offline installation, online updates, and local-edit protection
+passed. No live adopter installation was upgraded. The standard remains the
+PLS 0.3.0 working draft; checks ran on Linux/WSL and native Windows remains
+untested.
