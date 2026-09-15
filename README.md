@@ -25,10 +25,21 @@ design-writing for precise system designs. Each skill works with its own
 bundled guide. Adopting projects own their documents, implementation, storage
 locations, and adoption decisions.
 
+## Configure your project's locations
+
+The project map normally lives under `## Project map` in your project's root
+`README.md`. Start with the [basic project map](src/pls/assets/project-map.md),
+then set its documentation root and any area-specific overrides. Documents can
+stay with the project or use a selected vault directory; each area keeps one
+owning location. The [location rules](src/pls/references/PLS.md#42-configure-locations)
+explain path bases, existing maps, and migrations. This repository's own map
+is below.
+
 ## Project map
 
 | Question | Location |
 |---|---|
+| Where is the copyable basic project map? | [Basic project map](src/pls/assets/project-map.md) |
 | What rules does PLS define? | [PLS](src/pls/references/PLS.md) |
 | How are discussions, decisions, and changed decisions saved and retrieved? | [Project Journal standard](src/journal/references/journal.md) |
 | What project-specific rules must agents follow here? | [Agent instructions](AGENTS.md) |
@@ -92,6 +103,8 @@ versioned copy while keeping its integration rules in configured vault
 locations. Agent adapters follow the selected system's interface.
 
 Draft5 is published and verified, and Orca has adopted all three skills.
+The basic-map template and clarified location rules are newer source changes;
+they are not included in draft5 or Orca's installed copy yet.
 [Current](docs/journal.md#current) records the verification and adoption state;
 [release history](docs/journal.md#draft5-publication-and-live-adoption)
 retains the source commit and publication evidence. Runtime integration and

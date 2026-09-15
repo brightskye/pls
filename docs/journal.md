@@ -9,6 +9,8 @@ Recordkeeping topic: [discussion](#disc-0001-project-recordkeeping),
 [disposable context location](#dec-0004-allow-a-configured-disposable-context-location), and
 [working rules](../src/journal/references/journal.md), and
 [separate Journal ownership](#dec-0007-separate-journal-from-layout-rules).
+Project-map configuration: [discussion](#disc-0002-project-map-defaults-and-locations)
+and [accepted direction](#dec-0008-provide-a-basic-configurable-project-map).
 
 ## Current
 
@@ -29,15 +31,16 @@ guide and keep local execution rules in configurable vault locations.
 
 The latest published bundle is
 [`v0.3.0-draft.5`](https://github.com/brightskye/pls/releases/tag/v0.3.0-draft.5).
-All 47 package tests, three skill validators, document checks, independent
-Journal behavior trials, and actual draft4 migration checks passed. The
-published assets match the clean source build. [Release history](#draft5-publication-and-live-adoption)
-records the source commit, workflow, checksum, and verification details.
+The [release history](#draft5-publication-and-live-adoption) records its
+source commit, workflow, checksum, and verification details. Candidate draft6
+preparation is authorized for the basic project-map changes. All 47 package
+tests and three skill validators pass; build and publication checks remain
+pending.
 
 Orca has verified draft5 installations of `pls`, `journal`, and
-`design-writing`, with latest-release selection retained. No Runtime or vault
-behavior changed. The standard remains the 0.3.0 working draft; native Windows
-remains untested.
+`design-writing`, with latest-release selection retained. No live upgrade was
+requested for this candidate. The standard remains the 0.3.0 working draft;
+native Windows remains untested.
 
 PLS keeps its existing `docs/journal.md`. Adopting projects follow their current
 maps; separately authorized migrations are independent of this extraction.
@@ -45,8 +48,17 @@ Extraction preserves existing record IDs, dates, accepted choices, and
 reasons. Vault copying, Runtime integration, and record migration are
 separate from the package change and remain unimplemented.
 
+[DEC-0008](#dec-0008-provide-a-basic-configurable-project-map) accepts a basic
+project map with project-selected locations. The source now includes a
+[copyable map](../src/pls/assets/project-map.md), documentation-root and
+area-override rules, and explicit discovery from the root README. The
+candidate release carries those source changes; published draft5, installed
+Orca skills, and existing project or vault records remain unchanged.
+
 ## Next
 
+- Complete draft6 verification and publication. Orca's live installations
+  remain on draft5 until an upgrade is requested.
 - Migrate other projects' `project-record` locations and update installed
   skills only when those separate actions are requested.
 - Review whether any real project needs an explicitly mapped alternative to a
@@ -183,6 +195,36 @@ Outcome: [DEC-0007](#dec-0007-separate-journal-from-layout-rules). Existing
 shared record semantics remain; package ownership and execution routing are
 clarified. This does not authorize silent vault migration or weaker acceptance
 and history rules.
+
+### DISC-0002: Project map defaults and locations
+
+```yaml
+id: DISC-0002
+kind: discussion
+title: Make the project map discoverable and configurable
+project: pls
+topics: [project-layout, project-map, documentation-location]
+scope: Shared default map and project-selected locations; no record migration
+status: open
+occurred: 2026-09-15
+created: 2026-09-15
+updated: 2026-09-15
+sources: ["Retained user instructions below"]
+```
+
+The user asked whether folders could be configured so documents live in the
+project or a vault. The assistant described the existing root-README project
+map and proposed a documentation root with individual area overrides. The user
+then said: "I don't see where the project maps is located, we should have a
+default /basic project map while each project that uses pls can configure
+their own desired location if required".
+
+Outcome: [DEC-0008](#dec-0008-provide-a-basic-configurable-project-map). The
+request accepts a findable default map and project-controlled locations. The
+implementation uses the existing Markdown-map approach, with declared path
+bases; it does not add a parser or installer setting. The retained request is
+the available source, without a separate durable message locator. Publication,
+live skill upgrades, and moving existing records were not requested here.
 
 ## Decisions
 
@@ -439,6 +481,41 @@ Lifecycle: accepted on 2026-09-15 through the proposal and confirmation in
 [DISC-0001](#entry-2026-09-15-05). This partially amends DEC-0001's rule ownership,
 not its accepted history-preservation goal. Current tracks package verification,
 release, and adoption independently of future Runtime or vault integration.
+
+### DEC-0008: Provide a basic configurable project map
+
+```yaml
+id: DEC-0008
+kind: decision
+title: Provide a default project map with project-specific location overrides
+project: pls
+topics: [project-layout, project-map, documentation-location]
+scope: Shared map template, discovery, and location selection
+status: accepted
+occurred: 2026-09-15
+created: 2026-09-15
+updated: 2026-09-15
+sources: ["journal.md#disc-0002-project-map-defaults-and-locations"]
+```
+
+Provide a basic project map that adopting projects can use without inventing
+one. The root README makes the owning map directly discoverable. Each project
+can select its documentation root and override individual areas, including
+explicit vault destinations. Defaults provide a starting point; existing
+mapped owners remain authoritative until an authorized change is completed.
+
+This addresses the user's difficulty finding the map and makes location
+choices clear for humans and agents. The [PLS location rules](../src/pls/references/PLS.md#42-configure-locations)
+and [basic map](../src/pls/assets/project-map.md) define the resulting source
+behavior. Markdown declarations remain readable without a parser or another
+installed skill. Existing question-based maps remain valid. A location change
+retains access and managed-saving boundaries and does not itself move records.
+
+This extends the map convention to all project areas while preserving the
+configurable disposable-context direction in [DEC-0004](#dec-0004-allow-a-configured-disposable-context-location).
+No original decision or reason is replaced. Lifecycle: accepted on 2026-09-15
+through the user request in [DISC-0002](#disc-0002-project-map-defaults-and-locations).
+Current tracks verification and future distribution separately.
 
 ### Earlier recorded decisions
 
@@ -762,3 +839,31 @@ published bundle, and all three managed payloads and receipt hashes matched
 the release with `release_ref: latest`. No Orca Runtime implementation or
 vault changes were made. The standard remains the 0.3.0 working draft, and
 native Windows remains untested.
+
+### Basic project map and configurable locations
+
+On 2026-09-15, [DEC-0008](#dec-0008-provide-a-basic-configurable-project-map)
+was implemented in the PLS source. The package gained a copyable basic map;
+the standard and skill now explain its discovery, documentation-root defaults,
+per-area overrides, and handling of existing maps and pending moves. README
+and Operations link directly to the template and distinguish document
+locations from installer `--dest`. All 47 existing package tests, the PLS
+skill validator, Markdown and local-link checks passed. A temporary bundle and
+standalone install retained the template without requiring sibling skills.
+A separate review identified an undefined configuration-binding option; the
+source now limits map values to literal paths. Published draft5, live skill
+installations, and existing project/vault records are unchanged by this source
+update.
+
+### Draft6 release preparation authorization
+
+On 2026-09-15, the Owner said "commit and publish" for the existing basic
+project-map changes. The next bundle version is `0.3.0-draft.6`. The candidate carries
+the copyable `skills/pls/assets/project-map.md` asset and the clarified
+location rules; the 0.3.0 standard remains a working draft.
+
+The latest published bundle remains draft5 until draft6 publication is
+verified. Orca's live `pls`, `journal`, and `design-writing` skills remain on
+draft5 because no live upgrade was requested. Candidate commit, build,
+publication, and independent release verification are recorded separately as
+they complete; this authorization does not claim those results.

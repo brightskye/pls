@@ -3,10 +3,10 @@
 ## Release bundle
 
 Use the complete `pls.zip` asset from [GitHub Releases](https://github.com/brightskye/pls/releases).
-The layout below describes the published `0.3.0-draft.5` bundle. It contains
-three independently selectable skills. The preceding draft4 release has two
-skills with Journal rules inside PLS; the standalone Journal skill requires
-draft5 or later.
+The published `0.3.0-draft.5` bundle contains three independently selectable
+skills. The preceding draft4 release has two skills with Journal rules inside
+PLS; the standalone Journal skill requires draft5 or later. Candidate draft6
+adds the copyable project map to the PLS skill; its layout is shown below.
 
 ```text
 pls/
@@ -17,6 +17,7 @@ pls/
   skills/pls/
     SKILL.md
     references/PLS.md
+    assets/project-map.md
   skills/journal/
     SKILL.md
     references/journal.md
@@ -73,7 +74,7 @@ route:
 From draft5, PLS contains `references/PLS.md`, Journal contains
 `references/journal.md`, and design-writing contains
 `references/design-writing.md` and its agent metadata. Each guide is maintained
-with its owning skill.
+with its owning skill. PLS adds `assets/project-map.md` in candidate draft6.
 
 For a different location, pass `--dest` with the parent skills directory; the
 installer creates or updates its `<skill>/` child there. Use `--skill` to choose
@@ -201,6 +202,20 @@ To use a newer release, preserve local edits and rerun `add` with the new
 release asset URL. Use Python when release tracking and a dedicated update
 command are wanted.
 
+## Set up a project map
+
+The project's root README is the discovery point. The current source includes
+a [basic map](../src/pls/assets/project-map.md) to copy into its `Project map`
+section. Set the documentation root and override individual areas as needed.
+The [location rules](../src/pls/references/PLS.md#42-configure-locations) define
+how to interpret those paths, including vault locations.
+
+This map is project content interpreted by readers and agents. Installer
+`--dest` controls where the skill is installed; it does not configure where
+that project keeps its documents. The template and clarified rules are part of
+candidate draft6. Draft5 does not contain them; existing installations retain
+their selected version until explicitly upgraded.
+
 ## Use the installed skill
 
 From draft5, each of `pls`, `journal`, and `design-writing` has its own
@@ -264,21 +279,22 @@ From a clean, committed PLS checkout:
 
 ```bash
 python3 -m unittest discover -s tests -v
-python3 tools/build_release.py --version 0.3.0-draft.5
+python3 tools/build_release.py --version 0.3.0-draft.6
 ```
 
-The builder writes `releases/0.3.0-draft.5/pls.zip` and `pls.zip.sha256`, records
+The builder writes `releases/0.3.0-draft.6/pls.zip` and `pls.zip.sha256`, records
 the source commit, and refuses to overwrite an existing version output.
 `--output-dir` selects another build output location. Only the skill packages,
 installer, license, generated instructions, and release metadata are included.
 The same inputs produce the same ZIP bytes.
 
-For a future bundle, commit and push the desired source, then publish a matching
-new tag. The draft5 tag below is already published:
+For candidate draft6, commit the source, build and verify the bundle, then
+push the source and matching new tag. Draft5 remains the latest published
+release until draft6 publication is verified:
 
 ```bash
-git tag v0.3.0-draft.5
-git push origin v0.3.0-draft.5
+git tag v0.3.0-draft.6
+git push origin v0.3.0-draft.6
 ```
 
 The [release workflow](../.github/workflows/release.yml) runs the tests, builds
@@ -295,9 +311,10 @@ without network access, verify the installed bytes, and check updates and
 local-edit protection. Check the published release download after publication.
 The [Project Journal](journal.md) records current results and limitations.
 
-Draft5 is published and verified. Its [release history](journal.md#draft5-publication-and-live-adoption)
-records the source commit, workflow, checksum, package and migration checks,
-and Orca adoption. Native Windows remains untested.
+Draft5 is published and verified. Candidate draft6 contains the basic project
+map and clarified location rules; publication checks remain pending. The
+[Project Journal](journal.md) records release preparation and the draft5 live
+Orca installations. Native Windows remains untested.
 
 A working-draft bundle is not a stable PLS standard release. Stable promotion
 remains a separate human decision. Existing adopting projects do not migrate

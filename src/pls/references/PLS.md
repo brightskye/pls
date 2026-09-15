@@ -81,23 +81,74 @@ The `README.md` MUST explain:
 When details make the README difficult to use, the project MAY move them into
 linked documents. The README MUST retain a short summary and direct links.
 
-The project map SHOULD be in the root README. A large project MAY keep a more
-detailed map in `docs/README.md` when the root README links to it directly.
+### 4.1 Find or create the project map
 
-The map can be a short list or table:
+The project map SHOULD be the `Project map` section in the root `README.md`.
+A project MAY keep its map in another file, including an external vault, when
+that section links directly to the owning map. Keep one owning location map;
+other indexes link to it and the documents it identifies.
+
+PLS supplies a [basic project map](../assets/project-map.md). Copy it into the
+root README when setting up a new project, or use it to fill an explicitly
+requested gap in an existing map. Adjust the heading level to fit the README.
+Keep only useful areas and replace defaults with existing owners or the user's
+chosen paths. Existing question-based maps remain valid; adopting this
+revision does not require replacing them.
+
+### 4.2 Configure locations
+
+The project map owns location configuration. A separate configuration file or
+path-resolution program is not required. A project MAY map each area to its
+chosen folder or document, subject to its tool conventions and access rules.
+The root README remains at the project root.
+
+The basic map declares a **documentation root**, defaulting to `docs/` under
+the project root, and gives each area a **Base** and **Location**. `Project`
+uses the project root, `Documentation` uses the declared documentation root,
+and `Absolute` uses the complete path as written. These meanings travel with
+the copied map so readers need no installed PLS skill to interpret it.
+
+For example, change only the documentation-root declaration to use `handbook/`,
+`.` for documents directly in the project root, or an explicitly selected
+absolute vault directory such as `/vault/Projects/Sprout/Docs/`. Rows based on
+`Documentation` follow that root; rows based on `Project` remain with the code.
+An area-specific override can keep the Journal in the project:
 
 ```markdown
-Project layout standard: PLS 0.3
-
-## Project map
-
-| Question | Location |
-|---|---|
-| What is current and next? | [Project Journal](docs/journal.md) |
-| Where is the product implemented? | `src/` |
-| Where are repeatable checks? | `tests/` |
-| Where are complete versioned packages? | `releases/<version>/` |
+| Area | Base | Location |
+|---|---|---|
+| Project Journal | Project | `notes/journal.md` |
 ```
+
+Alternatively, that row can use `Absolute` with the full path to a separate
+vault Journal. A directory-based area maps its actual entry point, such as
+`journal/README.md`, instead of the single-file default `journal.md`.
+
+Resolve locations in this order:
+
+1. Use the area's explicit mapping. A literal path follows its stated base;
+   without a base, a relative path starts at the project root. Markdown links
+   always resolve from the containing file, regardless of the map's path bases.
+   Navigation links MUST point to the same resolved owner as the mapping.
+2. For an unmapped documentation area, use its standard default beneath the
+   declared documentation root; when that root is undeclared, use `docs/`.
+3. For other unmapped areas, use the standard project-root default or the
+   location required by the project's tools.
+
+Before creating an unmapped area, inspect the relevant existing owners and
+resolve a conflicting or unclear mapping. Create needed paths only within the
+authorized task. If a configured location cannot be accessed or established,
+report the problem instead of silently saving in the default folder.
+Selecting a path does not grant external access or change a managed system's
+saving interface. Use that system's declared interface when it owns the data.
+Root and location values are literal filesystem paths valid for the selected
+host; resolve placeholders before adopting the map.
+
+Changing the map changes intended placement. Existing content moves only as
+part of an authorized migration, with links and owners updated together. A
+map update alone MUST NOT be reported as a completed move. Preserve the prior
+owner until the move completes; record the target and pending migration
+separately. Defaults never replace an existing authoritative record.
 
 A project claiming that it follows PLS v0.3 MUST state that in the README. No
 separate profile, module list, or declaration is required.
@@ -295,8 +346,9 @@ For example, a project's map can declare:
 | Disposable working context and session handoffs | `.scratch/context/` |
 ```
 
-Paths are relative to the project root unless explicitly declared absolute.
-Use the declared path; when none is declared, use `.local/agent-note/`.
+Resolve this path using the project map's [location rules](#42-configure-locations).
+Without an override, use `.local/agent-note/` under the project root; changing
+the documentation root does not move disposable context.
 Conflicting declarations MUST be reconciled before saving to a guessed
 location. PLS requires no separate configuration file or runtime setting.
 
@@ -477,7 +529,8 @@ supporting artifact, an agent MUST:
 
 1. read the root README and any agent instruction file used by the project;
 2. identify the purpose of the material;
-3. use the project map to find the existing location or owner;
+3. use the project map and its [location rules](#42-configure-locations) to
+   find the existing owner;
 4. follow a location required or normally used by the project's tools when one
    exists;
 5. update the existing location instead of creating a duplicate;

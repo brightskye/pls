@@ -249,6 +249,13 @@ history. Each skill's bundled references own its rules. Disposable working
 context uses the location declared in the project map, with
 `.local/agent-note/` as the default; durable records belong in the Journal.
 The design-writing skill creates and reviews precise system design documents.
+
+PLS includes a basic project map at `assets/project-map.md` inside its installed
+skill folder. Copy it into the project's root README or link the owning map
+from there. The documentation root and individual area overrides select where
+project documents belong, including explicit vault locations. The bundled PLS
+guide defines path resolution. Installer `--dest` selects the skill folder;
+it does not configure project document locations or move existing records.
 """
     return text.encode("utf-8")
 

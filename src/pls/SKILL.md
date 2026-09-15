@@ -17,6 +17,12 @@ installed Journal companion for discussion and decision records. That
 companion follows the project's mapped entry point, including an existing
 `project-record` location, until a migration is requested.
 
+For project-map setup or location changes, use the standard's
+[map and location rules](references/PLS.md#41-find-or-create-the-project-map)
+and the [basic project map](assets/project-map.md). Resolve declared roots and
+area overrides before selecting a destination. Keep existing maps and owners
+unless the requested task changes them.
+
 For disposable working context or session handoffs, follow the standard's
 [location and lifecycle rules](references/PLS.md#disposable-working-context-and-session-handoffs).
 Resolve the project's declared location before using the default

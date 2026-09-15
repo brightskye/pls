@@ -28,6 +28,10 @@ jobs:
           The Journal skill includes retrievable discussion and decision
           history and selective reading. PLS owns configurable disposable
           context placement.
+          PLS also includes a copyable basic project map at assets/project-map.md
+          inside its skill folder. Configure a documentation root and individual
+          area overrides for project or vault locations. Existing mapped owners
+          remain authoritative until an authorized migration is completed.
           Download pls.zip and extract it. From the target project, use Python 3.10 or newer:
 
           - `python3 /path/to/pls/install.py install` installs only the PLS layout skill.
