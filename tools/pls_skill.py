@@ -6,7 +6,8 @@ contains the skill, rules, installer, and release information. Run its installed
 install.py to update that same directory from published release bundles.
 --bundle selects an offline bundle and --release pins a published release.
 --ref retains the development-only Git source route. Local edits are preserved.
---skill design-writing selects the companion skill in its own managed folder.
+--skill journal or design-writing selects an independently managed companion
+skill in its own folder.
 """
 
 from __future__ import annotations
@@ -28,7 +29,11 @@ import zipfile
 
 REPOSITORY = "brightskye/pls"
 SKILL_PATH = "src/pls"
-SKILLS = {"pls": "references/PLS.md", "design-writing": "references/design-writing.md"}
+SKILLS = {
+    "pls": "references/PLS.md",
+    "journal": "references/journal.md",
+    "design-writing": "references/design-writing.md",
+}
 RECEIPT = ".pls-install.json"
 MAX_DOWNLOAD = 20 * 1024 * 1024
 BUNDLE_FILES = ("release.json", "install.py", "README.md", "LICENSE")
@@ -40,7 +45,7 @@ class InstallError(Exception):
 
 def required_reference(skill: str) -> str:
     if not isinstance(skill, str) or skill not in SKILLS:
-        raise InstallError("Choose a supported skill: pls or design-writing.")
+        raise InstallError("Choose a supported skill: pls, journal, or design-writing.")
     return SKILLS[skill]
 
 

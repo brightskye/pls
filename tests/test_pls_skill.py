@@ -32,8 +32,11 @@ def archive(files):
     return data.getvalue()
 
 
-def release_archive(payload, version="0.3.0-draft.1", commit=FIRST, script=None, companion=None):
+def release_archive(payload, version="0.3.0-draft.1", commit=FIRST, script=None,
+                    companion=None, journal=None):
     files = {"pls/skills/pls/" + name: data for name, data in payload.items()}
+    if journal is not None:
+        files.update({"pls/skills/journal/" + name: data for name, data in journal.items()})
     if companion is not None:
         files.update({"pls/skills/design-writing/" + name: data for name, data in companion.items()})
     files.update({"pls/install.py": script or (ROOT / "tools" / "pls_skill.py").read_bytes(), "pls/README.md": b"Instructions",
@@ -53,16 +56,20 @@ class InstallerTests(unittest.TestCase):
         self.payload = {
             "SKILL.md": (ROOT / "src" / "pls" / "SKILL.md").read_bytes(),
             "references/PLS.md": (ROOT / "src" / "pls" / "references" / "PLS.md").read_bytes(),
-            "references/journal.md": (ROOT / "src" / "pls" / "references" / "journal.md").read_bytes(),
         }
+        journal_root = ROOT / "src" / "journal"
+        self.journal = {path.relative_to(journal_root).as_posix(): path.read_bytes()
+                        for path in journal_root.rglob("*") if path.is_file()}
+        self.legacy_journal = {"references/journal.md": b"# Legacy Project Journal\n"}
         companion_root = ROOT / "src" / "design-writing"
         self.companion = {path.relative_to(companion_root).as_posix(): path.read_bytes()
                           for path in companion_root.rglob("*") if path.is_file()}
 
-    def run_install(self, action="install", ref=None, commit=FIRST, payload=None):
+    def run_install(self, action="install", ref=None, commit=FIRST, payload=None,
+                    skill="pls", bundle=None):
         with patch.object(installer, "fetch_skill", return_value=(commit, payload or self.payload)) as fetch:
-            message = installer.install(action, self.skills, ref)
-        return message, fetch.call_args.args[0]
+            message = installer.install(action, self.skills, ref, bundle=bundle, skill=skill)
+        return message, fetch.call_args.args[0] if fetch.call_args else None
 
     def receipt(self):
         return json.loads((self.destination / installer.RECEIPT).read_text())
@@ -289,7 +296,8 @@ class InstallerTests(unittest.TestCase):
 
     def test_combined_zip_and_directory_install_only_the_selected_skill(self):
         bundle = self.project / "combined.zip"
-        bundle.write_bytes(release_archive(self.payload, companion=self.companion))
+        bundle.write_bytes(release_archive(self.payload, companion=self.companion,
+                                           journal=self.journal))
         extracted = self.project / "extracted"
         with zipfile.ZipFile(bundle) as archive_file:
             archive_file.extractall(extracted)
@@ -299,8 +307,10 @@ class InstallerTests(unittest.TestCase):
                 installer.install("install", skills, bundle=source)
                 before = (skills / "pls" / installer.RECEIPT).read_bytes()
                 installer.install("install", skills, bundle=source, skill="design-writing")
+                installer.install("install", skills, bundle=source, skill="journal")
                 self.assertEqual((skills / "pls" / installer.RECEIPT).read_bytes(), before)
-                for name, payload in (("pls", self.payload), ("design-writing", self.companion)):
+                for name, payload in (("pls", self.payload), ("journal", self.journal),
+                                      ("design-writing", self.companion)):
                     expected = installer.read_bundle(bundle.read_bytes(), name)[1]
                     self.assertEqual(installer.installed_files(skills / name), expected)
                     receipt = json.loads((skills / name / installer.RECEIPT).read_text())
@@ -309,14 +319,106 @@ class InstallerTests(unittest.TestCase):
                     self.assertTrue(all((skills / name / path).read_bytes() == data
                                         for path, data in payload.items()))
 
+    def test_journal_install_update_and_self_update(self):
+        bundle = self.project / "combined.zip"
+        bundle.write_bytes(release_archive(self.payload, journal=self.journal))
+        installer.install("install", self.skills, bundle=bundle, skill="journal")
+        destination = self.skills / "journal"
+        self.assertFalse(self.destination.exists())
+        managed = installer.installed_files(destination)
+        self.assertEqual(set(managed), set(self.journal) |
+                         {"install.py", "README.md", "LICENSE", "release.json"})
+        for name, data in self.journal.items():
+            self.assertEqual(managed[name], data)
+        self.assertEqual(managed["install.py"],
+                         (ROOT / "tools" / "pls_skill.py").read_bytes())
+        self.assertEqual(managed["README.md"], b"Instructions")
+        self.assertEqual(managed["LICENSE"], b"MIT")
+        old_guide = destination / "references/journal.md"
+        local_guide = old_guide.read_bytes() + b"\nLocal edit.\n"
+        old_guide.write_bytes(local_guide)
+        with self.assertRaisesRegex(installer.InstallError, "local changes"):
+            installer.install("update", self.skills, bundle=bundle, skill="journal")
+        self.assertEqual(old_guide.read_bytes(), local_guide)
+        old_guide.write_bytes(self.journal["references/journal.md"])
+
+        changed = {name: data + b"\nUpdated Journal.\n" for name, data in self.journal.items()}
+        script = destination / "install.py"
+        updated_script = script.read_bytes() + b"\n# Updated Journal installer.\n"
+        update = self.project / "update.zip"
+        update.write_bytes(release_archive(self.payload, "0.3.0-draft.5", SECOND,
+                                           updated_script, journal=changed))
+        unrelated = self.project / "unrelated"
+        with patch.object(Path, "cwd", return_value=unrelated):
+            with patch.object(sys, "argv", [str(script), "update", "--bundle", str(update)]):
+                with contextlib.redirect_stdout(io.StringIO()):
+                    with self.assertRaises(SystemExit) as result:
+                        runpy.run_path(str(script), run_name="__main__")
+        self.assertEqual(result.exception.code, 0)
+        self.assertEqual((destination / "references/journal.md").read_bytes(),
+                         changed["references/journal.md"])
+        self.assertEqual(script.read_bytes(), updated_script)
+        self.assertEqual(json.loads((destination / installer.RECEIPT).read_text())["skill"],
+                         "journal")
+        self.assertFalse(unrelated.exists())
+
+    def test_journal_selection_rejects_old_bundle_without_changing_siblings(self):
+        legacy = {**self.payload, **self.legacy_journal}
+        old_bundle = self.project / "old.zip"
+        old_bundle.write_bytes(release_archive(legacy, companion=self.companion))
+        installer.install("install", self.skills, bundle=old_bundle)
+        before = installer.installed_files(self.destination)
+        with self.assertRaisesRegex(installer.InstallError, "complete"):
+            installer.install("install", self.skills, bundle=old_bundle, skill="journal")
+        self.assertEqual(installer.installed_files(self.destination), before)
+        self.assertFalse((self.skills / "journal").exists())
+
+        incomplete = release_archive(self.payload, journal={"SKILL.md": self.journal["SKILL.md"]})
+        with self.assertRaisesRegex(installer.InstallError, "complete"):
+            installer.read_bundle(incomplete, "journal")
+
+    def test_update_removes_old_bundled_journal_only_when_unedited(self):
+        current_script = (ROOT / "tools" / "pls_skill.py").read_bytes()
+        legacy = {**self.payload, **self.legacy_journal}
+        old_bundle = self.project / "draft4.zip"
+        old_bundle.write_bytes(release_archive(legacy, "0.3.0-draft.4", FIRST,
+                                               companion=self.companion))
+        installer.install("install", self.skills, bundle=old_bundle)
+
+        new_bundle = self.project / "draft5.zip"
+        new_bundle.write_bytes(release_archive(self.payload, "0.3.0-draft.5", SECOND,
+                                               journal=self.journal, companion=self.companion))
+        old_guide = self.destination / "references/journal.md"
+        local_guide = old_guide.read_bytes() + b"\nLocal edit.\n"
+        old_guide.write_bytes(local_guide)
+        with self.assertRaisesRegex(installer.InstallError, "local changes"):
+            installer.install("update", self.skills, bundle=new_bundle)
+        self.assertEqual(old_guide.read_bytes(), local_guide)
+        old_guide.write_bytes(self.legacy_journal["references/journal.md"])
+        installer.install("update", self.skills, bundle=new_bundle)
+        self.assertEqual(installer.installed_files(self.destination), {
+            **self.payload,
+            "install.py": current_script,
+            "README.md": b"Instructions",
+            "LICENSE": b"MIT",
+            "release.json": json.dumps({
+                "format": 1, "repository": installer.REPOSITORY,
+                "version": "0.3.0-draft.5", "commit": SECOND}).encode(),
+        })
+        self.assertFalse((self.destination / "references/journal.md").exists())
+        self.assertEqual(json.loads((self.destination / installer.RECEIPT).read_text())["commit"],
+                         SECOND)
+
     def test_companion_installed_updater_uses_own_identity_and_destination(self):
         bundle = self.project / "combined.zip"
-        bundle.write_bytes(release_archive(self.payload, companion=self.companion))
-        for skill in ("pls", "design-writing"):
+        bundle.write_bytes(release_archive(self.payload, companion=self.companion,
+                                           journal=self.journal))
+        for skill in ("pls", "journal", "design-writing"):
             installer.install("install", self.skills, bundle=bundle, skill=skill)
         companion = self.skills / "design-writing"
         script = companion / "install.py"
         sibling = installer.installed_files(self.destination)
+        journal_sibling = installer.installed_files(self.skills / "journal")
         sibling_receipt = (self.destination / installer.RECEIPT).read_bytes()
         other_skills = self.project / "other-skills"
         installer.install("install", other_skills, bundle=bundle, skill="design-writing")
@@ -341,9 +443,11 @@ class InstallerTests(unittest.TestCase):
                                                  "--bundle", str(update)]), 0)
         self.assertEqual(json.loads((other_skills / "design-writing" / installer.RECEIPT).read_text())["commit"], SECOND)
         self.assertEqual(installer.installed_files(self.destination), sibling)
+        self.assertEqual(installer.installed_files(self.skills / "journal"), journal_sibling)
         self.assertEqual((self.destination / installer.RECEIPT).read_bytes(), sibling_receipt)
         self.assertFalse(unrelated.exists())
-        self.assertEqual(set(path.name for path in self.skills.iterdir()), {"pls", "design-writing"})
+        self.assertEqual(set(path.name for path in self.skills.iterdir()),
+                         {"pls", "journal", "design-writing"})
 
     def test_companion_broken_receipt_cannot_redirect_update_to_pls(self):
         bundle = self.project / "combined.zip"
@@ -410,6 +514,25 @@ class InstallerTests(unittest.TestCase):
             installer.install("update", self.skills, bundle=bundle, skill="design-writing")
         self.assertEqual((destination / "references/design-writing.md").read_bytes(),
                          before + b"\nLocal edit\n")
+
+    def test_journal_source_fetch_and_explicit_cli_install(self):
+        files = {"pls-sha/src/journal/" + name: data for name, data in self.journal.items()}
+        files.update({"pls-sha/src/pls/" + name: data for name, data in self.payload.items()})
+        with patch.object(installer, "download", side_effect=[
+            json.dumps({"sha": FIRST}).encode(), archive(files)
+        ]):
+            self.assertEqual(installer.fetch_skill("main", "journal"), (FIRST, self.journal))
+        bundle = self.project / "combined.zip"
+        bundle.write_bytes(release_archive(self.payload, journal=self.journal,
+                                           companion=self.companion))
+        with patch.object(Path, "cwd", return_value=self.project):
+            with contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(installer.main(["install", "--skill", "journal",
+                                                 "--bundle", str(bundle)]), 0)
+        self.assertFalse(self.destination.exists())
+        destination = self.skills / "journal"
+        self.assertEqual(installer.installed_files(destination),
+                         installer.read_bundle(bundle.read_bytes(), "journal")[1])
 
     def test_installed_script_updates_itself_from_another_working_directory(self):
         bundle = self.project / "pls.zip"

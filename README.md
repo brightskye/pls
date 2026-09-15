@@ -19,22 +19,23 @@ artifacts belong, and how to avoid unnecessary folders and process clutter.
 
 ## Scope
 
-This repository owns the PLS standard, its distributable agent skill, and a
-companion design-writing guide and skill. PLS governs project layout and
-retrievable discussion and decision records; the companion guides readable,
-precise system design. Adopting projects own their documentation,
-implementation, and adoption decisions.
+This repository maintains three independent guides and skills: PLS for project
+layout, Journal for retrievable discussion and decision history, and
+design-writing for precise system designs. Each skill works with its own
+bundled guide. Adopting projects own their documents, implementation, storage
+locations, and adoption decisions.
 
 ## Project map
 
 | Question | Location |
 |---|---|
 | What rules does PLS define? | [PLS](src/pls/references/PLS.md) |
-| How are discussions, decisions, and changed decisions saved and retrieved? | [Project Journal standard](src/pls/references/journal.md) |
+| How are discussions, decisions, and changed decisions saved and retrieved? | [Project Journal standard](src/journal/references/journal.md) |
 | What project-specific rules must agents follow here? | [Agent instructions](AGENTS.md) |
 | What is happening with the PLS project? | [Project Journal](docs/journal.md) |
-| How do I install and use the PLS agent skill? | [Operations](docs/operations.md) |
+| How do I install and use the skills? | [Operations](docs/operations.md) |
 | Where is the maintained PLS package? | [PLS agent skill](src/pls/SKILL.md) |
+| Which skill records or retrieves project history? | [Journal skill](src/journal/SKILL.md) |
 | How should system design documents be written? | [Design writing guide](src/design-writing/references/design-writing.md) |
 | Which skill creates, revises, or reviews a design? | [Design writing skill](src/design-writing/SKILL.md) |
 | Where is the Python install/update tool? | [Installer](tools/pls_skill.py) |
@@ -45,29 +46,28 @@ implementation, and adoption decisions.
 
 ## Distribution
 
-Download `pls.zip` from [GitHub Releases](https://github.com/brightskye/pls/releases).
-The published
+The next bundle, `0.3.0-draft.5`, separates Journal from the PLS layout skill.
+The currently published
 [`v0.3.0-draft.4`](https://github.com/brightskye/pls/releases/tag/v0.3.0-draft.4)
-bundle described here contains the PLS skill and
-the companion design-writing skill.
+still bundles Journal rules inside PLS. The source revision contains three
+independently selectable skills:
 
-The complete bundle includes both skills, their rules and guides, the Python
-installer, instructions, license, and release metadata. Extract it and run its
-`install.py` from the target project. The
-shared Python installer selects one skill per operation: PLS is the default and
-`--skill design-writing` selects the companion. Each selected skill is kept with
-its own updater and receipt in `<skills_parent>/<skill>/`; install both with two
-commands. Installation uses the bundled files without a development checkout or
-network access; the extracted bundle is no longer needed after installation.
-Later updates download release bundles, not the source tree.
+| Skill | Responsibility | Install selection |
+|---|---|---|
+| `pls` | Layout, placement, navigation, and document ownership | Default |
+| `journal` | Discussion and decision records, history, and retrieval | `--skill journal` |
+| `design-writing` | System design documents and implementation readiness | `--skill design-writing` |
 
-The Python route requires Python 3.10 or newer and no extra packages. `npx`
-can install a release ZIP, but the checked `skills` CLI does not track archive
-installs for `update`; rerun `add` with the selected new bundle instead.
+The complete bundle includes the guides, Python installer, instructions,
+license, and release metadata. Each selected skill keeps its own updater and
+receipt in `<skills_parent>/<skill>/`. Install each wanted skill explicitly;
+updating PLS does not install Journal or move project records.
 
-The maintained skills stay in `src/pls/` and `src/design-writing/`; installer
-and builder sources stay in `tools/`. See [Operations](docs/operations.md) for
-installation, updates, development routes, migration, and publication status.
+Python 3.10 or newer is required, with no extra packages. Installation uses the
+extracted bundle offline; later updates download release bundles. The source
+packages stay in `src/`, and installer and builder sources stay in `tools/`.
+See [Operations](docs/operations.md) for installation, upgrades from draft4,
+alternative routes, and publication status.
 
 ## Design writing
 
@@ -77,10 +77,8 @@ It supports human and agent readers, with Orca as an example, and works with
 the adopting project's documentation layout. The source is self-contained in
 `src/design-writing/`; it does not require the PLS skill or an Orca checkout.
 
-The published `v0.3.0-draft.4` bundle includes this companion beside
-`skills/pls/`. The shared installer selects one skill per operation, so a user
-who wants both runs two install commands. The two skills are independently
-selectable, and the companion does not change the PLS standard or its version.
+The design-writing companion remains independently selectable. Installing
+Journal or PLS does not install it or change its guide.
 
 ## License
 
@@ -88,21 +86,17 @@ PLS is available under the [MIT License](LICENSE).
 
 ## Current state
 
-The structure-first PLS v0.3 text is a working draft. The published
-[`v0.3.0-draft.4`](https://github.com/brightskye/pls/releases/tag/v0.3.0-draft.4)
-bundle is the latest published release and contains two independently
-selectable skills with their shared Python installer and per-skill updater.
-The standard remains the PLS 0.3.0 working draft and has not been promoted to
-a stable release. See the [Project Journal](docs/journal.md) for release
-verification and limitations.
+PLS remains the 0.3.0 working draft. Journal's
+[separate ownership](docs/journal.md#dec-0007-separate-journal-from-layout-rules)
+is accepted: PLS defines placement, the Journal guide defines shared record
+semantics, and saving systems own their execution paths. Orca can adopt a
+versioned copy while keeping its integration rules in configured vault
+locations. Agent adapters follow the selected system's interface.
 
-The source now includes the published
-[Project Journal standard](src/pls/references/journal.md) and matching PLS
-skill routes. The Journal name, retained history, growth rules, and selective
-reading direction are accepted. Detailed metadata and workflow remain a
-working draft. The published `v0.3.0-draft.4` bundle ships both skills, the
-Journal guide, and configurable disposable context rules. Native Windows
-remains untested, and no live adopter installations changed.
+The `0.3.0-draft.5` source revision implements the package separation. The
+latest published bundle is draft4 until draft5 publication is verified.
+[Current](docs/journal.md#current) records verification, release, and adoption
+status. Existing record locations remain in place; native Windows is untested.
 
 Projects may declare a disposable working context and session handoff
 location in their project map. This project uses the default

@@ -1,15 +1,25 @@
-# PLS Project Journal
+# Project Journal Companion
 
-Status: Working draft for review. This reference extends the
-[PLS Project Journal](PLS.md#71-project-journal) with saving, history, and retrieval
-rules. It defines portable Markdown records; a database or RAG service is
-optional. PLS requirement words apply here.
+Status: Working draft for review. This standalone guide defines portable
+Markdown records, their lifecycle, and selective retrieval for any project. It
+does not require PLS, Orca, a database, a RAG service, or another external
+dependency.
+
+## Rule words
+
+- **MUST** and **MUST NOT** are required by this guide.
+- **SHOULD** and **SHOULD NOT** describe the normal choice.
+- **MAY** means optional.
+
+Only the uppercase words above create requirements in this guide. A project's
+own instructions and adopted local policy may add requirements; they do not
+silently weaken the content and evidence rules below.
 
 ## Purpose and reading route
 
-Readers must be able to find what was discussed, what was decided, what applies
+Readers MUST be able to find what was discussed, what was decided, what applies
 now, and why a decision changed throughout the project's lifetime. Accepted
-choices must remain distinguishable from suggestions and unfinished work.
+choices MUST remain distinguishable from suggestions and unfinished work.
 
 Use [placement](#placement-and-ownership) to choose a home,
 [growth](#keeping-a-growing-journal-usable) to keep it manageable,
@@ -27,12 +37,14 @@ Use [placement](#placement-and-ownership) to choose a home,
 | Substantial proposals | Proposals in the Project Journal, or its mapped proposal files |
 | Required system behavior | The owning Architecture or Specification |
 | Documentation, implementation, and verification progress | Current in the Project Journal |
-| Disposable working context and session handoffs | Configured temporary location; default `.local/agent-note/` |
+| Disposable working context and session handoffs | The location declared by the project map or local policy |
 
-The Project Journal MUST remain the entry point. Its normal location is
-`docs/journal.md` or the expanded `docs/journal/README.md`. Use the adopting
-project's actual map; existing `project-record` locations remain in use until
-a separately authorized migration or explicit mapping decision.
+The Project Journal MUST remain the entry point for its records. Its common
+locations are `docs/journal.md` or an expanded `docs/journal/README.md`, but
+the project's actual map owns the path. Existing `project-record` locations
+and other mapped names remain in use until a separately authorized migration
+or explicit mapping decision. Installing this guide or skill does not migrate
+files, rename an area, or choose an arbitrary fallback path.
 
 Use one owning entry point. When expanding the single file into a directory,
 move its content to the mapped files and update the project map. Any retained
@@ -40,7 +52,7 @@ old entry point serves only as a navigation link, with no independent records.
 
 A small project MAY keep
 records as individually identified sections in one file. Expand into files
-only when that improves navigation. A durable discussion may still contain
+only when that improves navigation. A durable discussion MAY still contain
 open questions; an unresolved outcome does not make the discussion temporary.
 
 Each decision MUST have one owning record. Discussions, indexes, and Current
@@ -51,10 +63,10 @@ the decision record owns its rationale and history.
 Recording authority comes from the user's request or established project
 instructions. Retain purposeful summaries and necessary supporting excerpts.
 Saving project history does not authorize copying whole transcripts, publishing
-private content, implementing a decision, or changing external systems.
-The [disposable context rules](PLS.md#disposable-working-context-and-session-handoffs)
-own its configurable location and lifecycle. Changing that location does not
-change where durable journal records belong.
+private content, implementing a decision, or changing external systems. The
+project map or adopted local policy owns any disposable context location and
+lifecycle; changing that location does not change where durable Journal
+records belong.
 
 ## Keeping a growing journal usable
 
@@ -180,9 +192,13 @@ Use relative Markdown paths with stable anchors for local references. An ID
 reference MUST resolve through the Project Journal's links; qualify it with
 the project key when it refers to another authorized project.
 
+When more than one location could own a source or record, state the candidate
+owners, applicable scope, and unresolved conflict explicitly. Do not silently
+choose an owner from recency, filename, or similarity alone.
+
 ### Discussion records
 
-A discussion record has status `open` or `closed`; either may contain accepted,
+A discussion record has status `open` or `closed`; either MAY contain accepted,
 rejected, or unresolved individual outcomes. Group related discussion by
 coherent topic, with separately dated entries and stable entry anchors.
 
@@ -218,7 +234,7 @@ bundle it answers. Accept only the confirmed scope. Ask a focused question
 only when the existing context cannot resolve a material ambiguity; do not
 request confirmation again for an already clear decision.
 
-## Saving and maintaining records
+## Direct record editing and alignment
 
 1. **Locate:** Read the Project Journal map and the relevant topic's decisions,
    open questions, and design owners. Extend a matching discussion instead of
@@ -236,12 +252,23 @@ request confirmation again for an already clear decision.
    reachable index entries against the instruction. Report the saved outcome
    and any unfinished synchronization explicitly.
 
-A complete save means the records and necessary document updates are saved,
-consistent, and findable from the Project Journal. If interruption, conflicting
-edits, or a missing decision prevents alignment, preserve the accepted record
-and list the exact pending owner updates in Current. Report a partial save;
-do not silently downgrade the decision or claim all records are synchronized.
-An optional search-index update may follow later without blocking the save.
+A complete authoritative save means the records and necessary document updates
+are saved, consistent, and findable from the Project Journal after the Record,
+Align, and Verify steps. If interruption, conflicting edits, or a missing
+decision prevents alignment, preserve the accepted record and list the exact
+pending owner updates in Current. Report a partial save; do not silently
+downgrade the decision or claim all records are synchronized. An optional
+search-index update MAY follow later without blocking the save.
+
+In repository mode, direct edits MUST stay within the user's or project's
+authorization and the mapped project files. In managed or vault mode, use the
+project's established adapter or runtime and adopted local policy for writes.
+This guide does not invent commands, choose arbitrary paths, or silently fall
+back to direct file writes when that adapter is unavailable. An adapter policy
+MAY control transport, permissions, and placement, but it MUST preserve the
+record metadata, lifecycle, source evidence, relationship, retention, and
+alignment semantics in this guide. If a policy or adapter conflicts with those
+semantics, record the conflict and pending owner explicitly.
 
 Keep three meanings separate:
 
@@ -253,10 +280,31 @@ Keep three meanings separate:
 
 An accepted decision with pending implementation stays accepted. Identify any
 unsettled detail separately instead of labelling the entire direction proposed.
-A draft design may contain accepted decisions alongside explicit open design.
+A draft design MAY contain accepted decisions alongside explicit open design.
 When the design has not caught up, report the accepted target and the stale
 document separately; stale design text does not reverse acceptance.
 Readiness and deployment claims remain governed by the project's own checks.
+
+## Runtime capture and handoff
+
+Runtime capture is a transport concern separate from direct record editing. A
+raw-capture acknowledgement means that content was received or queued for
+processing. It remains pending processing and MUST NOT be reported as a
+completed Journal save. A receipt, queue entry, or handoff status does not by
+itself establish record metadata, acceptance, alignment, source ownership, or
+verification.
+
+The managed system's processor MUST perform the same Locate, Record, Align,
+and Verify work before the result is a completed Journal record. Its agent
+adapter supplies the authorized input and reports the returned state; it does
+not become a second record writer or processor. If processing fails, is
+interrupted, or cannot resolve the mapped owner, retain the pending status and
+report the exact follow-through rather than claiming completion.
+
+Use only the interface declared by the project for that operation. If no
+supported wait or processing command exists, report the returned pending state.
+Ordinary repository journaling needs no runtime. Each project's adoption owns
+its deployment, rule locations, and integration mechanics.
 
 ## Decision changes and history
 
@@ -282,12 +330,12 @@ rule. Dates and similarity alone cannot resolve this ambiguity.
 
 Discussion history and superseded or rejected decision records MUST remain
 retrievable for the project's lifetime unless an explicit retention, privacy,
-or legal requirement authorizes their removal. An overview may be condensed;
+or legal requirement authorizes their removal. An overview MAY be condensed;
 it MUST NOT replace or erase the retained dated history and reasons. Follow
 the [growth rules](#keeping-a-growing-journal-usable) when splitting files.
 An archive move changes location, not decision identity or authority.
 
-Material in the configured disposable context location may be retired after
+Material in the configured disposable context location MAY be retired after
 its durable discussion and decision content has been recorded and checked,
 or review has established that nothing durable needs retention.
 
@@ -350,8 +398,8 @@ saved history or turn an accepted decision into an unknown one.
 Topic similarity helps find candidates; it does not prove acceptance,
 applicability, supersession, or complete search coverage. Searches across
 projects and indexing by an external service require the applicable access
-and retention authority. PLS does not require embeddings, a database product,
-a background service, or new software merely to follow this standard.
+and retention authority. This guide does not require embeddings, a database
+product, a background service, or new software merely to follow it.
 
 ## Compact examples
 
@@ -410,8 +458,8 @@ The exact processing schema remains a separately tracked open design question.
 ## Check the recording flow
 
 Use ordinary document review and relevant project checks. A focused trial
-should confirm that a short acceptance updates the correct choice, an
+SHOULD confirm that a short acceptance updates the correct choice, an
 unimplemented choice stays accepted, a replacement preserves both reasons,
 and retrieval can find original and current decisions without an index.
-Existing projects should reconcile important retained outcomes and flag
+Existing projects SHOULD reconcile important retained outcomes and flag
 unrecoverable evidence explicitly rather than inventing a complete history.

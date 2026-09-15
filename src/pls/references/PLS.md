@@ -310,9 +310,10 @@ Save temporary context when the human requests it or project instructions
 establish that retention choice. Use the configured location consistently for
 reading, saving, reviewing, and retiring these notes.
 
-Durable discussion summaries and decision history belong in the Project
-Journal, even when some questions remain open. Follow the
-[discussion and decision rules](journal.md) for saving that material.
+Durable discussion summaries and decision history belong in the mapped
+Project Journal, even when some questions remain open. PLS defines the
+placement and navigation boundary; a project MAY adopt a separate Journal
+standard for record content and maintenance.
 
 The normal note states within the selected location are:
 
@@ -389,12 +390,11 @@ A decision record owns the reason for a choice. The resulting current design
 or behavior belongs in Architecture or Specifications. A reader MUST NOT need
 to reconstruct the current design from old decisions.
 
-The [Journal standard](journal.md) owns the record format, acceptance,
-change history, save flow, growth, and retrieval rules, with examples for
-[small and expanded journals](journal.md#small-and-expanded-journals).
-It preserves original and replacement decisions with their reasons, separates
-acceptance from documentation and implementation progress, and supports
-ordinary file search with optional indexing or RAG.
+The Project Journal area is a navigation and ownership convention. Record
+format, acceptance, change history, save flow, growth, and retrieval may be
+defined by an optional named companion or by the adopting project. PLS does
+not require a particular Journal implementation, index, database, or retrieval
+service.
 
 ### 7.2 Architecture and Specifications
 

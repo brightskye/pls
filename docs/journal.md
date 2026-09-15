@@ -7,49 +7,45 @@ Recordkeeping topic: [discussion](#disc-0001-project-recordkeeping),
 [Journal naming](#dec-0002-name-the-area-project-journal),
 [growth](#dec-0003-keep-journal-reading-focused),
 [disposable context location](#dec-0004-allow-a-configured-disposable-context-location), and
-[working rules](../src/pls/references/journal.md).
+[working rules](../src/journal/references/journal.md), and
+[separate Journal ownership](#dec-0007-separate-journal-from-layout-rules).
 
 ## Current
 
-PLS is the 0.3.0 working draft. The active
-[standard](../src/pls/references/PLS.md) and
-[Journal reference](../src/pls/references/journal.md) are self-contained in
-`src/pls/`; the independent
-[design-writing skill and guide](../src/design-writing/SKILL.md) live in
-`src/design-writing/`. The root README owns the project map, and
-[Operations](operations.md) owns installation and release procedures.
+PLS remains the 0.3.0 working draft. This repository maintains three independent
+packages: [PLS](../src/pls/SKILL.md) for layout,
+[Journal](../src/journal/SKILL.md) for shared discussion and decision rules, and
+[design-writing](../src/design-writing/SKILL.md) for system designs. Each guide
+is maintained with its owning skill and works without the other packages.
 
-The published [`v0.3.0-draft.4`](https://github.com/brightskye/pls/releases/tag/v0.3.0-draft.4)
-release adds Journal saving and retrieval rules, linked discussion and
-decision history, selective reading, and a configurable disposable context
-location. The accepted directions are
-[history retention](#dec-0001-preserve-retrievable-project-history),
-[Journal naming](#dec-0002-name-the-area-project-journal),
-[growth and selective reading](#dec-0003-keep-journal-reading-focused), and
-[location configuration](#dec-0004-allow-a-configured-disposable-context-location).
-Documentation alignment is `synced`. Implementation is `not-applicable` to
-these written rules; optional indexing software remains outside scope.
-The detailed metadata and workflows remain working-draft rules. Release
-review does not establish stable-standard acceptance.
+[DEC-0007](#dec-0007-separate-journal-from-layout-rules) accepts the Journal
+extraction. The shared guide preserves metadata, sources, acceptance, reasons,
+linked changes, retention, growth, and retrieval. PLS retains placement and
+ownership rules. Direct repository recording performs the record, alignment,
+and verification steps; a managed saving system owns execution and reports a
+raw capture separately from a completed journal save. Agent adapters follow
+the selected interface. Orca's later vault integration can adopt a versioned
+guide and keep local execution rules in configurable vault locations.
 
-PLS uses `docs/journal.md` for its own records. Its migration from
-`docs/project-record.md` preserved record IDs, dated discussions, decisions,
-and reasons. Two earlier amended choices now have their own stable records
-and links in both directions; unknown historical dates or reasons are stated
-explicitly. The rule reference's temporary working name was
-`references/project-records.md`; it became `references/journal.md` before
-being committed or published.
+The `0.3.0-draft.5` candidate passes all 47 package tests, three skill
+validators, Markdown and local-link checks, and independent Journal behavior
+trials. Actual draft4 updaters also passed offline migration, local-edit
+protection, sibling preservation, and receipt checks. Publication and Orca's
+installation update remain pending. The latest published bundle is
+[`v0.3.0-draft.4`](https://github.com/brightskye/pls/releases/tag/v0.3.0-draft.4),
+which has two skills and keeps Journal guidance inside PLS. The standard has
+not been promoted to stable. Native Windows remains untested.
 
-See [release preparation](#draft4-release-preparation) and
-[publication verification](#draft4-publication) for results.
-The latest published bundle is
-[`v0.3.0-draft.4`](https://github.com/brightskye/pls/releases/tag/v0.3.0-draft.4).
-It contains both independently selectable skills, the Journal guide, and
-configurable disposable context rules. Native Windows remains untested, and
-no live adopter installation was changed.
+PLS keeps its existing `docs/journal.md`. Adopting projects follow their current
+maps; separately authorized migrations are independent of this extraction.
+Extraction preserves existing record IDs, dates, accepted choices, and
+reasons. Vault copying, Runtime integration, and record migration are
+separate from the package change and remain unimplemented.
 
 ## Next
 
+- Publish the verified draft5 bundle and complete the authorized Orca skill
+  upgrade, preserving its current mapped record locations.
 - Migrate other projects' `project-record` locations and update installed
   skills only when those separate actions are requested.
 - Review whether any real project needs an explicitly mapped alternative to a
@@ -59,7 +55,7 @@ no live adopter installation was changed.
 ## Proposals
 
 The metadata, status vocabulary, and detailed save/retrieval workflow in the
-[Journal reference](../src/pls/references/journal.md) are proposed
+[Journal reference](../src/journal/references/journal.md) are proposed
 details for the accepted recordkeeping direction. They have passed release
 review and remain open to feedback before stable acceptance. Their draft
 status does not reopen the accepted purpose, Journal name, history retention,
@@ -81,7 +77,7 @@ occurred: 2026-09-15
 created: 2026-09-15
 updated: 2026-09-15
 sources:
-  - Retained user instructions in entries 2026-09-15-01 through 2026-09-15-04
+  - Retained user instructions in entries 2026-09-15-01 through 2026-09-15-05
 ```
 
 #### Entry 2026-09-15-01
@@ -164,6 +160,28 @@ own records. No release, installation, or disposable-context move was made.
 The retained proposal and response above are the migration source; no
 separate durable message locator is recorded here.
 
+#### Entry 2026-09-15-05
+
+The user reconsidered whether Journal rules should belong in PLS, individual
+agents, or the Orca vault. The proposed change separated layout from detailed
+recordkeeping: keep a shared Journal guide and companion skill in this
+repository, let Orca adopt a versioned copy with separate execution rules, and
+keep agent adapters thin. The user replied, "i like this suggestion. How can
+we achieve it?"
+
+The implementation proposal was to extract `src/journal/`, narrow PLS to
+layout and placement, distinguish direct repository saves from Runtime-managed
+handoffs, add Journal to the bundle and installer, verify independent skills,
+and update Orca's design and installed skills. Existing journals would remain
+in place. The user answered "yes" to that proposal. These retained proposal
+and response excerpts are the source; no separate durable message locator is
+recorded here.
+
+Outcome: [DEC-0007](#dec-0007-separate-journal-from-layout-rules). Existing
+shared record semantics remain; package ownership and execution routing are
+clarified. This does not authorize silent vault migration or weaker acceptance
+and history rules.
+
 ## Decisions
 
 ### DEC-0001: Preserve retrievable project history
@@ -180,6 +198,7 @@ occurred: 2026-09-15
 created: 2026-09-15
 updated: 2026-09-15
 sources: ["journal.md#entry-2026-09-15-01"]
+amended_by: ["journal.md#dec-0007-separate-journal-from-layout-rules"]
 ```
 
 PLS will define an organized way to save discussions and decisions, including
@@ -195,8 +214,13 @@ standard is established. No other storage option was rejected by this decision.
 
 Lifecycle: accepted on 2026-09-15 by the user through the request and
 clarification retained in [DISC-0001](#entry-2026-09-15-01). Detailed rules live
-in the [working reference](../src/pls/references/journal.md); Current
+in the [working reference](../src/journal/references/journal.md); Current
 tracks their review, publication, and adoption separately.
+
+On 2026-09-15, [DEC-0007](#dec-0007-separate-journal-from-layout-rules)
+amended the package and rule ownership: the shared Journal guide now owns
+detailed recordkeeping independently of the PLS layout standard. The original
+history-retention requirement remains accepted.
 
 ### DEC-0002: Name the area Project Journal
 
@@ -259,8 +283,8 @@ is not part of this decision; no fixed word or record limit was selected.
 
 Lifecycle: accepted on 2026-09-15 through the same
 [source confirmation](#entry-2026-09-15-02). The
-[Journal growth rules](../src/pls/references/journal.md#keeping-a-growing-journal-usable)
-and [retrieval rules](../src/pls/references/journal.md#retrieval-without-a-database)
+[Journal growth rules](../src/journal/references/journal.md#keeping-a-growing-journal-usable)
+and [retrieval rules](../src/journal/references/journal.md#retrieval-without-a-database)
 own the required behavior.
 
 ### DEC-0004: Allow a configured disposable context location
@@ -369,6 +393,50 @@ Lifecycle: accepted on 2026-09-05 according to the retained history. On
 only the location rule to allow a project-declared alternative. The default,
 lifecycle, and authority boundary remain in force. This record was backfilled
 with a stable ID on 2026-09-15.
+
+### DEC-0007: Separate Journal from layout rules
+
+```yaml
+id: DEC-0007
+kind: decision
+title: Separate shared Journal rules from layout and agent integration
+project: pls
+topics: [recordkeeping, skill-ownership, agent-integration]
+scope: Shared guide, companion skill, distribution, and adoption boundaries
+status: accepted
+occurred: 2026-09-15
+created: 2026-09-15
+updated: 2026-09-15
+sources: ["journal.md#entry-2026-09-15-05"]
+amends: ["journal.md#dec-0001-preserve-retrievable-project-history"]
+```
+
+Maintain Journal as an independent guide and skill at `src/journal/`, alongside
+PLS and design-writing. PLS owns layout, placement, navigation, and document
+ownership. Journal owns shared record content, acceptance, history, and
+retrieval rules. Agents use the same definitions; their adapters own only
+agent-specific triggers, context access, interface calls, and presentation.
+
+A project chooses its authoritative journal location. Direct repository
+recording applies the shared record/alignment/verification flow. An external
+Runtime owns managed capture and processing; a durable queued input is reported
+as captured and pending, not as a completed journal record. The completed
+record must still meet the adopted shared standard.
+
+Orca can adopt a versioned copy in its configurable vault-rule locations and
+keep integration rules separate. The shared source remains here. Updating a
+package does not implicitly update a vault copy or move records. Existing
+project maps and records remain in place through this extraction.
+
+This narrows PLS's layout responsibility and avoids agents or vaults maintaining
+independently edited versions of the same general rules. It also keeps ordinary
+project journals usable without Orca. The earlier PLS-contained guide remains
+part of published draft4; shared metadata and history requirements are retained.
+
+Lifecycle: accepted on 2026-09-15 through the proposal and confirmation in
+[DISC-0001](#entry-2026-09-15-05). This partially amends DEC-0001's rule ownership,
+not its accepted history-preservation goal. Current tracks package verification,
+release, and adoption independently of future Runtime or vault integration.
 
 ### Earlier recorded decisions
 
@@ -640,3 +708,28 @@ passed 40 tests; the published ZIP and checksum matched the verified local
 bundle; and both draft3 updaters selected draft4 with exact payload and
 receipt hashes while preserving the sibling skill. The published checksum is
 `d369afbf065b979dd8479e163bf8b056d64d9cfe0a84e30d14a1d612ae131466`.
+
+### Separate Journal package
+
+On 2026-09-15, the user approved [DEC-0007](#dec-0007-separate-journal-from-layout-rules).
+The existing guide was moved from `src/pls/references/journal.md` to
+`src/journal/references/journal.md`, with a standalone Journal skill. PLS's
+entry point and guide were narrowed to layout and placement. The bundle and
+installer now select each of the three skills independently. The next candidate
+is draft5; verification, publication, and installation results are recorded
+here when completed. Existing journal records and locations were preserved.
+
+The candidate passed 47 unit tests, all three skill validators, Markdown and
+local-link checks, and two independent agent trials. The repository trial
+preserved an old decision and its reason, linked its accepted replacement,
+and aligned design and Current without claiming implementation. The managed
+trial submitted the authorized input through the fixture Runtime and reported
+captured/pending while the published journal stayed unchanged.
+
+Offline integration used the actual published draft4 ZIP and its installed
+updaters from an unrelated working directory. Updates protected local edits,
+preserved the sibling skill, removed the former PLS-contained guide, and
+matched new payloads and receipt hashes. All three skills also installed
+independently without the source checkout; Journal's own updater retained its
+identity and latest-release selection. Native Windows remains untested.
+Publication and live installation are separate results recorded when complete.

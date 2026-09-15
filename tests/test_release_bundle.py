@@ -21,7 +21,7 @@ assert SPEC.loader is not None
 SPEC.loader.exec_module(builder)
 
 COMMIT = "0123456789abcdef" * 2 + "01234567"
-VERSION = "0.3.0-draft.4"
+VERSION = "0.3.0-draft.5"
 
 
 class ReleaseBundleTests(unittest.TestCase):
@@ -41,7 +41,11 @@ class ReleaseBundleTests(unittest.TestCase):
         (self.root / "src" / "pls" / "references" / "guide.md").write_text(
             "Bundled guidance.\n", encoding="utf-8"
         )
-        (self.root / "src" / "pls" / "references" / "journal.md").write_text(
+        (self.root / "src" / "journal" / "references").mkdir(parents=True)
+        (self.root / "src" / "journal" / "SKILL.md").write_text(
+            "---\nname: journal\n---\n\n# Journal\n", encoding="utf-8"
+        )
+        (self.root / "src" / "journal" / "references" / "journal.md").write_text(
             "# Project Journal\n", encoding="utf-8"
         )
         (self.root / "src" / "design-writing" / "references").mkdir(parents=True)
@@ -74,15 +78,16 @@ class ReleaseBundleTests(unittest.TestCase):
             "pls/release.json",
             "pls/skills/design-writing/SKILL.md",
             "pls/skills/design-writing/references/design-writing.md",
+            "pls/skills/journal/SKILL.md",
+            "pls/skills/journal/references/journal.md",
             "pls/skills/pls/SKILL.md",
             "pls/skills/pls/references/PLS.md",
             "pls/skills/pls/references/guide.md",
-            "pls/skills/pls/references/journal.md",
         }
         self.assertEqual(set(members), expected)
         self.assertEqual(list(members), sorted(members))
         self.assertTrue(all(name.startswith("pls/") for name in members))
-        for skill in ("pls", "design-writing"):
+        for skill in ("pls", "journal", "design-writing"):
             source = self.root / "src" / skill
             for path in source.rglob("*"):
                 if path.is_file():
@@ -94,10 +99,17 @@ class ReleaseBundleTests(unittest.TestCase):
         for phrase in (
             "python3 /path/to/pls/install.py install",
             "python3 /path/to/pls/install.py install --skill design-writing",
+            "python3 /path/to/pls/install.py install --skill journal",
             "`.agents/skills/design-writing/`",
+            "`.agents/skills/journal/`",
             "default command installs only `pls`",
             "Updating one skill leaves the other",
+            "All three skills",
+            "does not silently install Journal",
+            "Old PLS-contained journaling moves to Journal",
+            "Draft4 bundled the Journal guide inside the PLS skill",
             "python3 /absolute/path/to/project/.agents/skills/design-writing/install.py update",
+            "python3 /absolute/path/to/project/.agents/skills/journal/install.py update",
             "--dest",
             "latest published bundle",
             "update --bundle /path/to/extracted/pls",
@@ -124,7 +136,7 @@ class ReleaseBundleTests(unittest.TestCase):
 
     def test_same_inputs_produce_same_zip_and_hash(self):
         first = self.build()
-        for skill in ("pls", "design-writing"):
+        for skill in ("pls", "journal", "design-writing"):
             path = self.root / "src" / skill / "SKILL.md"
             os.utime(path, (1_600_000_000, 1_600_000_000))
             path.chmod(0o744)
@@ -155,25 +167,55 @@ class ReleaseBundleTests(unittest.TestCase):
                     finally:
                         path.write_bytes(original)
 
-    def test_pls_requires_its_journal_reference(self):
-        path = self.root / "src" / "pls" / "references" / "journal.md"
+    def test_journal_requires_its_skill_and_guide(self):
+        for name in ("SKILL.md", "references/journal.md"):
+            path = self.root / "src" / "journal" / name
+            original = path.read_bytes()
+            for content in (None, b""):
+                with self.subTest(name=name, content=content):
+                    if content is None:
+                        path.unlink()
+                    else:
+                        path.write_bytes(content)
+                    try:
+                        with self.assertRaisesRegex(builder.BundleError, "journal skill must contain"):
+                            self.build()
+                        self.assertFalse(self.output.exists())
+                    finally:
+                        path.write_bytes(original)
+
+    def test_pls_requires_only_standard_reference(self):
+        path = self.root / "src" / "pls" / "references" / "guide.md"
         original = path.read_bytes()
-        for content in (None, b""):
-            with self.subTest(content=content):
-                if content is None:
-                    path.unlink()
-                else:
-                    path.write_bytes(content)
-                try:
-                    with self.assertRaisesRegex(builder.BundleError, "references/journal.md"):
-                        self.build()
-                    self.assertFalse(self.output.exists())
-                finally:
-                    path.write_bytes(original)
+        path.unlink()
+        try:
+            archive, _ = self.build()
+            with zipfile.ZipFile(archive) as bundle:
+                self.assertNotIn("pls/skills/pls/references/journal.md", bundle.namelist())
+        finally:
+            path.write_bytes(original)
+
+    def test_release_notes_describe_independent_skills_and_migration(self):
+        notes = (ROOT / ".github" / "workflows" / "release.yml").read_text(encoding="utf-8")
+        for phrase in (
+            "independently selectable layout",
+            "--skill journal",
+            "--skill design-writing",
+            "does not silently install Journal",
+            "Old PLS-contained journaling moves to Journal",
+        ):
+            self.assertIn(phrase, notes)
 
     def test_missing_companion_directory_is_not_packaged(self):
         source = self.root / "src" / "design-writing"
         source.rename(source.with_name("companion-away"))
+        with self.assertRaisesRegex(builder.BundleError, "Missing bundle source directory"):
+            self.build()
+        self.assertFalse(self.output.exists())
+
+    def test_missing_journal_directory_is_not_packaged(self):
+        source = self.root / "src" / "journal"
+        source.rename(source.with_name("journal-away"))
         with self.assertRaisesRegex(builder.BundleError, "Missing bundle source directory"):
             self.build()
         self.assertFalse(self.output.exists())

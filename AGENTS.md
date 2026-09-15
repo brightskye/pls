@@ -18,8 +18,11 @@
   PLS-specific validator without an explicit Owner decision.
 - Do not add scripts, evidence packages, manifests, or review records merely to
   demonstrate that a process was followed.
-- Keep `src/pls/` self-contained. Its skill MUST NOT depend on files outside
-  that directory or fetch replacement rules while it is being used.
+- Keep `src/pls/`, `src/journal/`, and `src/design-writing/` independently
+  self-contained. Each skill uses its own bundled guide without requiring a
+  sibling skill or fetching replacement rules while it is being used.
+- Read `src/journal/references/journal.md` when saving or retrieving project
+  discussions and decisions. PLS owns placement; Journal owns record rules.
 - Update `docs/journal.md` when the current direction or release state
   materially changes.
 

@@ -23,7 +23,8 @@ import zipfile
 REPOSITORY = "brightskye/pls"
 SKILL_SOURCE = Path("src") / "pls"
 SKILL_REFERENCES = {
-    "pls": ("PLS.md", "journal.md"),
+    "pls": ("PLS.md",),
+    "journal": ("journal.md",),
     "design-writing": ("design-writing.md",),
 }
 INSTALLER_SOURCE = Path("tools") / "pls_skill.py"
@@ -160,32 +161,40 @@ def _readme(version: str) -> bytes:
     status = "working draft" if "-draft." in version else "stable standard"
     text = f"""# PLS {version}
 
-This bundle contains the PLS v{standard_version} {status}, the companion
-design-writing skill and guide, and their Python installer. Each skill is
-self-contained. The release version identifies the exact packaged skills,
-guides, and installer; it does not change the PLS standard version.
+This bundle contains the PLS v{standard_version} {status}, the independently
+selectable Journal and design-writing skills and their guides, and their
+Python installer. Each skill is self-contained. The release version identifies
+the exact packaged skills, guides, and installer; it does not change the PLS
+standard version.
 
 ## Install
 
-From the target project's root, install the PLS layout and Journal skill:
+From the target project's root, install the PLS layout skill:
 
 ```bash
 python3 /path/to/pls/install.py install
 ```
 
-To install the design-writing skill, run a separate command:
+To install the Journal skill, run a separate command:
+
+```bash
+python3 /path/to/pls/install.py install --skill journal
+```
+
+To install the design-writing skill, run another separate command:
 
 ```bash
 python3 /path/to/pls/install.py install --skill design-writing
 ```
 
 The default command installs only `pls` into `.agents/skills/pls/`.
-`--skill design-writing` installs only the companion into
-`.agents/skills/design-writing/`. Either skill works without the other. Each
-installation includes its skill, guide, updater, instructions, release
-metadata, and license. Use `--dest` with the parent skills directory when a
-different managed location is needed; the selected skill gets its own child
-directory. This Python route needs
+`--skill journal` installs only the Journal skill into
+`.agents/skills/journal/`; `--skill design-writing` installs only the
+design-writing skill into `.agents/skills/design-writing/`. All three skills
+work without the others. Each installation includes its skill, guide, updater,
+instructions, release metadata, and license. Use `--dest` with the parent
+skills directory when a different managed location is needed; the selected
+skill gets its own child directory. This Python route needs
 no PLS checkout, Node.js, or third-party Python packages. The extracted bundle
 is no longer needed after installation.
 Python 3.10 or newer is required. Installation uses the local bundle offline.
@@ -199,18 +208,25 @@ Run the updater inside the skill you want to update, from any working directory:
 
 ```bash
 python3 /absolute/path/to/project/.agents/skills/pls/install.py update
+python3 /absolute/path/to/project/.agents/skills/journal/install.py update
 python3 /absolute/path/to/project/.agents/skills/design-writing/install.py update
 ```
 
 The installed updater identifies its own skill and location. Each command
 asks for the latest published bundle and updates every managed file for that
 skill, including `install.py` itself. Updating one skill leaves the other
-unchanged. Use `--dest` with the parent skills directory to override the managed
-location while keeping the same skill selected.
+skills unchanged. A PLS update does not silently install Journal or
+design-writing. Old PLS-contained journaling moves to Journal in
+v0.3.0-draft.5. Draft4 bundled the Journal guide inside the PLS skill;
+updating that PLS installation removes the old bundled guide. Install Journal separately from this bundle, or run its installed
+updater, when you want the Journal skill. Use `--dest` with the parent skills
+directory to override the managed location while keeping the same skill
+selected.
 For an explicitly offline update, provide an extracted bundle directory:
 
 ```bash
 python3 /absolute/path/to/project/.agents/skills/pls/install.py update --bundle /path/to/extracted/pls
+python3 /absolute/path/to/project/.agents/skills/journal/install.py update --bundle /path/to/extracted/pls
 python3 /absolute/path/to/project/.agents/skills/design-writing/install.py update --bundle /path/to/extracted/pls
 ```
 
@@ -222,14 +238,14 @@ downloaded installer:
 python3 /path/to/new/pls/install.py update --bundle /path/to/new/pls
 ```
 
-Installing either skill does not adopt PLS or reorganize a project. Human
+Installing any skill does not adopt PLS or reorganize a project. Human
 adoption and layout decisions remain separate.
 
 ## Use
 
-The PLS skill covers project layout and Project Journal records: save
-discussions and decisions, preserve reasons and linked changes, and retrieve
-relevant history. Its bundled references own the rules. Disposable working
+The PLS skill covers project layout. The Journal skill saves discussions and
+decisions, preserves reasons and linked changes, and retrieves relevant
+history. Each skill's bundled references own its rules. Disposable working
 context uses the location declared in the project map, with
 `.local/agent-note/` as the default; durable records belong in the Journal.
 The design-writing skill creates and reviews precise system design documents.

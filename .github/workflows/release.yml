@@ -22,14 +22,20 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           cat > /tmp/pls-release-notes.md <<'NOTES'
-          Complete PLS working-draft bundle: layout and Project Journal skill, companion design-writing skill, guides, Python installer, instructions, and license.
-          PLS includes retrievable discussion and decision history, selective reading, and configurable disposable context placement.
+          Complete PLS working-draft bundle: independently selectable layout,
+          Journal, and design-writing skills, guides, Python installer,
+          instructions, and license.
+          The Journal skill includes retrievable discussion and decision
+          history and selective reading. PLS owns configurable disposable
+          context placement.
           Download pls.zip and extract it. From the target project, use Python 3.10 or newer:
 
-          - `python3 /path/to/pls/install.py install` installs only the PLS layout and Journal skill.
+          - `python3 /path/to/pls/install.py install` installs only the PLS layout skill.
+          - `python3 /path/to/pls/install.py install --skill journal` installs only the Journal skill.
           - `python3 /path/to/pls/install.py install --skill design-writing` installs only the design-writing skill.
 
-          Each skill is self-contained and has its own installed updater. Run `install.py update` inside the installed skill to update that skill.
+          Each skill is self-contained and has its own installed updater. Run `install.py update` inside the installed skill to update that skill; updating PLS does not silently install Journal or design-writing.
+          Old PLS-contained journaling moves to Journal in v0.3.0-draft.5. Draft4 bundled the Journal guide inside PLS. Use this bundle's installer to update the existing PLS installation, then install Journal separately when needed.
           This is a working draft, not a stable PLS standard release.
           NOTES
           gh release create "$GITHUB_REF_NAME" \

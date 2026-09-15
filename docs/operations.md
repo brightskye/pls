@@ -3,12 +3,9 @@
 ## Release bundle
 
 Use the complete `pls.zip` asset from [GitHub Releases](https://github.com/brightskye/pls/releases).
-The published `v0.3.0-draft.4` bundle contains two independently selectable
-skills, adds the Journal reference to PLS, and ships configurable disposable
-context rules. It is the latest published bundle; its install and update
-commands are described below.
-
-The new bundle contains:
+The layout below describes the `0.3.0-draft.5` candidate. It contains three
+independently selectable skills. Published draft4 has two skills with Journal
+rules inside PLS; the standalone Journal skill requires draft5 or later.
 
 ```text
 pls/
@@ -19,6 +16,8 @@ pls/
   skills/pls/
     SKILL.md
     references/PLS.md
+  skills/journal/
+    SKILL.md
     references/journal.md
   skills/design-writing/
     SKILL.md
@@ -26,21 +25,13 @@ pls/
     references/design-writing.md
 ```
 
-The maintained skills and guides stay in `src/`, and the installer source stays
-in `tools/pls_skill.py`. These are copied into the release; users do not need a
-development checkout or a separate installer download. The shared Python
-installer selects one skill per operation: it defaults to `pls`, while
-`--skill design-writing` selects the companion. Generated ZIPs and checksums use
-ignored `releases/<version>/` locally and GitHub Releases for distribution. The
-standard remains a working draft. Bundle versions such as `0.3.0-draft.4`
-identify packaged revisions of that draft.
-
-The [`v0.3.0-draft.4`](https://github.com/brightskye/pls/releases/tag/v0.3.0-draft.4)
-Python installer selects one skill per operation, with PLS as the default
-and `--skill design-writing` selecting the
-companion; each selected skill has its own updater and receipt. The PLS
-standard remains the 0.3.0 working draft. See the [Project Journal](journal.md)
-for verification results and limits.
+The maintained packages stay in `src/`, and the installer stays in
+`tools/pls_skill.py`. Each selected skill has its own updater and receipt.
+The installer defaults to `pls`; `--skill journal` and
+`--skill design-writing` select the companions. Generated bundles use ignored
+`releases/<version>/` locally and GitHub Releases for distribution. The PLS
+standard remains the 0.3.0 working draft. The [Project Journal](journal.md)
+records current verification and publication status.
 
 ## Install with Python
 
@@ -51,10 +42,10 @@ extracted bundle's installer:
 python3 /absolute/path/to/pls/install.py install
 ```
 
-The command installs PLS by default. To install the companion from the same
-extracted bundle, run a second command:
+The default command installs only PLS. Select each wanted companion explicitly:
 
 ```bash
+python3 /absolute/path/to/pls/install.py install --skill journal
 python3 /absolute/path/to/pls/install.py install --skill design-writing
 ```
 
@@ -78,9 +69,10 @@ route:
   .pls-install.json
 ```
 
-From draft4, the PLS installation contains `references/PLS.md` and
-`references/journal.md`; the design-writing installation contains
-`references/design-writing.md` and its agent metadata.
+From draft5, PLS contains `references/PLS.md`, Journal contains
+`references/journal.md`, and design-writing contains
+`references/design-writing.md` and its agent metadata. Each guide is maintained
+with its owning skill.
 
 For a different location, pass `--dest` with the parent skills directory; the
 installer creates or updates its `<skill>/` child there. Use `--skill` to choose
@@ -104,6 +96,7 @@ Run the updater installed in the managed directory:
 ```bash
 python3 /absolute/path/to/project/.agents/skills/pls/install.py update
 python3 /absolute/path/to/project/.agents/skills/design-writing/install.py update
+python3 /absolute/path/to/project/.agents/skills/journal/install.py update
 ```
 
 Each updater identifies its skill from its installed receipt and location,
@@ -162,6 +155,29 @@ source, `npx`, and symlink installations keep their original update routes.
 Installing or updating the skill does not change a project's recorded PLS
 version or reorganize its files. A human must accept that adoption separately.
 
+## Upgrade from draft4 to separate Journal
+
+Use the draft5-or-later extracted bundle's installer to update PLS and install
+Journal into the same project. From the project root:
+
+```bash
+python3 /path/to/new/pls/install.py update --bundle /path/to/new/pls
+python3 /path/to/new/pls/install.py install --skill journal
+```
+
+The old installed PLS updater can also update PLS from a newer bundle. Its
+old command-line parser cannot select `journal` until it is upgraded; use the
+new bundle installer for the new skill. Updating PLS removes its former
+`references/journal.md` after verifying managed files are unedited, and does
+not install the companion automatically. Local edits stop the update for
+review.
+
+Use `$journal` for recordkeeping previously handled by `$pls`. Update active
+project pointers to the new installed guide in the same adoption. Preserve
+historical version references and leave journal records at their mapped paths.
+The record rules remain shared; the extraction does not weaken acceptance,
+provenance, history, or completed-save requirements.
+
 ## Install a bundle with npx
 
 With Node.js/npm available, use the release asset URL:
@@ -186,12 +202,12 @@ command are wanted.
 
 ## Use the installed skill
 
-From draft4, the installed PLS directory contains `SKILL.md`,
-`references/PLS.md`, and `references/journal.md`.
-The design-writing directory contains its `SKILL.md` and writing guide.
+From draft5, each of `pls`, `journal`, and `design-writing` has its own
+`SKILL.md` and bundled guide. PLS handles layout, Journal handles discussion
+and decision records, and design-writing handles system designs.
 Codex can select the skill when its description matches the request; in CLI or
-the IDE extension, `$pls` or `$design-writing` selects it explicitly. If the
-skill does not appear, restart the agent. See the official
+the IDE extension, `$pls`, `$journal`, or `$design-writing` selects it
+explicitly. If the skill does not appear, restart the agent. See the official
 [Build skills guide](https://learn.chatgpt.com/docs/build-skills) for discovery
 locations and behavior.
 
@@ -200,8 +216,8 @@ $pls scaffold this new project
 $pls review this project's structure
 $pls reorganize this project using PLS
 $pls tell me where this release package belongs
-$pls record this discussion and our accepted decisions in the project journal
-$pls recall why we changed the capture destination
+$journal record this discussion and our accepted decisions in the project journal
+$journal recall why we changed the capture destination
 $design-writing draft the design for this system
 $design-writing review this design for implementation readiness
 ```
@@ -210,8 +226,8 @@ Review is read-only unless changes are requested. Scaffold creates only needed
 areas. Reorganize improves the recorded layout; adopting a different version
 requires human acceptance. The bundled standard owns placement and adoption
 rules. PLS does not introduce a separate scaffold command or linter.
-The Journal recording and retrieval examples require draft4 or the working
-source revision. Disposable context uses the path declared in the project's
+The Journal recording and retrieval examples require the standalone Journal
+skill from draft5 or later. Disposable context uses the path declared in the project's
 map, defaulting to `.local/agent-note/`; it remains separate from durable
 Journal records.
 
@@ -247,10 +263,10 @@ From a clean, committed PLS checkout:
 
 ```bash
 python3 -m unittest discover -s tests -v
-python3 tools/build_release.py --version 0.3.0-draft.4
+python3 tools/build_release.py --version 0.3.0-draft.5
 ```
 
-The builder writes `releases/0.3.0-draft.4/pls.zip` and `pls.zip.sha256`, records
+The builder writes `releases/0.3.0-draft.5/pls.zip` and `pls.zip.sha256`, records
 the source commit, and refuses to overwrite an existing version output.
 `--output-dir` selects another build output location. Only the skill packages,
 installer, license, generated instructions, and release metadata are included.
@@ -259,8 +275,8 @@ The same inputs produce the same ZIP bytes.
 After committing and pushing the desired source, publish a matching new tag:
 
 ```bash
-git tag v0.3.0-draft.4
-git push origin v0.3.0-draft.4
+git tag v0.3.0-draft.5
+git push origin v0.3.0-draft.5
 ```
 
 The [release workflow](../.github/workflows/release.yml) runs the tests, builds
