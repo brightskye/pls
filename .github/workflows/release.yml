@@ -22,8 +22,13 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           cat > /tmp/pls-release-notes.md <<'NOTES'
-          Complete PLS working-draft bundle: skill, rules, Python installer, instructions, and license.
-          Download pls.zip and extract it. From the target project, run the extracted install.py with Python 3.10 or newer.
+          Complete PLS working-draft bundle: PLS layout skill, companion design-writing skill, guides, Python installer, instructions, and license.
+          Download pls.zip and extract it. From the target project, use Python 3.10 or newer:
+
+          - `python3 /path/to/pls/install.py install` installs only the PLS layout skill.
+          - `python3 /path/to/pls/install.py install --skill design-writing` installs only the design-writing skill.
+
+          Each skill is self-contained and has its own installed updater. Run `install.py update` inside the installed skill to update that skill.
           This is a working draft, not a stable PLS standard release.
           NOTES
           gh release create "$GITHUB_REF_NAME" \

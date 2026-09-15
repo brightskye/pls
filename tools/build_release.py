@@ -22,6 +22,10 @@ import zipfile
 
 REPOSITORY = "brightskye/pls"
 SKILL_SOURCE = Path("src") / "pls"
+SKILL_REFERENCES = {
+    "pls": "PLS.md",
+    "design-writing": "design-writing.md",
+}
 INSTALLER_SOURCE = Path("tools") / "pls_skill.py"
 LICENSE_SOURCE = Path("LICENSE")
 ZIP_NAME = "pls.zip"
@@ -95,7 +99,7 @@ def _reject_private_or_special(path: Path, relative: Path) -> None:
         raise BundleError(f"Refusing symlink in bundle source: {path}")
 
 
-def _source_files(directory: Path) -> Iterable[tuple[str, Path]]:
+def _source_files(directory: Path, skill: str) -> Iterable[tuple[str, Path]]:
     if directory.is_symlink():
         raise BundleError(f"Refusing symlink in bundle source: {directory}")
     if not directory.is_dir():
@@ -110,7 +114,7 @@ def _source_files(directory: Path) -> Iterable[tuple[str, Path]]:
         if not path.is_file():
             raise BundleError(f"Unsupported file in bundle source: {path}")
         found = True
-        yield (Path("skills") / "pls" / relative).as_posix(), path
+        yield (Path("skills") / skill / relative).as_posix(), path
     if not found:
         raise BundleError(f"Bundle source directory is empty: {directory}")
 
@@ -127,10 +131,16 @@ def _required_file(root: Path, relative: Path) -> Path:
 
 
 def _read_sources(root: Path) -> dict[str, bytes]:
-    source_dir = root / SKILL_SOURCE
-    files = dict(_read_file(path, arcname) for arcname, path in _source_files(source_dir))
-    if not files.get("skills/pls/SKILL.md") or not files.get("skills/pls/references/PLS.md"):
-        raise BundleError("PLS skill must contain SKILL.md and references/PLS.md")
+    files: dict[str, bytes] = {}
+    for skill, reference in SKILL_REFERENCES.items():
+        source_dir = root / "src" / skill
+        files.update(_read_file(path, arcname)
+                     for arcname, path in _source_files(source_dir, skill))
+        if (not files.get(f"skills/{skill}/SKILL.md")
+                or not files.get(f"skills/{skill}/references/{reference}")):
+            raise BundleError(
+                f"{skill} skill must contain SKILL.md and references/{reference}"
+            )
     installer = _required_file(root, INSTALLER_SOURCE)
     license_file = _required_file(root, LICENSE_SOURCE)
     files["install.py"] = installer.read_bytes()
@@ -150,43 +160,58 @@ def _readme(version: str) -> bytes:
     status = "working draft" if "-draft." in version else "stable standard"
     text = f"""# PLS {version}
 
-This bundle contains the PLS v{standard_version} {status} and its Python installer.
-The release version identifies the exact packaged rules and installer.
+This bundle contains the PLS v{standard_version} {status}, the companion
+design-writing skill and guide, and their Python installer. Each skill is
+self-contained. The release version identifies the exact packaged skills,
+guides, and installer; it does not change the PLS standard version.
 
 ## Install
 
-From the target project's root, run:
+From the target project's root, install the PLS layout skill:
 
 ```bash
 python3 /path/to/pls/install.py install
 ```
 
-The skill, rules, updater, instructions, release metadata, and license are
-copied together to `.agents/skills/pls/`. Use `--dest` with the parent skills
-directory when a different managed location is needed. This Python route needs
+To install the design-writing skill, run a separate command:
+
+```bash
+python3 /path/to/pls/install.py install --skill design-writing
+```
+
+The default command installs only `pls` into `.agents/skills/pls/`.
+`--skill design-writing` installs only the companion into
+`.agents/skills/design-writing/`. Either skill works without the other. Each
+installation includes its skill, guide, updater, instructions, release
+metadata, and license. Use `--dest` with the parent skills directory when a
+different managed location is needed; the selected skill gets its own child
+directory. This Python route needs
 no PLS checkout, Node.js, or third-party Python packages. The extracted bundle
 is no longer needed after installation.
 Python 3.10 or newer is required. Installation uses the local bundle offline.
 
-The installed directory contains the skill, rules, updater, instructions,
-license, release metadata, and `.pls-install.json` receipt. The receipt records
+Each installed directory contains its own `.pls-install.json` receipt. It records
 hashes for every installed bundle file and detects local edits before updates.
 
 ## Update
 
-Run the installed updater from any working directory:
+Run the updater inside the skill you want to update, from any working directory:
 
 ```bash
 python3 /absolute/path/to/project/.agents/skills/pls/install.py update
+python3 /absolute/path/to/project/.agents/skills/design-writing/install.py update
 ```
 
-It asks for the latest published bundle and updates every managed file,
-including `install.py` itself. Use `--dest` with the parent skills directory to
-override the managed location.
+The installed updater identifies its own skill and location. Each command
+asks for the latest published bundle and updates every managed file for that
+skill, including `install.py` itself. Updating one skill leaves the other
+unchanged. Use `--dest` with the parent skills directory to override the managed
+location while keeping the same skill selected.
 For an explicitly offline update, provide an extracted bundle directory:
 
 ```bash
 python3 /absolute/path/to/project/.agents/skills/pls/install.py update --bundle /path/to/extracted/pls
+python3 /absolute/path/to/project/.agents/skills/design-writing/install.py update --bundle /path/to/extracted/pls
 ```
 
 The extracted update bundle is no longer needed after the update. An unchanged
@@ -197,7 +222,7 @@ downloaded installer:
 python3 /path/to/new/pls/install.py update --bundle /path/to/new/pls
 ```
 
-Installing the skill does not adopt PLS or reorganize a project. Human
+Installing either skill does not adopt PLS or reorganize a project. Human
 adoption and layout decisions remain separate.
 """
     return text.encode("utf-8")

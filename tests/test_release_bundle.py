@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import importlib.util
 import json
+import os
 from pathlib import Path
 import stat
 import tempfile
@@ -20,7 +21,7 @@ assert SPEC.loader is not None
 SPEC.loader.exec_module(builder)
 
 COMMIT = "0123456789abcdef" * 2 + "01234567"
-VERSION = "0.3.0-draft.1"
+VERSION = "0.3.0-draft.3"
 
 
 class ReleaseBundleTests(unittest.TestCase):
@@ -39,6 +40,13 @@ class ReleaseBundleTests(unittest.TestCase):
         )
         (self.root / "src" / "pls" / "references" / "guide.md").write_text(
             "Bundled guidance.\n", encoding="utf-8"
+        )
+        (self.root / "src" / "design-writing" / "references").mkdir(parents=True)
+        (self.root / "src" / "design-writing" / "SKILL.md").write_text(
+            "---\nname: design-writing\n---\n\n# Design writing\n", encoding="utf-8"
+        )
+        (self.root / "src" / "design-writing" / "references" / "design-writing.md").write_bytes(
+            "# Design writing\r\n\r\nWrite the user's goal → operating behavior.\r\n".encode("utf-8")
         )
         (self.root / "tools" / "pls_skill.py").write_text(
             "#!/usr/bin/env python3\nprint('installer')\n", encoding="utf-8"
@@ -61,6 +69,8 @@ class ReleaseBundleTests(unittest.TestCase):
             "pls/README.md",
             "pls/install.py",
             "pls/release.json",
+            "pls/skills/design-writing/SKILL.md",
+            "pls/skills/design-writing/references/design-writing.md",
             "pls/skills/pls/SKILL.md",
             "pls/skills/pls/references/PLS.md",
             "pls/skills/pls/references/guide.md",
@@ -68,19 +78,22 @@ class ReleaseBundleTests(unittest.TestCase):
         self.assertEqual(set(members), expected)
         self.assertEqual(list(members), sorted(members))
         self.assertTrue(all(name.startswith("pls/") for name in members))
-        self.assertEqual(
-            members["pls/skills/pls/SKILL.md"],
-            (self.root / "src" / "pls" / "SKILL.md").read_bytes(),
-        )
-        self.assertEqual(
-            members["pls/skills/pls/references/PLS.md"],
-            (self.root / "src" / "pls" / "references" / "PLS.md").read_bytes(),
-        )
+        for skill in ("pls", "design-writing"):
+            source = self.root / "src" / skill
+            for path in source.rglob("*"):
+                if path.is_file():
+                    member = f"pls/skills/{skill}/{path.relative_to(source).as_posix()}"
+                    self.assertEqual(members[member], path.read_bytes(), member)
         self.assertEqual(members["pls/install.py"], (self.root / "tools" / "pls_skill.py").read_bytes())
         self.assertEqual(members["pls/LICENSE"], b"MIT License\n")
         readme = members["pls/README.md"].decode("utf-8")
         for phrase in (
             "python3 /path/to/pls/install.py install",
+            "python3 /path/to/pls/install.py install --skill design-writing",
+            "`.agents/skills/design-writing/`",
+            "default command installs only `pls`",
+            "Updating one skill leaves the other",
+            "python3 /absolute/path/to/project/.agents/skills/design-writing/install.py update",
             "--dest",
             "latest published bundle",
             "update --bundle /path/to/extracted/pls",
@@ -107,6 +120,10 @@ class ReleaseBundleTests(unittest.TestCase):
 
     def test_same_inputs_produce_same_zip_and_hash(self):
         first = self.build()
+        for skill in ("pls", "design-writing"):
+            path = self.root / "src" / skill / "SKILL.md"
+            os.utime(path, (1_600_000_000, 1_600_000_000))
+            path.chmod(0o744)
         second = self.build(output=Path(self.temporary.name) / "other" / VERSION)
         self.assertEqual(first[0].read_bytes(), second[0].read_bytes())
         self.assertEqual(first[1].read_bytes(), second[1].read_bytes())
@@ -114,6 +131,30 @@ class ReleaseBundleTests(unittest.TestCase):
     def test_empty_skill_is_not_packaged(self):
         (self.root / "src" / "pls" / "SKILL.md").write_bytes(b"")
         with self.assertRaisesRegex(builder.BundleError, "must contain"):
+            self.build()
+        self.assertFalse(self.output.exists())
+
+    def test_companion_requires_its_skill_and_guide(self):
+        for name in ("SKILL.md", "references/design-writing.md"):
+            path = self.root / "src" / "design-writing" / name
+            original = path.read_bytes()
+            for content in (None, b""):
+                with self.subTest(name=name, content=content):
+                    if content is None:
+                        path.unlink()
+                    else:
+                        path.write_bytes(content)
+                    try:
+                        with self.assertRaisesRegex(builder.BundleError, "design-writing skill must contain"):
+                            self.build()
+                        self.assertFalse(self.output.exists())
+                    finally:
+                        path.write_bytes(original)
+
+    def test_missing_companion_directory_is_not_packaged(self):
+        source = self.root / "src" / "design-writing"
+        source.rename(source.with_name("companion-away"))
+        with self.assertRaisesRegex(builder.BundleError, "Missing bundle source directory"):
             self.build()
         self.assertFalse(self.output.exists())
 
@@ -144,6 +185,38 @@ class ReleaseBundleTests(unittest.TestCase):
             self.skipTest("symbolic links are unavailable")
         with self.assertRaisesRegex(builder.BundleError, "symlink"):
             self.build(output=Path(self.temporary.name) / "symlink" / VERSION)
+
+    def test_rejects_private_and_cache_files_in_companion(self):
+        source = self.root / "src" / "design-writing"
+        for name, error in ((".private", "private"), ("__pycache__/cache.pyc", "cache")):
+            with self.subTest(name=name):
+                path = source / name
+                path.parent.mkdir(exist_ok=True)
+                path.write_bytes(b"not release content")
+                try:
+                    with self.assertRaisesRegex(builder.BundleError, error):
+                        self.build()
+                    self.assertFalse(self.output.exists())
+                finally:
+                    path.unlink()
+
+    def test_rejects_companion_symlinks(self):
+        source = self.root / "src" / "design-writing"
+        link = source / "outside.md"
+        try:
+            link.symlink_to(self.root / "LICENSE")
+        except (OSError, NotImplementedError):
+            self.skipTest("symbolic links are unavailable")
+        with self.assertRaisesRegex(builder.BundleError, "symlink"):
+            self.build()
+        self.assertFalse(self.output.exists())
+        link.unlink()
+        moved = source.with_name("companion-away")
+        source.rename(moved)
+        source.symlink_to(moved, target_is_directory=True)
+        with self.assertRaisesRegex(builder.BundleError, "symlink"):
+            self.build()
+        self.assertFalse(self.output.exists())
 
     def test_cli_checkout_must_be_clean_but_direct_build_has_explicit_commit(self):
         with patch.object(builder, "_git_output", side_effect=[" M README.md", COMMIT]):

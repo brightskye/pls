@@ -3,7 +3,10 @@
 ## Release bundle
 
 Use the complete `pls.zip` asset from [GitHub Releases](https://github.com/brightskye/pls/releases).
-It contains:
+The layout and companion commands below describe the prepared, unpublished
+`v0.3.0-draft.3` bundle. The published `v0.3.0-draft.2` contains only PLS.
+
+The new bundle contains:
 
 ```text
 pls/
@@ -14,20 +17,27 @@ pls/
   skills/pls/
     SKILL.md
     references/PLS.md
+  skills/design-writing/
+    SKILL.md
+    agents/openai.yaml
+    references/design-writing.md
 ```
 
-The maintained skill and rules stay in `src/pls/`, and the installer source
-stays in `tools/pls_skill.py`. These are copied into the release; users do not
-need a development checkout or a separate installer download. Generated ZIPs
-and checksums use ignored `releases/<version>/` locally and GitHub Releases
-for distribution. The standard remains a working draft. Bundle versions such
-as `0.3.0-draft.1` identify packaged revisions of that draft.
+The maintained skills and guides stay in `src/`, and the installer source stays
+in `tools/pls_skill.py`. These are copied into the release; users do not need a
+development checkout or a separate installer download. The shared Python
+installer selects one skill per operation: it defaults to `pls`, while
+`--skill design-writing` selects the companion. Generated ZIPs and checksums use
+ignored `releases/<version>/` locally and GitHub Releases for distribution. The
+standard remains a working draft. Bundle versions such as `0.3.0-draft.3`
+identify packaged revisions of that draft.
 
-The current bundle,
+The latest verified remote bundle,
 [`v0.3.0-draft.2`](https://github.com/brightskye/pls/releases/tag/v0.3.0-draft.2),
-is published and tested. Its Python installer keeps the complete installation
-in one folder. See the [Project Record](project-record.md) for verification
-results and limits.
+is published and tested. The `v0.3.0-draft.3` bundle is prepared in this
+working tree and remains pending commit and publication. It will add the
+companion skill while preserving the PLS standard version. See the [Project
+Record](project-record.md) for verification results and limits.
 
 ## Install with Python
 
@@ -38,18 +48,26 @@ extracted bundle's installer:
 python3 /absolute/path/to/pls/install.py install
 ```
 
-This copies the skill, rules, updater, instructions, release metadata, and
-license into `.agents/skills/pls/` without network access. It requires Python
-3.10 or newer, with no Node.js, Git, or extra Python packages. On Windows,
-`py -3` can replace `python3` when using the Python launcher. The extracted
-bundle is no longer needed after installation.
+The command installs PLS by default. To install the companion from the same
+extracted bundle, run a second command:
 
-The managed directory contains the complete Python route:
+```bash
+python3 /absolute/path/to/pls/install.py install --skill design-writing
+```
+
+This copies the selected skill, its guide or rules, updater, instructions,
+release metadata, and license into `.agents/skills/<skill>/` without network
+access. It requires Python 3.10 or newer, with no Node.js, Git, or extra Python
+packages. On Windows, `py -3` can replace `python3` when using the Python
+launcher. The extracted bundle is no longer needed after installation.
+
+The managed directory for each selected skill contains the complete Python
+route:
 
 ```text
-.agents/skills/pls/
+.agents/skills/<skill>/
   SKILL.md
-  references/PLS.md
+  references/
   install.py
   README.md
   LICENSE
@@ -57,15 +75,19 @@ The managed directory contains the complete Python route:
   .pls-install.json
 ```
 
-For a different location, pass `--dest` with the parent skills directory; the
-installer creates or updates its `pls/` child there. Other agent hosts may use
-different skill locations; use the path documented by that host.
+The PLS installation contains `references/PLS.md`; the design-writing
+installation contains `references/design-writing.md` and its agent metadata.
 
-The installed `.pls-install.json` records the release, source commit, file
-hashes for every installed bundle file, and update selection. Keep this
-generated receipt unchanged; it is the baseline for detecting local edits. The
-installer refuses to overwrite an existing path during installation, or update
-an unmanaged or edited copy.
+For a different location, pass `--dest` with the parent skills directory; the
+installer creates or updates its `<skill>/` child there. Use `--skill` to choose
+the companion explicitly. Other agent hosts may use different skill locations;
+use the path documented by that host.
+
+Each installed `.pls-install.json` records the selected `skill`, release,
+source commit, file hashes for every installed bundle file, and update
+selection. Keep this generated receipt unchanged; it is the baseline for
+detecting local edits. The installer refuses to overwrite an existing path
+during installation, or update an unmanaged or edited copy.
 
 Use one installation method for each copy. A source or `npx` installation,
 or a symlink, keeps its original update route and does not include this
@@ -77,14 +99,16 @@ Run the updater installed in the managed directory:
 
 ```bash
 python3 /absolute/path/to/project/.agents/skills/pls/install.py update
+python3 /absolute/path/to/project/.agents/skills/design-writing/install.py update
 ```
 
-The updater resolves the managed directory from its own installed path, so this
-command works even when the current working directory is elsewhere. Pass
-`--dest` to override that location. It downloads the newest published PLS
-release bundle and checks its SHA-256 checksum before replacing every managed
-file, including the skill, instructions, release metadata, license, and
-`install.py` itself. It does not fetch `src/pls` or read a local PLS checkout.
+Each updater identifies its skill from its installed receipt and location,
+so it works even when the current working directory is elsewhere. An explicit
+`--skill` selects another supported skill; `--dest` changes the parent skills
+directory. The updater downloads the newest published PLS bundle and
+checks its SHA-256 checksum before replacing every managed file for that skill,
+including the skill, guide or instructions, release metadata, license, and
+`install.py` itself. It does not fetch `src/` or read a local PLS checkout.
 Updates require HTTPS access to GitHub. The newest published bundle may be a
 working-draft prerelease; unpublished GitHub drafts are excluded. Updating is
 always an explicit operation.
@@ -92,14 +116,16 @@ always an explicit operation.
 To select a release and keep subsequent updates pinned to it:
 
 ```bash
-python3 /absolute/path/to/project/.agents/skills/pls/install.py update --release v0.3.0-draft.2
+python3 /path/to/project/.agents/skills/pls/install.py update \
+  --release v0.3.0-draft.3
 ```
 
 Use `--release latest` to follow new published bundles again. To update offline,
 download and extract the desired bundle, then select it explicitly:
 
 ```bash
-python3 /absolute/path/to/project/.agents/skills/pls/install.py update --bundle /absolute/path/to/new/pls
+python3 /path/to/project/.agents/skills/pls/install.py update \
+  --bundle /path/to/new/pls
 ```
 
 `--bundle` also accepts a release ZIP. A pinned installation remains pinned
@@ -114,8 +140,8 @@ reports that it is already up to date. The updater itself is replaced as part
 of a successful update, so later runs use the new bundle's behavior. The
 downloaded or extracted update bundle is no longer needed after the update.
 
-To migrate an unchanged Python installation from the published draft.1 bundle
-to the new bundled installer, download and extract the new bundle, then run its
+To migrate an unchanged Python installation from an older PLS-only bundle to
+the new bundled installer, download and extract the new bundle, then run its
 installer once from the target project:
 
 ```bash
@@ -124,8 +150,10 @@ python3 /path/to/new/pls/install.py update --bundle /path/to/new/pls
 
 The migration replaces the old managed directory only after checking its
 receipt and local files. A Python-managed `--ref` installation can use this
-same explicit bundle migration. Unmanaged source, `npx`, and symlink
-installations keep their original update routes.
+same explicit bundle migration. Existing PLS receipts and legacy PLS-only ZIPs
+remain supported for the `pls` skill. An older PLS-only bundle cannot install
+`design-writing`; use the draft3-or-later bundle for that skill. Unmanaged
+source, `npx`, and symlink installations keep their original update routes.
 
 Installing or updating the skill does not change a project's recorded PLS
 version or reorganize its files. A human must accept that adoption separately.
@@ -151,10 +179,11 @@ command are wanted.
 
 ## Use the installed skill
 
-The installed directory must contain `SKILL.md` and `references/PLS.md`.
+The installed PLS directory must contain `SKILL.md` and `references/PLS.md`.
+The design-writing directory contains its `SKILL.md` and writing guide.
 Codex can select the skill when its description matches the request; in CLI or
-the IDE extension, `$pls` selects it explicitly. If the skill does not appear,
-restart the agent. See the official
+the IDE extension, `$pls` or `$design-writing` selects it explicitly. If the
+skill does not appear, restart the agent. See the official
 [Build skills guide](https://learn.chatgpt.com/docs/build-skills) for discovery
 locations and behavior.
 
@@ -163,6 +192,8 @@ $pls scaffold this new project
 $pls review this project's structure
 $pls reorganize this project using PLS
 $pls tell me where this release package belongs
+$design-writing draft the design for this system
+$design-writing review this design for implementation readiness
 ```
 
 Review is read-only unless changes are requested. Scaffold creates only needed
@@ -202,20 +233,20 @@ From a clean, committed PLS checkout:
 
 ```bash
 python3 -m unittest discover -s tests -v
-python3 tools/build_release.py --version 0.3.0-draft.1
+python3 tools/build_release.py --version 0.3.0-draft.3
 ```
 
-The builder writes `releases/0.3.0-draft.1/pls.zip` and `pls.zip.sha256`, records
+The builder writes `releases/0.3.0-draft.3/pls.zip` and `pls.zip.sha256`, records
 the source commit, and refuses to overwrite an existing version output.
-`--output-dir` selects another build output location. Only the skill package,
+`--output-dir` selects another build output location. Only the skill packages,
 installer, license, generated instructions, and release metadata are included.
 The same inputs produce the same ZIP bytes.
 
 After committing and pushing the desired source, publish a matching new tag:
 
 ```bash
-git tag v0.3.0-draft.1
-git push origin v0.3.0-draft.1
+git tag v0.3.0-draft.3
+git push origin v0.3.0-draft.3
 ```
 
 The [release workflow](../.github/workflows/release.yml) runs the tests, builds

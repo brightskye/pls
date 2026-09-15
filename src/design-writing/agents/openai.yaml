@@ -1,0 +1,4 @@
+interface:
+  display_name: "Design Writing"
+  short_description: "Write clear, precise system design documents"
+  default_prompt: "Use $design-writing to turn these requirements and decisions into a readable system design with use cases, workflows, and exact operating behavior."

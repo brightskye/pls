@@ -25,19 +25,28 @@ project's authoritative standard and the version distributed with the skill,
 so a Git installer may copy that directory without relying on the repository
 parent or fetching rules at runtime.
 
-The published
-[`v0.3.0-draft.2`](https://github.com/brightskye/pls/releases/tag/v0.3.0-draft.2)
-bundle installs the skill, rules, updater, instructions, license, and release
+The latest verified remote bundle,
+[`v0.3.0-draft.2`](https://github.com/brightskye/pls/releases/tag/v0.3.0-draft.2),
+installs the skill, rules, updater, instructions, license, and release
 metadata together in `.agents/skills/pls/`. Its receipt tracks every installed
 file. The installed updater updates that same directory, including itself,
 from published GitHub bundles. The extracted download is no longer needed.
 Maintained sources remain in `src/pls/` and `tools/`; generated bundles use
 ignored `releases/<version>/` outputs and GitHub Releases for distribution.
 
-All 30 installer and builder tests pass locally and in the GitHub release
-workflow. These include migration of old receipts, self-update from an
-unrelated working directory, and preservation of local updater edits. The
-published ZIP matched the local build byte for byte and passed its checksum.
+The planned `v0.3.0-draft.3` bundle adds the companion design-writing skill
+beside `skills/pls/`. Its shared Python installer selects one skill per
+operation, defaulting to `pls` and accepting `--skill design-writing`; each
+installed skill has its own updater and `.pls-install.json` receipt. Installing
+both skills therefore requires two commands. Draft3 preparation is pending
+commit and publication; it is not a live release, and the latest verified
+remote remains draft2.
+
+The published draft2's 30 installer and builder tests passed locally and in the
+GitHub release workflow. These include migration of old receipts, self-update
+from an unrelated working directory, and preservation of local updater edits.
+The published ZIP matched the local build byte for byte and passed its
+checksum.
 Offline installation and GitHub updates through the installed updater passed
 after the extracted installer was moved away. The installed PLS skill also
 passed its validator. Live checks ran on Linux/WSL; native Windows remains
@@ -63,6 +72,24 @@ published GitHub branch. The `src/pls/` source layout, updated working rules,
 Python tool, tests, and installation instructions are published. Existing
 installed copies remain at their selected version until explicitly updated.
 
+A companion [design-writing skill](../src/design-writing/SKILL.md) and
+[standalone guide](../src/design-writing/references/design-writing.md) are now
+maintained in `src/design-writing/`. They cover system views, use cases,
+operating behavior, readable prose and diagrams, and implementation readiness.
+The guide remains a draft for review and uses Orca as an example. The package
+is self-contained and independent of the PLS skill. Draft3 preparation adds it
+to the release bundle as a separately selectable skill. It has not been
+published or installed in live projects. Orca keeps a local copy of the guide
+for its readers.
+
+All 39 draft3 installer and builder tests passed locally, and both skill
+packages passed the skill validator. A temporary candidate bundle passed
+offline installation, byte and checksum checks, independent updates from an
+unrelated directory, and migration using the published draft2 updater.
+The final artifact must still be built from committed source, published, and
+verified through its release download. Checks ran on Linux/WSL; native Windows
+remains untested.
+
 ## Next
 
 - Review the working standard as a human reader.
@@ -77,6 +104,10 @@ becomes large enough to need its own document.
 
 ## Decisions
 
+- The reusable design-writing guide and skill are maintained by this project
+  as a separate companion in `src/design-writing/`. Its bundled guide owns
+  writing guidance; the PLS standard retains ownership of project layout.
+  Copied guides and skill installations adopt revisions explicitly.
 - PLS is maintained as an independent project.
 - PLS is distributed under the MIT License.
 - PLS means Project Layout Standard and covers the main project layout, not
@@ -134,6 +165,12 @@ becomes large enough to need its own document.
   replaces all managed files, including the updater. Python-managed `--ref`
   installations can migrate with an explicit bundle update; unmanaged source,
   `npx`, and symlink routes remain separate and do not include that updater.
+- A release bundle may contain multiple skills. The Python installer selects
+  one skill per operation and defaults to `pls`. The `--skill design-writing`
+  option selects the companion; each skill has its own directory, updater,
+  and receipt. Installing both requires two commands. Legacy
+  PLS receipts and PLS-only bundles remain supported for PLS; a PLS-only
+  bundle cannot provide the companion skill.
 - Adopting PLS means preserving useful material while migrating obsolete
   structure to the normal PLS areas and names. A mapped existing name is an
   explicit exception for a project convention or Owner choice, not the default
@@ -204,3 +241,18 @@ was published as `v0.3.0-draft.2`. All 30 release tests passed, and the publishe
 bundle passed offline installation and independent GitHub update checks.
 Orca was migrated and its updater verified after retiring the separate
 home-folder installation and source link. The standard remains a working draft.
+
+On 2026-09-15, the Owner requested that Orca's writing guide become a standalone
+Markdown document maintained in PLS and a reusable design-writing skill. The
+guide was extracted with its Orca example, bundled beside the new skill, and
+linked from the project map. Orca's README now links to its standalone copy.
+Existing edited documents were preserved as dated `.bak` files. No standard,
+release, installer, or adopting-project behavior changed.
+
+Later on 2026-09-15, draft3 preparation was approved to include both
+`skills/pls/` and `skills/design-writing/` in one release bundle. The shared
+Python installer selects one skill per operation, with PLS as the default and
+the companion selected explicitly; each installed skill owns its updater and
+receipt. The draft3 release remains pending commit and publication, and the
+latest verified remote remains draft2. No live adoption or install was made by
+this preparation.
