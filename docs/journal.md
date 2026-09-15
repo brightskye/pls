@@ -27,14 +27,17 @@ raw capture separately from a completed journal save. Agent adapters follow
 the selected interface. Orca's later vault integration can adopt a versioned
 guide and keep local execution rules in configurable vault locations.
 
-The `0.3.0-draft.5` candidate passes all 47 package tests, three skill
-validators, Markdown and local-link checks, and independent Journal behavior
-trials. Actual draft4 updaters also passed offline migration, local-edit
-protection, sibling preservation, and receipt checks. Publication and Orca's
-installation update remain pending. The latest published bundle is
-[`v0.3.0-draft.4`](https://github.com/brightskye/pls/releases/tag/v0.3.0-draft.4),
-which has two skills and keeps Journal guidance inside PLS. The standard has
-not been promoted to stable. Native Windows remains untested.
+The latest published bundle is
+[`v0.3.0-draft.5`](https://github.com/brightskye/pls/releases/tag/v0.3.0-draft.5).
+All 47 package tests, three skill validators, document checks, independent
+Journal behavior trials, and actual draft4 migration checks passed. The
+published assets match the clean source build. [Release history](#draft5-publication-and-live-adoption)
+records the source commit, workflow, checksum, and verification details.
+
+Orca has verified draft5 installations of `pls`, `journal`, and
+`design-writing`, with latest-release selection retained. No Runtime or vault
+behavior changed. The standard remains the 0.3.0 working draft; native Windows
+remains untested.
 
 PLS keeps its existing `docs/journal.md`. Adopting projects follow their current
 maps; separately authorized migrations are independent of this extraction.
@@ -44,8 +47,6 @@ separate from the package change and remain unimplemented.
 
 ## Next
 
-- Publish the verified draft5 bundle and complete the authorized Orca skill
-  upgrade, preserving its current mapped record locations.
 - Migrate other projects' `project-record` locations and update installed
   skills only when those separate actions are requested.
 - Review whether any real project needs an explicitly mapped alternative to a
@@ -172,7 +173,8 @@ we achieve it?"
 The implementation proposal was to extract `src/journal/`, narrow PLS to
 layout and placement, distinguish direct repository saves from Runtime-managed
 handoffs, add Journal to the bundle and installer, verify independent skills,
-and update Orca's design and installed skills. Existing journals would remain
+publish the bundle, and update Orca's design and installed skills. Existing
+journals would remain
 in place. The user answered "yes" to that proposal. These retained proposal
 and response excerpts are the source; no separate durable message locator is
 recorded here.
@@ -732,4 +734,31 @@ preserved the sibling skill, removed the former PLS-contained guide, and
 matched new payloads and receipt hashes. All three skills also installed
 independently without the source checkout; Journal's own updater retained its
 identity and latest-release selection. Native Windows remains untested.
-Publication and live installation are separate results recorded when complete.
+At that stage, publication and live installation were separate results still
+pending.
+
+### Draft5 publication and live adoption
+
+On 2026-09-15, commit
+[`8b9ad75b1bd6e51c98533820ba39de1cfa38a71e`](https://github.com/brightskye/pls/commit/8b9ad75b1bd6e51c98533820ba39de1cfa38a71e)
+was published as
+[`v0.3.0-draft.5`](https://github.com/brightskye/pls/releases/tag/v0.3.0-draft.5).
+The [release workflow](https://github.com/brightskye/pls/actions/runs/34964074409)
+completed successfully. The downloaded ZIP and checksum were byte-identical
+to the clean source build, and the published checksum is
+`bec67abad1023603611bc9fa0acdbd4f82523f1cb0cb218613e6b7509fc2c5db`.
+
+The final bundle passed the same-input deterministic rebuild and migration
+check. The release verification included 47 package tests, three skill
+validators, Markdown and local-link checks, and independent direct and managed
+behavior trials. Offline migration tests used the actual published draft4
+PLS and design-writing updaters. Exact installed payloads and receipt hashes
+matched the new bundle, local edits were protected, each update preserved the
+sibling skill, and the former PLS-contained Journal guide was removed.
+
+The live Orca upgrade then completed: PLS and design-writing updated through
+their normal latest-release path, Journal was installed explicitly from the
+published bundle, and all three managed payloads and receipt hashes matched
+the release with `release_ref: latest`. No Orca Runtime implementation or
+vault changes were made. The standard remains the 0.3.0 working draft, and
+native Windows remains untested.

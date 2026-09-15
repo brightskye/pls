@@ -3,9 +3,10 @@
 ## Release bundle
 
 Use the complete `pls.zip` asset from [GitHub Releases](https://github.com/brightskye/pls/releases).
-The layout below describes the `0.3.0-draft.5` candidate. It contains three
-independently selectable skills. Published draft4 has two skills with Journal
-rules inside PLS; the standalone Journal skill requires draft5 or later.
+The layout below describes the published `0.3.0-draft.5` bundle. It contains
+three independently selectable skills. The preceding draft4 release has two
+skills with Journal rules inside PLS; the standalone Journal skill requires
+draft5 or later.
 
 ```text
 pls/
@@ -114,7 +115,7 @@ To select a release and keep subsequent updates pinned to it:
 
 ```bash
 python3 /path/to/project/.agents/skills/pls/install.py update \
-  --release v0.3.0-draft.4
+  --release v0.3.0-draft.5
 ```
 
 Use `--release latest` to follow new published bundles again. To update offline,
@@ -184,7 +185,7 @@ With Node.js/npm available, use the release asset URL:
 
 ```bash
 npx skills@latest add \
-  https://github.com/brightskye/pls/releases/download/v0.3.0-draft.4/pls.zip \
+  https://github.com/brightskye/pls/releases/download/v0.3.0-draft.5/pls.zip \
   --skill pls --agent codex
 ```
 
@@ -272,7 +273,8 @@ the source commit, and refuses to overwrite an existing version output.
 installer, license, generated instructions, and release metadata are included.
 The same inputs produce the same ZIP bytes.
 
-After committing and pushing the desired source, publish a matching new tag:
+For a future bundle, commit and push the desired source, then publish a matching
+new tag. The draft5 tag below is already published:
 
 ```bash
 git tag v0.3.0-draft.5
@@ -292,6 +294,10 @@ Before declaring a new bundle usable, extract it outside the checkout, install
 without network access, verify the installed bytes, and check updates and
 local-edit protection. Check the published release download after publication.
 The [Project Journal](journal.md) records current results and limitations.
+
+Draft5 is published and verified. Its [release history](journal.md#draft5-publication-and-live-adoption)
+records the source commit, workflow, checksum, package and migration checks,
+and Orca adoption. Native Windows remains untested.
 
 A working-draft bundle is not a stable PLS standard release. Stable promotion
 remains a separate human decision. Existing adopting projects do not migrate

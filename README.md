@@ -46,11 +46,9 @@ locations, and adoption decisions.
 
 ## Distribution
 
-The next bundle, `0.3.0-draft.5`, separates Journal from the PLS layout skill.
-The currently published
-[`v0.3.0-draft.4`](https://github.com/brightskye/pls/releases/tag/v0.3.0-draft.4)
-still bundles Journal rules inside PLS. The source revision contains three
-independently selectable skills:
+The published [draft5 bundle](https://github.com/brightskye/pls/releases/tag/v0.3.0-draft.5)
+separates Journal from the PLS layout skill. It contains three independently
+selectable skills:
 
 | Skill | Responsibility | Install selection |
 |---|---|---|
@@ -93,10 +91,11 @@ semantics, and saving systems own their execution paths. Orca can adopt a
 versioned copy while keeping its integration rules in configured vault
 locations. Agent adapters follow the selected system's interface.
 
-The `0.3.0-draft.5` source revision implements the package separation. The
-latest published bundle is draft4 until draft5 publication is verified.
-[Current](docs/journal.md#current) records verification, release, and adoption
-status. Existing record locations remain in place; native Windows is untested.
+Draft5 is published and verified, and Orca has adopted all three skills.
+[Current](docs/journal.md#current) records the verification and adoption state;
+[release history](docs/journal.md#draft5-publication-and-live-adoption)
+retains the source commit and publication evidence. Runtime integration and
+vault adoption remain separate work. Native Windows is untested.
 
 Projects may declare a disposable working context and session handoff
 location in their project map. This project uses the default
