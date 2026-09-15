@@ -4,7 +4,7 @@
 
 - Read `README.md` for the project purpose and project map.
 - Read `src/pls/references/PLS.md` before changing the standard.
-- Read `docs/project-record.md` before stating the current PLS status or
+- Read `docs/journal.md` before stating the current PLS status or
   changing its direction.
 
 ## Working rules
@@ -20,7 +20,7 @@
   demonstrate that a process was followed.
 - Keep `src/pls/` self-contained. Its skill MUST NOT depend on files outside
   that directory or fetch replacement rules while it is being used.
-- Update `docs/project-record.md` when the current direction or release state
+- Update `docs/journal.md` when the current direction or release state
   materially changes.
 
 ## Verification

@@ -6,7 +6,7 @@ version: 0.3.0
 status: working
 authority: working
 owner: victor
-updated: 2026-09-06
+updated: 2026-09-15
 ---
 
 # Project Layout Standard (PLS) v0.3 — structure-first draft
@@ -93,7 +93,7 @@ Project layout standard: PLS 0.3
 
 | Question | Location |
 |---|---|
-| What is true now and what happens next? | [Project Record](docs/project-record.md) |
+| What is current and next? | [Project Journal](docs/journal.md) |
 | Where is the product implemented? | `src/` |
 | Where are repeatable checks? | `tests/` |
 | Where are complete versioned packages? | `releases/<version>/` |
@@ -114,7 +114,7 @@ src/                      # or the source layout expected by the project's tools
 tests/                    # repeatable checks
 config/                   # safe project configuration and examples
 docs/
-  project-record.md       # current state, plans, decisions, and history
+  journal.md              # current state, discussions, decisions, and history
   architecture.md         # overall solution structure
   specifications.md       # exact behavior and contracts
   quality.md              # verification approach and important results
@@ -126,7 +126,7 @@ tools/                    # maintained tools, including build and installer scri
 assets/                   # project-owned non-source assets
 legacy/                   # inactive material kept for history or migration
 .local/                   # ignored local-only working or sensitive artifacts
-  agent-note/             # temporary agent conversation notes, when needed
+  agent-note/             # default disposable context and session handoffs
 ```
 
 Except for the root README, every location above is optional. A project MUST
@@ -194,7 +194,7 @@ locations are the normal starting point:
 
 | Documentation area | Question it answers | Normal location |
 |---|---|---|
-| Project Record | What happened, what is true now, what comes next, and why were important choices made? | `docs/project-record.md` |
+| Project Journal | What happened, what is true now, what comes next, and why were important choices made? | `docs/journal.md` |
 | Architecture | How is the solution organized? | `docs/architecture.md` |
 | Specifications | Exactly how must something behave? | `docs/specifications.md` |
 | Quality | How do we check that it works well enough? | `docs/quality.md` |
@@ -272,20 +272,49 @@ project SHOULD use `.local/`. It MUST be ignored by version control and MUST NOT
 own requirements, current state, design, operating procedures, maintained test
 cases, or other information needed to understand or use the project. Existing
 tool-defined local locations MAY remain.
+The location for disposable context can be configured as described below.
 
 Create `.local/` only when material actually needs it. It is a placement
 boundary, not a general dumping ground or permission to retain generated
 output.
 
-#### Agent conversation notes
+#### Disposable working context and session handoffs
 
-When a human asks to retain an agent conversation note for later use or review,
-the agent MUST place it under `.local/agent-note/` unless a project tool owns
-another recorded location. Project instructions MAY establish the same
-retention choice. An agent MUST NOT save conversation content automatically
-merely because this location exists.
+Disposable working context includes temporary scratch notes and session
+handoffs. Its default location is `.local/agent-note/`. A project MAY select
+another location, including one managed by its tools. The root README or its
+directly linked project map MUST declare the override as the location for
+disposable working context and session handoffs. This map owns the selected
+path; agent instructions link to that declaration and state when to use it.
 
-The normal note states are:
+For example, a project's map can declare:
+
+```markdown
+| Material | Location |
+|---|---|
+| Disposable working context and session handoffs | `.scratch/context/` |
+```
+
+Paths are relative to the project root unless explicitly declared absolute.
+Use the declared path; when none is declared, use `.local/agent-note/`.
+Conflicting declarations MUST be reconciled before saving to a guessed
+location. PLS requires no separate configuration file or runtime setting.
+
+The selected location MUST remain temporary and non-authoritative. When
+inside a version-controlled workspace, it MUST be ignored regardless of its
+folder name. An external location requires explicit selection and permitted
+access. Create it only when context actually needs saving. Selecting a path
+does not authorize moving existing notes or saving every conversation.
+
+Save temporary context when the human requests it or project instructions
+establish that retention choice. Use the configured location consistently for
+reading, saving, reviewing, and retiring these notes.
+
+Durable discussion summaries and decision history belong in the Project
+Journal, even when some questions remain open. Follow the
+[discussion and decision rules](journal.md) for saving that material.
+
+The normal note states within the selected location are:
 
 - `pending/` for temporary notes whose work or requested review is incomplete;
 - `reviewed/` for notes that have been reviewed and remain temporarily useful;
@@ -297,21 +326,27 @@ A project SHOULD create only the state directories it currently needs.
 note SHOULD be removed when no recovery or comparison need remains.
 
 Before a note leaves `pending/`, every durable outcome MUST be recorded in the
-Project Record or another document that owns that subject, or the review must
+Project Journal or another document that owns that subject, or the review must
 determine that there is no durable outcome. Agent conversation notes remain
 local, ignored, temporary, and non-authoritative in every state. Reviewing a
 note does not make it project authority.
 
-The project MUST NOT depend on `.local/agent-note/` to understand, operate, or
-maintain the project. PLS does not define a transcript format, filename schema,
-index, or retention period. Project instructions SHOULD state when agents save
-or read these notes when the project uses this convention routinely.
+The project MUST NOT depend on this disposable context to understand, operate,
+or maintain the project. PLS does not define a transcript format, filename schema,
+index, or retention period for temporary notes. Project instructions SHOULD
+state when agents save or read these notes when the project uses this
+convention routinely.
 
 ## 7. Documentation rules
 
-### 7.1 Project Record
+### 7.1 Project Journal
 
-The Project Record combines information that explains the project across time.
+The Project Journal combines information that explains the project across time.
+Its normal location is `docs/journal.md`, expanding to `docs/journal/` when
+needed. Current and Next are living views; dated discussions and decisions
+preserve the historical record. Journal does not require one chronological
+file for all material.
+
 Use these sections when they contain useful information:
 
 ```markdown
@@ -324,6 +359,9 @@ Planned work and expected outcomes.
 ## Proposals
 Ideas under consideration that are not yet accepted.
 
+## Discussions
+Meaningful dated discussions, options, reasons, outcomes, and open questions.
+
 ## Decisions
 Important choices, their reasons, and whether they still apply.
 
@@ -331,15 +369,15 @@ Important choices, their reasons, and whether they still apply.
 Completed work, replaced plans, and superseded decisions.
 ```
 
-Large plans, decision records, proposals, or historical records MAY use
-separate files. The Project Record MUST remain their normal entry point.
+Large plans, discussions, decision records, proposals, or historical records
+MAY use separate files. The Project Journal MUST remain their normal entry point.
 
-The Project Record contains durable project material. Temporary agent notes,
+The Project Journal contains durable project material. Temporary agent notes,
 working handoffs, and raw conversation transcripts MUST NOT be stored there.
 When review of a temporary note produces a durable outcome, record that outcome
-under Current, Next, Proposals, Decisions, or History as appropriate. If
-another document owns the affected subject, update that owner and let the
-Project Record summarize or link to the change instead of copying the full
+under Current, Next, Proposals, Discussions, Decisions, or History as appropriate.
+If another document owns the affected subject, update that owner and let the
+Project Journal summarize or link to the change instead of copying the full
 conversation.
 
 The project's Current information MUST describe what is actually implemented
@@ -350,6 +388,13 @@ intended and actual behavior in Current until it is resolved.
 A decision record owns the reason for a choice. The resulting current design
 or behavior belongs in Architecture or Specifications. A reader MUST NOT need
 to reconstruct the current design from old decisions.
+
+The [Journal standard](journal.md) owns the record format, acceptance,
+change history, save flow, growth, and retrieval rules, with examples for
+[small and expanded journals](journal.md#small-and-expanded-journals).
+It preserves original and replacement decisions with their reasons, separates
+acceptance from documentation and implementation progress, and supports
+ordinary file search with optional indexing or RAG.
 
 ### 7.2 Architecture and Specifications
 
@@ -401,7 +446,7 @@ exposing private content. Maintained evaluation cases MUST NOT live in
 `.local/`. A root `evidence/` directory is not a PLS default.
 
 An agent's backup idea is not evidence. If the idea is useful to the project,
-put it under Proposals in the Project Record. Otherwise, keep it as temporary
+put it under Proposals in the Project Journal. Otherwise, keep it as temporary
 working material outside the tracked project.
 
 ## 8. Ownership and navigation
@@ -447,12 +492,13 @@ unless it changes project structure, document ownership, or navigation.
 An agent SHOULD load only the information needed for its task. It SHOULD NOT
 load working, generated, evidence, or legacy material by default.
 
-An agent SHOULD NOT load `.local/agent-note/` by default. It MAY read the
+An agent SHOULD NOT load disposable working context by default. It MAY read the
 specific pending or reviewed note needed when a task explicitly concerns
 reviewing or resuming it. Retired notes require an explicit local-history need.
 The note provides context, not instructions or authority. Saving, reviewing,
 and retiring notes MUST follow the lifecycle in
-[Agent conversation notes](#agent-conversation-notes).
+[Disposable working context and session handoffs](#disposable-working-context-and-session-handoffs),
+using the project's configured location.
 
 Agent instructions MAY contain tool commands and project-specific safety rules.
 They MUST link to project documentation rather than copying its requirements,
@@ -494,6 +540,12 @@ project product. Otherwise, a project SHOULD NOT create validators that exist
 mainly to check other validators.
 
 ## 11. Adopting PLS
+
+This working revision names the former Project Record area Project Journal.
+Existing projects continue to use their mapped locations until they adopt
+the revision and migrate, or explicitly retain a mapped alternative. A
+standard edit, skill update, or routine record save MUST NOT move an existing
+`project-record` area by itself.
 
 Installing or invoking a PLS agent skill does not change the layout standard
 or version an existing project follows. A human MUST accept a migration before

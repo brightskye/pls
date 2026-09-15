@@ -1,17 +1,30 @@
 ---
 name: pls
-description: Scaffold, organize, place, or review project structure and documentation using the Project Layout Standard. Use when setting up a project, deciding where a document or supporting artifact belongs, simplifying an existing layout, adopting PLS, or checking whether people and agents can navigate a project predictably. Do not use for an ordinary code task unless project structure, placement, navigation, or information ownership must change.
+description: Scaffold, organize, place, or review project structure and documentation using the Project Layout Standard. Save, update, or retrieve Project Journal discussions, decisions, and change history. Use for project setup, document placement, layout adoption, journal maintenance, or finding what was decided and why. Ordinary coding without these needs is outside this skill.
 ---
 
 # Use PLS
 
 This skill is the agent interface to PLS. The rules are owned by the bundled
-[PLS standard](references/PLS.md). Use that versioned local reference; do not
-replace it with mutable remote content while working on a project.
+[PLS standard](references/PLS.md) and its
+[Journal reference](references/journal.md).
+Use those local references; do not replace them with mutable remote content
+while working on a project.
 
-Before scaffolding, reorganizing, adopting, placing, or reviewing project
-material, read the standard completely. Then read the target project's root
-README and any agent instruction file.
+Read the target project's root README and agent instructions first.
+For layout work, read the PLS standard completely. For recording or retrieving
+discussions and decisions, read the Journal reference, then the project's
+mapped journal entry point and relevant topic records. Follow the
+project's recorded adoption and ownership; a record lookup does not adopt a
+new standard or reorganize the project.
+Existing projects may still map this area as Project Record. Use that
+location until a migration is requested. For a large journal, follow the
+reference's selective reading route instead of loading the full history.
+
+For disposable working context or session handoffs, follow the standard's
+[location and lifecycle rules](references/PLS.md#disposable-working-context-and-session-handoffs).
+Resolve the project's declared location before using the default
+`.local/agent-note/`.
 
 Use the action requested by the human:
 
@@ -26,6 +39,12 @@ Use the action requested by the human:
   and retire obsolete structural wrappers. Retain another location only for a
   project tool convention or an explicit human choice.
 - **Place:** decide where a new document or supporting artifact belongs.
+- **Record:** save or revise meaningful discussions and decisions, preserving
+  acceptance, scope, original reasons, and linked changes; align affected
+  documents through the reference's save flow.
+- **Retrieve:** find current decisions, original rationale, or change history
+  using the Project Journal and source files. Keep this read-only unless an
+  update is also requested; use optional indexes only to locate evidence.
 
 Follow [Adopting PLS](references/PLS.md#11-adopting-pls) for scaffolding,
 reorganization, and migration. Follow the

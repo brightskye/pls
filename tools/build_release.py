@@ -23,8 +23,8 @@ import zipfile
 REPOSITORY = "brightskye/pls"
 SKILL_SOURCE = Path("src") / "pls"
 SKILL_REFERENCES = {
-    "pls": "PLS.md",
-    "design-writing": "design-writing.md",
+    "pls": ("PLS.md", "journal.md"),
+    "design-writing": ("design-writing.md",),
 }
 INSTALLER_SOURCE = Path("tools") / "pls_skill.py"
 LICENSE_SOURCE = Path("LICENSE")
@@ -132,14 +132,14 @@ def _required_file(root: Path, relative: Path) -> Path:
 
 def _read_sources(root: Path) -> dict[str, bytes]:
     files: dict[str, bytes] = {}
-    for skill, reference in SKILL_REFERENCES.items():
+    for skill, references in SKILL_REFERENCES.items():
         source_dir = root / "src" / skill
         files.update(_read_file(path, arcname)
                      for arcname, path in _source_files(source_dir, skill))
-        if (not files.get(f"skills/{skill}/SKILL.md")
-                or not files.get(f"skills/{skill}/references/{reference}")):
+        required = ("SKILL.md", *(f"references/{name}" for name in references))
+        if any(not files.get(f"skills/{skill}/{name}") for name in required):
             raise BundleError(
-                f"{skill} skill must contain SKILL.md and references/{reference}"
+                f"{skill} skill must contain nonempty files: {', '.join(required)}"
             )
     installer = _required_file(root, INSTALLER_SOURCE)
     license_file = _required_file(root, LICENSE_SOURCE)
@@ -167,7 +167,7 @@ guides, and installer; it does not change the PLS standard version.
 
 ## Install
 
-From the target project's root, install the PLS layout skill:
+From the target project's root, install the PLS layout and Journal skill:
 
 ```bash
 python3 /path/to/pls/install.py install
@@ -224,6 +224,15 @@ python3 /path/to/new/pls/install.py update --bundle /path/to/new/pls
 
 Installing either skill does not adopt PLS or reorganize a project. Human
 adoption and layout decisions remain separate.
+
+## Use
+
+The PLS skill covers project layout and Project Journal records: save
+discussions and decisions, preserve reasons and linked changes, and retrieve
+relevant history. Its bundled references own the rules. Disposable working
+context uses the location declared in the project map, with
+`.local/agent-note/` as the default; durable records belong in the Journal.
+The design-writing skill creates and reviews precise system design documents.
 """
     return text.encode("utf-8")
 

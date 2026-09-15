@@ -22,10 +22,11 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           cat > /tmp/pls-release-notes.md <<'NOTES'
-          Complete PLS working-draft bundle: PLS layout skill, companion design-writing skill, guides, Python installer, instructions, and license.
+          Complete PLS working-draft bundle: layout and Project Journal skill, companion design-writing skill, guides, Python installer, instructions, and license.
+          PLS includes retrievable discussion and decision history, selective reading, and configurable disposable context placement.
           Download pls.zip and extract it. From the target project, use Python 3.10 or newer:
 
-          - `python3 /path/to/pls/install.py install` installs only the PLS layout skill.
+          - `python3 /path/to/pls/install.py install` installs only the PLS layout and Journal skill.
           - `python3 /path/to/pls/install.py install --skill design-writing` installs only the design-writing skill.
 
           Each skill is self-contained and has its own installed updater. Run `install.py update` inside the installed skill to update that skill.

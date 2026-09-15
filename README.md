@@ -2,6 +2,8 @@
 
 Project layout standard: PLS 0.3 working draft
 
+Project key: `pls`
+
 PLS defines a small, predictable project layout for people and AI agents.
 It explains what each main area is for, where documents and supporting
 artifacts belong, and how to avoid unnecessary folders and process clutter.
@@ -18,17 +20,19 @@ artifacts belong, and how to avoid unnecessary folders and process clutter.
 ## Scope
 
 This repository owns the PLS standard, its distributable agent skill, and a
-companion design-writing guide and skill. PLS governs project layout; the
-companion guides readable, precise system design. Adopting projects own their
-documentation, implementation, and adoption decisions.
+companion design-writing guide and skill. PLS governs project layout and
+retrievable discussion and decision records; the companion guides readable,
+precise system design. Adopting projects own their documentation,
+implementation, and adoption decisions.
 
 ## Project map
 
 | Question | Location |
 |---|---|
 | What rules does PLS define? | [PLS](src/pls/references/PLS.md) |
+| How are discussions, decisions, and changed decisions saved and retrieved? | [Project Journal standard](src/pls/references/journal.md) |
 | What project-specific rules must agents follow here? | [Agent instructions](AGENTS.md) |
-| What is happening with the PLS project? | [Project Record](docs/project-record.md) |
+| What is happening with the PLS project? | [Project Journal](docs/journal.md) |
 | How do I install and use the PLS agent skill? | [Operations](docs/operations.md) |
 | Where is the maintained PLS package? | [PLS agent skill](src/pls/SKILL.md) |
 | How should system design documents be written? | [Design writing guide](src/design-writing/references/design-writing.md) |
@@ -87,5 +91,24 @@ The structure-first PLS v0.3 text is a working draft. The published
 bundle is the latest verified release and contains two independently
 selectable skills with their shared Python installer and per-skill updater.
 The standard remains the PLS 0.3.0 working draft and has not been promoted to
-a stable release. See the [Project Record](docs/project-record.md) for release
+a stable release. See the [Project Journal](docs/journal.md) for release
 verification and limitations.
+
+The source now includes an unpublished
+[Project Journal standard](src/pls/references/journal.md) and matching PLS
+skill routes. The Journal name, retained history, growth rules, and selective
+reading direction are accepted. Detailed metadata and workflow remain a
+working draft. The `0.3.0-draft.4` candidate has passed release review;
+[verification and remaining publication work](docs/journal.md#draft4-release-preparation)
+are recorded in the Journal. The published draft3 bundle and installed
+copies do not yet contain this revision.
+
+Projects may declare a disposable working context and session handoff
+location in their project map. This project uses the default
+`.local/agent-note/`; no override is configured. Its temporary, ignored,
+non-authoritative role is unchanged.
+
+The normal location is `docs/journal.md` or an expanded `docs/journal/`.
+This repository now uses [its Journal](docs/journal.md), migrated from the
+former Project Record with record IDs and history preserved. Other projects
+retain their own mapped locations until they choose to migrate.

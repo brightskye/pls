@@ -3,8 +3,10 @@
 ## Release bundle
 
 Use the complete `pls.zip` asset from [GitHub Releases](https://github.com/brightskye/pls/releases).
-The layout and companion commands below describe the published
-`v0.3.0-draft.3` bundle, which contains two independently selectable skills.
+The layout below describes the `0.3.0-draft.4` release candidate. It contains
+two independently selectable skills and adds the Journal reference to PLS.
+The latest published bundle remains `v0.3.0-draft.3`; its install and update
+commands are the same, but it does not contain the Journal rules.
 
 The new bundle contains:
 
@@ -17,6 +19,7 @@ pls/
   skills/pls/
     SKILL.md
     references/PLS.md
+    references/journal.md
   skills/design-writing/
     SKILL.md
     agents/openai.yaml
@@ -29,7 +32,7 @@ development checkout or a separate installer download. The shared Python
 installer selects one skill per operation: it defaults to `pls`, while
 `--skill design-writing` selects the companion. Generated ZIPs and checksums use
 ignored `releases/<version>/` locally and GitHub Releases for distribution. The
-standard remains a working draft. Bundle versions such as `0.3.0-draft.3`
+standard remains a working draft. Bundle versions such as `0.3.0-draft.4`
 identify packaged revisions of that draft.
 
 The latest verified remote bundle,
@@ -37,7 +40,7 @@ The latest verified remote bundle,
 is published and tested. Its shared Python installer selects one skill per
 operation, with PLS as the default and `--skill design-writing` selecting the
 companion; each selected skill has its own updater and receipt. The PLS
-standard remains the 0.3.0 working draft. See the [Project Record](project-record.md)
+standard remains the 0.3.0 working draft. See the [Project Journal](journal.md)
 for verification results and limits.
 
 ## Install with Python
@@ -76,8 +79,9 @@ route:
   .pls-install.json
 ```
 
-The PLS installation contains `references/PLS.md`; the design-writing
-installation contains `references/design-writing.md` and its agent metadata.
+From draft4, the PLS installation contains `references/PLS.md` and
+`references/journal.md`; the design-writing installation contains
+`references/design-writing.md` and its agent metadata.
 
 For a different location, pass `--dest` with the parent skills directory; the
 installer creates or updates its `<skill>/` child there. Use `--skill` to choose
@@ -164,7 +168,9 @@ version or reorganize its files. A human must accept that adoption separately.
 With Node.js/npm available, use the release asset URL:
 
 ```bash
-npx skills@latest add https://github.com/brightskye/pls/releases/download/v0.3.0-draft.1/pls.zip --skill pls --agent codex
+npx skills@latest add \
+  https://github.com/brightskye/pls/releases/download/v0.3.0-draft.3/pls.zip \
+  --skill pls --agent codex
 ```
 
 The [skills CLI](https://github.com/vercel-labs/skills) installs the skill found
@@ -172,7 +178,8 @@ inside the ZIP. Add `--global` for a user-wide copy or use another supported
 agent name as needed. This route installs the skill payload only; it does not
 include the Python updater or the bundle's outer files.
 
-The checked CLI version, 1.5.23, does not put archive installs in its lock file.
+The CLI checks used version 1.5.23 and the draft1 bundle. That CLI version
+does not put archive installs in its lock file.
 Therefore `npx skills update pls --project` cannot update this installation.
 To use a newer release, preserve local edits and rerun `add` with the new
 release asset URL. Use Python when release tracking and a dedicated update
@@ -180,7 +187,8 @@ command are wanted.
 
 ## Use the installed skill
 
-The installed PLS directory must contain `SKILL.md` and `references/PLS.md`.
+From draft4, the installed PLS directory contains `SKILL.md`,
+`references/PLS.md`, and `references/journal.md`.
 The design-writing directory contains its `SKILL.md` and writing guide.
 Codex can select the skill when its description matches the request; in CLI or
 the IDE extension, `$pls` or `$design-writing` selects it explicitly. If the
@@ -193,6 +201,8 @@ $pls scaffold this new project
 $pls review this project's structure
 $pls reorganize this project using PLS
 $pls tell me where this release package belongs
+$pls record this discussion and our accepted decisions in the project journal
+$pls recall why we changed the capture destination
 $design-writing draft the design for this system
 $design-writing review this design for implementation readiness
 ```
@@ -201,6 +211,10 @@ Review is read-only unless changes are requested. Scaffold creates only needed
 areas. Reorganize improves the recorded layout; adopting a different version
 requires human acceptance. The bundled standard owns placement and adoption
 rules. PLS does not introduce a separate scaffold command or linter.
+The Journal recording and retrieval examples require draft4 or the working
+source revision. Disposable context uses the path declared in the project's
+map, defaulting to `.local/agent-note/`; it remains separate from durable
+Journal records.
 
 ## Development and older installations
 
@@ -234,10 +248,10 @@ From a clean, committed PLS checkout:
 
 ```bash
 python3 -m unittest discover -s tests -v
-python3 tools/build_release.py --version 0.3.0-draft.3
+python3 tools/build_release.py --version 0.3.0-draft.4
 ```
 
-The builder writes `releases/0.3.0-draft.3/pls.zip` and `pls.zip.sha256`, records
+The builder writes `releases/0.3.0-draft.4/pls.zip` and `pls.zip.sha256`, records
 the source commit, and refuses to overwrite an existing version output.
 `--output-dir` selects another build output location. Only the skill packages,
 installer, license, generated instructions, and release metadata are included.
@@ -246,8 +260,8 @@ The same inputs produce the same ZIP bytes.
 After committing and pushing the desired source, publish a matching new tag:
 
 ```bash
-git tag v0.3.0-draft.3
-git push origin v0.3.0-draft.3
+git tag v0.3.0-draft.4
+git push origin v0.3.0-draft.4
 ```
 
 The [release workflow](../.github/workflows/release.yml) runs the tests, builds
@@ -262,7 +276,7 @@ Use the maintained installer and bundle tests, plus `git diff --check`.
 Before declaring a new bundle usable, extract it outside the checkout, install
 without network access, verify the installed bytes, and check updates and
 local-edit protection. Check the published release download after publication.
-The [Project Record](project-record.md) records current results and limitations.
+The [Project Journal](journal.md) records current results and limitations.
 
 A working-draft bundle is not a stable PLS standard release. Stable promotion
 remains a separate human decision. Existing adopting projects do not migrate

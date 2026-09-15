@@ -53,6 +53,7 @@ class InstallerTests(unittest.TestCase):
         self.payload = {
             "SKILL.md": (ROOT / "src" / "pls" / "SKILL.md").read_bytes(),
             "references/PLS.md": (ROOT / "src" / "pls" / "references" / "PLS.md").read_bytes(),
+            "references/journal.md": (ROOT / "src" / "pls" / "references" / "journal.md").read_bytes(),
         }
         companion_root = ROOT / "src" / "design-writing"
         self.companion = {path.relative_to(companion_root).as_posix(): path.read_bytes()

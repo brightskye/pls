@@ -21,7 +21,7 @@ assert SPEC.loader is not None
 SPEC.loader.exec_module(builder)
 
 COMMIT = "0123456789abcdef" * 2 + "01234567"
-VERSION = "0.3.0-draft.3"
+VERSION = "0.3.0-draft.4"
 
 
 class ReleaseBundleTests(unittest.TestCase):
@@ -40,6 +40,9 @@ class ReleaseBundleTests(unittest.TestCase):
         )
         (self.root / "src" / "pls" / "references" / "guide.md").write_text(
             "Bundled guidance.\n", encoding="utf-8"
+        )
+        (self.root / "src" / "pls" / "references" / "journal.md").write_text(
+            "# Project Journal\n", encoding="utf-8"
         )
         (self.root / "src" / "design-writing" / "references").mkdir(parents=True)
         (self.root / "src" / "design-writing" / "SKILL.md").write_text(
@@ -74,6 +77,7 @@ class ReleaseBundleTests(unittest.TestCase):
             "pls/skills/pls/SKILL.md",
             "pls/skills/pls/references/PLS.md",
             "pls/skills/pls/references/guide.md",
+            "pls/skills/pls/references/journal.md",
         }
         self.assertEqual(set(members), expected)
         self.assertEqual(list(members), sorted(members))
@@ -150,6 +154,22 @@ class ReleaseBundleTests(unittest.TestCase):
                         self.assertFalse(self.output.exists())
                     finally:
                         path.write_bytes(original)
+
+    def test_pls_requires_its_journal_reference(self):
+        path = self.root / "src" / "pls" / "references" / "journal.md"
+        original = path.read_bytes()
+        for content in (None, b""):
+            with self.subTest(content=content):
+                if content is None:
+                    path.unlink()
+                else:
+                    path.write_bytes(content)
+                try:
+                    with self.assertRaisesRegex(builder.BundleError, "references/journal.md"):
+                        self.build()
+                    self.assertFalse(self.output.exists())
+                finally:
+                    path.write_bytes(original)
 
     def test_missing_companion_directory_is_not_packaged(self):
         source = self.root / "src" / "design-writing"
